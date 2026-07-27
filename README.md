@@ -9,19 +9,43 @@
 - JVM
 - Multithreading
 - Spring Framework
-- PostgreSQL
-- Hibernate
-- Kafka
+- PostgreSQL and SQL
+- JPA and Hibernate
+- Apache Kafka
 - Testing
 - System Design
+
+## Формат подготовки
+
+Для каждой темы:
+
+1. Изучение теории.
+2. Разбор внутренних механизмов.
+3. Написание небольших примеров на Java.
+4. Ответы на вопросы технических интервью.
+5. Разбор практических backend-сценариев.
+6. Повторение слабых тем.
 
 ## Стек
 
 - Java 21
 - Gradle
+- JUnit 5
 
 ## Структура
 
-- `docs` — конспекты и ответы на вопросы;
-- `src/main/java` — небольшие демонстрационные примеры;
-- `src/test/java` — тесты для учебных примеров.
+- `docs/java-core` — Java Core, коллекции, JVM и многопоточность;
+- `docs/spring` — Spring Framework;
+- `docs/databases` — SQL и базы данных;
+- `docs/hibernate` — JPA и Hibernate;
+- `docs/kafka` — Apache Kafka;
+- `docs/testing` — тестирование;
+- `docs/system-design` — основы проектирования систем;
+- `docs/progress` — прогресс подготовки;
+- `docs/templates` — шаблоны конспектов;
+- `src/main/java` — демонстрационные примеры;
+- `src/test/java` — тесты учебных примеров.
+
+## Текущая тема
+
+Collections Framework.
