@@ -1138,3 +1138,50 @@ TreeSet       → уникальность + сортировка
 HashSet и LinkedHashSet → equals() + hashCode()
 TreeSet                 → compareTo() или Comparator
 ```
+
+## Queue
+
+`Queue` представляет структуру данных, в которой элементы обычно обрабатываются
+по принципу FIFO: first in, first out.
+
+Основные пары методов:
+
+| Операция | Исключение при неудаче | Специальное значение |
+|---|---|---|
+| Добавление | `add()` | `offer()` |
+| Получение с удалением | `remove()` | `poll()` |
+| Просмотр без удаления | `element()` | `peek()` |
+
+Для обычной очереди чаще используются `offer()`, `poll()` и `peek()`.
+
+```java
+Queue<Integer> queue = new ArrayDeque<>();
+
+queue.offer(10);
+queue.offer(20);
+queue.offer(30);
+
+int first = queue.poll();
+int next = queue.peek();
+```
+
+## Deque
+
+`Deque` — двусторонняя очередь, которая позволяет добавлять, удалять и
+просматривать элементы с обоих концов.
+
+| Операция | Начало | Конец |
+|---|---|---|
+| Добавление | `offerFirst()` | `offerLast()` |
+| Удаление | `pollFirst()` | `pollLast()` |
+| Просмотр | `peekFirst()` | `peekLast()` |
+
+```java
+Deque<Integer> deque = new ArrayDeque<>();
+
+deque.offerFirst(10);
+deque.offerLast(20);
+
+int first = deque.pollFirst();
+int last = deque.pollLast();
+```
