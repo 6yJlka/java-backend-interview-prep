@@ -1,29 +1,5 @@
-# Gradle
 .gradle/
 build/
-**/build/
-
-# IntelliJ IDEA
 .idea/
 *.iml
-*.iws
-*.ipr
 out/
-
-# Kotlin
-.kotlin/
-
-# Logs and JVM crash files
-*.log
-hs_err_pid*
-replay_pid*
-
-# Environment files
-.env
-.env.*
-!.env.example
-
-# Operating systems
-.DS_Store
-Thumbs.db
-desktop.ini
