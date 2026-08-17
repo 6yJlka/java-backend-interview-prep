@@ -10,7 +10,7 @@
 | 6 | Java Core | Stream API | Изучено | Средняя | 10.08.2026 |
 | 7 | JVM | Runtime Data Areas | Изучено | Начальная | 06.08.2026 |
 | 8 | Java Concurrency | Java Memory Model | Изучено | Начальная | 10.08.2026 |
-| 9 | Java Concurrency | Multithreading | В процессе | Начальная | 13.08.2026 |
+| 9 | Java Concurrency | Multithreading | Изучено | Средняя | 20.08.2026 |
 
 ## Статусы
 
