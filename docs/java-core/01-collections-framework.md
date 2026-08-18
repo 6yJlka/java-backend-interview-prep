@@ -1185,3 +1185,678 @@ deque.offerLast(20);
 int first = deque.pollFirst();
 int last = deque.pollLast();
 ```
+# PriorityQueue
+
+`PriorityQueue<E>` — очередь с приоритетом. Внутри она основана на куче (`heap`).
+
+По умолчанию первым извлекается минимальный элемент в соответствии с естественным порядком.
+
+```java
+PriorityQueue<Integer> queue = new PriorityQueue<>();
+
+queue.offer(10);
+queue.offer(3);
+queue.offer(7);
+
+queue.poll(); // 3
+```
+
+Порядок определяется:
+
+- естественным порядком через `Comparable`;
+- переданным `Comparator`.
+
+## Max-heap
+
+Чтобы первым извлекался максимальный элемент, можно передать обратный компаратор.
+
+```java
+PriorityQueue<Integer> maxHeap =
+        new PriorityQueue<>(Comparator.reverseOrder());
+
+maxHeap.offer(10);
+maxHeap.offer(3);
+maxHeap.offer(7);
+
+maxHeap.poll(); // 10
+```
+
+Для пользовательского типа:
+
+```java
+PriorityQueue<User> queue = new PriorityQueue<>(
+        Comparator.comparingInt(User::getPriority).reversed()
+);
+```
+
+## Сложность PriorityQueue
+
+| Операция | Сложность |
+|---|---:|
+| `offer()` / `add()` | `O(log n)` |
+| `poll()` / `remove()` первого элемента | `O(log n)` |
+| `peek()` / `element()` | `O(1)` |
+| поиск произвольного элемента | `O(n)` |
+
+Важно: внутренний массив `PriorityQueue` не обязан быть полностью отсортирован.
+Гарантируется только то, что элемент с наивысшим приоритетом доступен через `peek()` / `poll()`.
+
+Типичные применения:
+
+```text
+получение минимума или максимума
+Top K
+scheduler по приоритету
+алгоритм Дейкстры
+heap-задачи
+```
+
+# Comparable и Comparator
+
+Оба интерфейса задают порядок объектов, но делают это по-разному.
+
+## Comparable
+
+`Comparable<T>` задаёт естественный порядок самого класса.
+
+```java
+public class User implements Comparable<User> {
+
+    private final long id;
+
+    @Override
+    public int compareTo(User other) {
+        return Long.compare(this.id, other.id);
+    }
+}
+```
+
+Основной метод:
+
+```java
+int compareTo(T other);
+```
+
+Результат сравнения:
+
+```text
+< 0 → текущий объект меньше
+= 0 → объекты равны с точки зрения порядка
+> 0 → текущий объект больше
+```
+
+Естественный порядок используется, например, здесь:
+
+```java
+Collections.sort(users);
+```
+
+Если `Comparator` явно не передан, элементы должны иметь естественный порядок.
+
+## Comparator
+
+`Comparator<T>` задаёт внешнюю стратегию сравнения.
+
+```java
+Comparator<User> byName =
+        Comparator.comparing(User::getName);
+```
+
+Для одного класса можно создать сколько угодно стратегий:
+
+```java
+Comparator<User> byAge =
+        Comparator.comparingInt(User::getAge);
+
+Comparator<User> byName =
+        Comparator.comparing(User::getName);
+
+Comparator<User> bySalary =
+        Comparator.comparing(User::getSalary);
+```
+
+Основной метод:
+
+```java
+int compare(T first, T second);
+```
+
+## Comparable и Comparator
+
+```text
+Comparable
+→ естественный порядок
+→ логика находится внутри класса
+→ compareTo()
+
+Comparator
+→ внешний или альтернативный порядок
+→ логика находится отдельно
+→ compare()
+```
+
+Компараторы можно объединять:
+
+```java
+Comparator<User> comparator =
+        Comparator.comparingInt(User::getAge)
+                  .thenComparing(User::getName);
+```
+
+Также можно развернуть порядок:
+
+```java
+Comparator<User> byAgeDescending =
+        Comparator.comparingInt(User::getAge).reversed();
+```
+
+## Collections.sort и List.sort
+
+Оба варианта сортируют список на месте.
+
+```java
+Collections.sort(list);
+```
+
+Без явного `Comparator` используется естественный порядок элементов.
+
+```java
+list.sort(comparator);
+```
+
+Использует переданный `Comparator`.
+
+Ни один из этих вызовов не создаёт новый отсортированный список.
+
+# Iterator и ListIterator
+
+`Iterator<E>` — интерфейс последовательного обхода элементов.
+
+```java
+Iterator<String> iterator = list.iterator();
+```
+
+Основные методы:
+
+```java
+hasNext();
+next();
+remove();
+```
+
+Цикл `for-each` использует `Iterator` под капотом.
+
+```java
+for (String value : list) {
+    System.out.println(value);
+}
+```
+
+Упрощённо эквивалентен:
+
+```java
+Iterator<String> iterator = list.iterator();
+
+while (iterator.hasNext()) {
+    String value = iterator.next();
+    System.out.println(value);
+}
+```
+
+## ListIterator
+
+`ListIterator<E>` расширяет `Iterator<E>` и предназначен специально для `List`.
+
+Он умеет двигаться в обе стороны:
+
+```java
+hasNext();
+next();
+hasPrevious();
+previous();
+```
+
+Также доступны:
+
+```java
+nextIndex();
+previousIndex();
+set(element);
+add(element);
+remove();
+```
+
+Пример изменения элемента:
+
+```java
+ListIterator<String> iterator = list.listIterator();
+
+while (iterator.hasNext()) {
+    String value = iterator.next();
+
+    if (value.equals("old")) {
+        iterator.set("new");
+    }
+}
+```
+
+Кратко:
+
+```text
+Iterator
+→ общий обход Collection
+→ движение вперёд
+
+ListIterator
+→ только List
+→ вперёд и назад
+→ индексы
+→ add / set
+```
+
+# Fail-fast Iterator
+
+Многие итераторы обычных коллекций Java являются `fail-fast`.
+
+Итератор пытается обнаружить структурное изменение коллекции, выполненное неожиданным способом во время обхода.
+
+Например:
+
+```java
+for (String value : list) {
+    if (value.equals("delete")) {
+        list.remove(value);
+    }
+}
+```
+
+`for-each` использует `Iterator`, а изменение выполняется напрямую через `list`.
+
+Упрощённо многие реализации используют два счётчика:
+
+```text
+modCount         → текущее число структурных изменений коллекции
+expectedModCount → значение, которое ожидает Iterator
+```
+
+Если итератор обнаруживает:
+
+```text
+modCount != expectedModCount
+```
+
+он может выбросить:
+
+```text
+ConcurrentModificationException
+```
+
+Важно:
+
+> `ConcurrentModificationException` не означает, что обязательно участвовало несколько потоков.
+
+Его можно получить и в одном потоке.
+
+## Безопасное удаление через Iterator
+
+```java
+Iterator<String> iterator = list.iterator();
+
+while (iterator.hasNext()) {
+    String value = iterator.next();
+
+    if (value.equals("delete")) {
+        iterator.remove();
+    }
+}
+```
+
+Здесь изменение выполняется через сам итератор, поэтому его внутреннее состояние обновляется корректно.
+
+Также для удаления по условию часто подходит:
+
+```java
+list.removeIf(value -> value.equals("delete"));
+```
+
+## Что означает fail-fast
+
+`fail-fast` — механизм раннего обнаружения неправильного структурного изменения.
+
+Это `best effort`, а не строгая гарантия.
+
+```text
+fail-fast
+→ пытается быстро обнаружить изменение
+→ может выбросить ConcurrentModificationException
+
+fail-fast
+≠ механизм thread safety
+≠ гарантия исключения при абсолютно любом неправильном изменении
+```
+
+# Immutable и Unmodifiable Collections
+
+Важно различать неизменяемую коллекцию и неизменяемое представление другой коллекции.
+
+## Immutable collection
+
+Коллекцию нельзя структурно изменить после создания.
+
+```java
+List<String> list = List.of("A", "B");
+
+list.add("C");
+```
+
+Результат:
+
+```text
+UnsupportedOperationException
+```
+
+То же касается:
+
+```java
+list.remove(...);
+list.set(...);
+```
+
+## Unmodifiable view
+
+```java
+List<String> original = new ArrayList<>();
+original.add("A");
+
+List<String> view =
+        Collections.unmodifiableList(original);
+```
+
+Через `view` изменять список нельзя:
+
+```java
+view.add("B");
+```
+
+Результат:
+
+```text
+UnsupportedOperationException
+```
+
+Но исходная коллекция остаётся изменяемой:
+
+```java
+original.add("B");
+```
+
+После этого изменение видно и через `view`:
+
+```text
+original → [A, B]
+view     → [A, B]
+```
+
+Кратко:
+
+```text
+immutable collection
+→ сама коллекция не изменяется
+
+unmodifiable view
+→ через эту ссылку менять нельзя
+→ backing collection может измениться через другую ссылку
+```
+
+# List.copyOf, Set.copyOf и Map.copyOf
+
+`copyOf()` возвращает неизменяемый snapshot текущего содержимого.
+
+```java
+List<String> original = new ArrayList<>();
+original.add("A");
+
+List<String> copy = List.copyOf(original);
+
+original.add("B");
+```
+
+Результат:
+
+```text
+original → [A, B]
+copy     → [A]
+```
+
+В отличие от `Collections.unmodifiableList(original)`, дальнейшие изменения исходной коллекции на результат `copyOf()` не влияют.
+
+Однако `copyOf()` не обязана создавать новый объект, если аргумент уже является подходящей неизменяемой коллекцией.
+
+```java
+List<String> original = List.of("A", "B");
+List<String> copy = List.copyOf(original);
+
+// original == copy может быть true
+```
+
+Гарантируется неизменяемость результата, а не новая identity объекта.
+
+# List.of, Set.of и Map.of
+
+Фабричные методы создают неизменяемые коллекции.
+
+## List.of
+
+```java
+List<String> values = List.of("A", "B");
+```
+
+Нельзя изменять список и нельзя передавать `null`.
+
+```java
+List.of("A", null); // NullPointerException
+```
+
+## Set.of
+
+```java
+Set<String> values = Set.of("A", "B");
+```
+
+Ограничения:
+
+```text
+null запрещён
+дубликаты запрещены
+структурные изменения запрещены
+```
+
+```java
+Set.of("A", "A"); // IllegalArgumentException
+```
+
+## Map.of
+
+```java
+Map<String, Integer> map = Map.of(
+        "A", 1,
+        "B", 2
+);
+```
+
+Ограничения:
+
+```text
+null-ключи запрещены
+null-значения запрещены
+повторяющиеся ключи запрещены
+изменение карты запрещено
+```
+
+# Поверхностная неизменяемость
+
+Неизменяемость коллекции не делает автоматически неизменяемыми объекты внутри неё.
+
+```java
+User user = new User("Dima");
+List<User> users = List.of(user);
+
+user.setName("Alex");
+```
+
+Структура списка не изменилась, но состояние объекта `User` изменилось.
+
+Поэтому:
+
+```text
+immutable collection
+≠ deep immutability объектов внутри неё
+```
+
+# Stack в современном Java-коде
+
+Класс:
+
+```java
+java.util.Stack
+```
+
+является legacy API и наследуется от `Vector`.
+
+Для нового кода стек обычно реализуют через `Deque`, чаще всего `ArrayDeque`.
+
+```java
+Deque<Integer> stack = new ArrayDeque<>();
+
+stack.push(10);
+stack.push(20);
+
+stack.pop();  // 20
+stack.peek(); // 10
+```
+
+`Stack` формально не помечен `@Deprecated`, но `Deque` является предпочтительным API для LIFO.
+
+# Финальная памятка по Collections Framework
+
+```text
+ArrayList
+→ динамический массив
+→ get O(1)
+→ add в конец O(1) амортизированно
+→ вставка / удаление в середине O(n)
+```
+
+```text
+LinkedList
+→ двусвязный список
+→ get O(n)
+→ работа с уже найденным узлом O(1)
+→ вставка по индексу O(n) из-за поиска
+```
+
+```text
+HashSet
+→ hash table
+→ equals + hashCode
+→ O(1) в среднем
+```
+
+```text
+LinkedHashSet
+→ HashSet + порядок вставки
+→ O(1) в среднем
+```
+
+```text
+TreeSet
+→ красно-чёрное дерево
+→ Comparable или Comparator
+→ O(log n)
+→ compare(...) == 0 означает дубликат для Set
+```
+
+```text
+ArrayDeque
+→ FIFO и LIFO
+→ современный вариант для Queue / Stack
+```
+
+```text
+PriorityQueue
+→ heap
+→ offer / poll O(log n)
+→ peek O(1)
+```
+
+```text
+Comparable
+→ естественный порядок
+→ compareTo()
+
+Comparator
+→ внешняя стратегия
+→ compare()
+```
+
+```text
+Iterator
+→ последовательный обход
+
+ListIterator
+→ List
+→ вперёд и назад
+→ add / set / индексы
+```
+
+```text
+fail-fast
+→ попытка быстро обнаружить неожиданное структурное изменение
+→ ConcurrentModificationException
+→ не является гарантией и не обеспечивает thread safety
+```
+
+```text
+Collections.unmodifiableList(original)
+→ read-only view
+→ изменения original видны
+
+List.copyOf(original)
+→ immutable snapshot
+→ дальнейшие изменения original не видны
+```
+
+```text
+List.of / Set.of / Map.of
+→ immutable
+→ null запрещён
+
+Set.of
+→ дубликаты запрещены
+
+Map.of
+→ повторные ключи запрещены
+```
+
+# Дополнительные вопросы для самопроверки
+
+1. Чем `Comparable` отличается от `Comparator`?
+2. Где находится логика естественного порядка?
+3. Можно ли иметь несколько `Comparator` для одного класса?
+4. Что означает результат `compare(...) == 0` для `TreeSet`?
+5. Чем `Iterator` отличается от `ListIterator`?
+6. Почему `ConcurrentModificationException` можно получить в одном потоке?
+7. Что означает `fail-fast`?
+8. Почему `iterator.remove()` допустим во время обхода?
+9. Чем immutable collection отличается от unmodifiable view?
+10. Чем `List.copyOf()` отличается от `Collections.unmodifiableList()`?
+11. Обязана ли `List.copyOf()` создавать новый объект?
+12. Можно ли передать `null` в `List.of()`?
+13. Что произойдёт при дубликате в `Set.of()`?
+14. Какие ограничения есть у `Map.of()`?
+15. Делает ли immutable collection неизменяемыми её элементы?
+16. Как устроена `PriorityQueue`?
+17. Как сделать max-heap?
+18. Почему `PriorityQueue` не гарантирует полностью отсортированный порядок обхода?
+19. Почему для стека предпочтительнее `ArrayDeque`, а не `Stack`?
+20. Чем `Collections.sort(list)` отличается от `list.sort(comparator)`?
