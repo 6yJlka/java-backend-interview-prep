@@ -16,97 +16,94 @@ Roadmap ориентирован не просто на изучение Java, �
 
 # 1. Java Core
 
-## 1.1. Java Language Basics — Не начато системно
+## 1.1. Java Language Basics — Изучено
 
-Базовый синтаксис уже используется на практике, но этот блок нужно пройти именно в формате подготовки к интервью.
-
-- [ ] primitive types
-- [ ] reference types
-- [ ] variables
-- [ ] scopes
-- [ ] default values
-- [ ] operators
-- [ ] control flow
-- [ ] arrays
-- [ ] multidimensional arrays
-- [ ] type casting
-- [ ] widening conversion
-- [ ] narrowing conversion
-- [ ] Java pass-by-value
-- [ ] передача primitive в метод
-- [ ] передача object reference в метод
-- [ ] varargs
-- [ ] packages
-- [ ] imports
-- [ ] access modifiers
+- [x] primitive types
+- [x] reference types
+- [x] variables
+- [x] scopes
+- [x] default values
+- [x] operators
+- [x] control flow
+- [x] arrays
+- [x] multidimensional arrays
+- [x] type casting
+- [x] widening conversion
+- [x] narrowing conversion
+- [x] Java pass-by-value
+- [x] передача primitive в метод
+- [x] передача object reference в метод
+- [x] varargs
+- [x] packages
+- [x] imports
+- [x] access modifiers
 
 ---
 
-## 1.2. OOP — Не начато системно
+## 1.2. OOP — Изучено
 
-- [ ] class и object
-- [ ] encapsulation
-- [ ] inheritance
-- [ ] polymorphism
-- [ ] abstraction
-- [ ] interface
-- [ ] abstract class
-- [ ] interface vs abstract class
-- [ ] overriding
-- [ ] overloading
-- [ ] static binding
-- [ ] dynamic binding
-- [ ] `this`
-- [ ] `super`
-- [ ] `final`
-- [ ] `static`
-- [ ] composition vs inheritance
-- [ ] можно ли override `static`
-- [ ] можно ли override `private`
-- [ ] covariant return type
-
+- [x] class и object
+- [x] encapsulation
+- [x] inheritance
+- [x] polymorphism
+- [x] abstraction
+- [x] interface
+- [x] abstract class
+- [x] interface vs abstract class
+- [x] overriding
+- [x] overloading
+- [x] static binding
+- [x] dynamic binding
+- [x] `this`
+- [x] `super`
+- [x] `final`
+- [x] `static`
+- [x] composition vs inheritance
+- [x] можно ли override `static`
+- [x] можно ли override `private`
+- [x] covariant return type
 ---
 
-## 1.3. Object, String и Wrappers — Не начато системно
+## 1.3. Object, String и Wrappers — Изучено
 
 ### Object
 
-- [ ] `toString`
-- [ ] `equals`
-- [ ] `hashCode`
-- [ ] `getClass`
+- [x] `toString`
+- [x] `equals`
+- [x] `hashCode`
+- [x] `getClass`
 - [ ] `clone` на концептуальном уровне
-- [ ] runtime type объекта
+- [x] runtime type объекта
 
 ### String
 
-- [ ] String immutability
-- [ ] String Pool
-- [ ] string literals
-- [ ] `new String(...)`
-- [ ] `intern`
-- [ ] concatenation
-- [ ] `StringBuilder`
-- [ ] `StringBuffer`
-- [ ] `StringBuilder` vs `StringBuffer`
-- [ ] почему `String` immutable
+- [x] String immutability
+- [x] String Pool
+- [x] string literals
+- [x] `new String(...)`
+- [x] `intern`
+- [x] concatenation
+- [x] `StringBuilder`
+- [x] `StringBuffer`
+- [x] `StringBuilder` vs `StringBuffer`
+- [x] почему `String` immutable
 
 ### Primitive Types и Wrappers
 
-- [ ] primitives vs wrappers
-- [ ] boxing
-- [ ] unboxing
-- [ ] autoboxing
-- [ ] Integer cache
-- [ ] wrapper equality
-- [ ] `==` vs `equals`
-- [ ] numeric overflow
-- [ ] `null` + unboxing
-- [ ] `Number`
+- [x] primitives vs wrappers
+- [x] boxing
+- [x] unboxing
+- [x] autoboxing
+- [x] Integer cache
+- [x] wrapper equality
+- [x] `==` vs `equals`
+- [x] numeric overflow
+- [x] `null` + unboxing
+- [x] `Number`
 
 ---
 
-## 1.4. Collections Framework — В процессе
+## 1.4. Collections Framework — Изучено
 
 - [x] Иерархия `Collection`
 - [x] `List`
@@ -124,16 +121,16 @@ Roadmap ориентирован не просто на изучение Java, �
 - [x] `peek` / `element`
 - [x] `poll` / `remove`
 - [x] основные сложности операций
-- [ ] `Comparable` vs `Comparator` — финальное повторение
-- [ ] `Iterator`
-- [ ] `ListIterator`
-- [ ] fail-fast iterator
-- [ ] `ConcurrentModificationException`
-- [ ] immutable collections
-- [ ] unmodifiable collections
-- [ ] `List.of`
-- [ ] `Set.of`
-- [ ] `Map.of`
+- [x] `Comparable` vs `Comparator`
+- [x] `Iterator`
+- [x] `ListIterator`
+- [x] fail-fast iterator
+- [x] `ConcurrentModificationException`
+- [x] immutable collections
+- [x] unmodifiable collections
+- [x] `List.of`
+- [x] `Set.of`
+- [x] `Map.of`
 - [ ] Финальный контрольный опрос
 
 ---
@@ -1068,17 +1065,13 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ## Этап 1. Закрыть оставшийся Java Core
 
-1. Закрыть `Collections Framework`.
-2. `Java Language Basics` — быстрый interview-oriented проход.
-3. `OOP`.
-4. `Object`, `String`, primitives и wrappers.
-5. `Functional Interfaces` и `Lambda`.
-6. `Optional`.
-7. `Annotations`.
-8. `Nested Classes`.
-9. `Modern Java`.
-10. `Date and Time API`.
-11. `Java I/O / NIO`.
+1. `Functional Interfaces` и `Lambda`.
+2. `Optional`.
+3. `Annotations`.
+4. `Nested Classes`.
+5. `Modern Java`.
+6. `Date and Time API`.
+7. `Java I/O / NIO`.
 
 ## Этап 2. Закрыть JVM
 
