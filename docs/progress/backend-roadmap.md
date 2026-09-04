@@ -203,19 +203,19 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ## 1.9. Functional Interfaces и Lambda — Не начато системно
 
-- [ ] lambda expressions
-- [ ] method references
-- [ ] functional interface
-- [ ] `@FunctionalInterface`
-- [ ] `Predicate`
-- [ ] `Function`
-- [ ] `Consumer`
-- [ ] `Supplier`
-- [ ] `UnaryOperator`
-- [ ] `BinaryOperator`
-- [ ] effectively final
-- [ ] closure
-- [ ] lambda vs anonymous class
+- [x] lambda expressions
+- [x] method references
+- [x] functional interface
+- [x] `@FunctionalInterface`
+- [x] `Predicate`
+- [x] `Function`
+- [x] `Consumer`
+- [x] `Supplier`
+- [x] `UnaryOperator`
+- [x] `BinaryOperator`
+- [x] effectively final
+- [x] closure
+- [x] lambda vs anonymous class
 
 ---
 
