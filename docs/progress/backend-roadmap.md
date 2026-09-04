@@ -311,18 +311,18 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 Нужны как фундамент под Spring: без `RetentionPolicy.RUNTIME` и базовой рефлексии
 не объяснить, как работает `@Transactional`.
 
-- [ ] что такое annotation
-- [ ] built-in annotations
-- [ ] `@Override`
-- [ ] `@Deprecated`
-- [ ] `@SuppressWarnings`
-- [ ] `@FunctionalInterface`
-- [ ] custom annotations
-- [ ] `@Target`
-- [ ] `@Retention`
-- [ ] `RetentionPolicy`
-- [ ] `@Inherited`
-- [ ] reflection + annotations на базовом уровне
+- [x] что такое annotation
+- [x] built-in annotations
+- [x] `@Override`
+- [x] `@Deprecated`
+- [x] `@SuppressWarnings`
+- [x] `@FunctionalInterface`
+- [x] custom annotations
+- [x] `@Target`
+- [x] `@Retention`
+- [x] `RetentionPolicy`
+- [x] `@Inherited`
+- [x] reflection + annotations на базовом уровне
 
 ---
 
