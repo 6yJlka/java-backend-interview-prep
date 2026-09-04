@@ -1956,3 +1956,14 @@ take()   → wait
 ## Главное правило
 
 Потокобезопасная коллекция решает проблему конкурентного доступа к самой структуре данных, но не делает автоматически атомарной любую бизнес-операцию и не делает автоматически потокобезопасными объекты, которые хранятся внутри неё.
+
+---
+
+## См. также
+
+- [`03-locks-atomics-executors.md`](03-locks-atomics-executors.md) — как
+  `workQueue` влияет на рост pool и rejection
+- [`../java-core/02-map.md`](../java-core/02-map.md) — обычный `HashMap` и почему
+  он не подходит для конкурентного доступа
+- [`../java-core/01-collections-framework.md`](../java-core/01-collections-framework.md) —
+  fail-fast итератор против weakly consistent и snapshot

@@ -1860,3 +1860,16 @@ Map.of
 18. Почему `PriorityQueue` не гарантирует полностью отсортированный порядок обхода?
 19. Почему для стека предпочтительнее `ArrayDeque`, а не `Stack`?
 20. Чем `Collections.sort(list)` отличается от `list.sort(comparator)`?
+
+---
+
+## См. также
+
+- [`02-map.md`](02-map.md) — `Map` не входит в иерархию `Collection`, но
+  разбирается вместе с ней
+- [`03-equals-hashcode.md`](03-equals-hashcode.md) — контракт, от которого зависит
+  корректность `HashSet` и ключей `Map`
+- [`08-functional-interfaces-lambda.md`](08-functional-interfaces-lambda.md) —
+  `Comparator` как функциональный интерфейс и его фабрики
+- [`../concurrency/04-concurrent-collections.md`](../concurrency/04-concurrent-collections.md) —
+  потокобезопасные аналоги и отличие fail-fast итератора от weakly consistent

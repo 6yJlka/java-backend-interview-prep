@@ -1824,3 +1824,14 @@ entrySet → Set пар ключ–значение
 Главное правило выбора:
 
 > Используй `HashMap` по умолчанию. Выбирай `LinkedHashMap`, когда нужен предсказуемый порядок. Выбирай `TreeMap`, когда ключи должны постоянно храниться отсортированными или нужны диапазонные операции.
+
+---
+
+## См. также
+
+- [`01-collections-framework.md`](01-collections-framework.md) — общая иерархия
+  коллекций
+- [`03-equals-hashcode.md`](03-equals-hashcode.md) — почему нарушение контракта
+  ломает поиск по ключу
+- [`../concurrency/04-concurrent-collections.md`](../concurrency/04-concurrent-collections.md) —
+  `ConcurrentHashMap`, атомарные операции и запрет `null`

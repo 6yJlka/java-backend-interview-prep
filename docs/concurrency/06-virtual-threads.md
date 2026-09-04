@@ -1606,3 +1606,14 @@ synchronization
 не ограничивать дешёвые virtual threads без причины
 → ограничивать реальный дефицитный ресурс
 ```
+
+---
+
+## См. также
+
+- [`02-multithreading-basics.md`](02-multithreading-basics.md) — platform threads
+  и их жизненный цикл
+- [`03-locks-atomics-executors.md`](03-locks-atomics-executors.md) — почему
+  привычная модель пулов здесь не нужна
+- [`05-completable-future.md`](05-completable-future.md) — разные задачи, а не
+  замена друг другу

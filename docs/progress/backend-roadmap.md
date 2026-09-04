@@ -2,15 +2,26 @@
 
 Полный roadmap подготовки к техническим интервью на позиции Java Backend Developer.
 
-Roadmap ориентирован не просто на изучение Java, а на подготовку к Junior / Junior+ Java Backend интервью.  
-Он объединяет Java Core, JVM, Concurrency, Spring, базы данных, JPA/Hibernate, Kafka, Testing, инфраструктуру, архитектуру и алгоритмы.
+Roadmap ориентирован не на изучение Java вообще, а на подготовку к Junior /
+Junior+ Java Backend интервью. Он объединяет Java Core, JVM, Concurrency, Spring,
+базы данных, JPA/Hibernate, Kafka, Testing, инфраструктуру и архитектуру.
 
 ## Статусы
 
 - `Не начато`
 - `В процессе`
 - `Изучено`
-- `Нужно повторить`
+- `Отложено` — тема сознательно исключена из ближайшей подготовки
+
+## Принцип приоритизации
+
+Порядок изучения определяется не логикой языка, а тем, что реально спрашивают на
+Junior / Junior+ собеседовании. Spring, SQL и Hibernate занимают на таком
+интервью больше места, чем остаток Java Core, поэтому Java Core закрывается
+выборочно, а не целиком.
+
+Темы со статусом `Отложено` не выброшены. Они прочитываются перед собеседованием
+обзорно, но конспект по ним не пишется, пока не закрыты приоритетные блоки.
 
 ---
 
@@ -62,6 +73,7 @@ Roadmap ориентирован не просто на изучение Java, �
 - [x] можно ли override `static`
 - [x] можно ли override `private`
 - [x] covariant return type
+
 ---
 
 ## 1.3. Object, String и Wrappers — Изучено
@@ -72,8 +84,8 @@ Roadmap ориентирован не просто на изучение Java, �
 - [x] `equals`
 - [x] `hashCode`
 - [x] `getClass`
-- [ ] `clone` на концептуальном уровне
 - [x] runtime type объекта
+- [ ] `clone` на концептуальном уровне
 
 ### String
 
@@ -105,7 +117,7 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ## 1.4. Collections Framework — Изучено
 
-- [x] Иерархия `Collection`
+- [x] иерархия `Collection`
 - [x] `List`
 - [x] `Set`
 - [x] `Queue`
@@ -131,7 +143,6 @@ Roadmap ориентирован не просто на изучение Java, �
 - [x] `List.of`
 - [x] `Set.of`
 - [x] `Map.of`
-- [ ] Финальный контрольный опрос
 
 ---
 
@@ -149,9 +160,8 @@ Roadmap ориентирован не просто на изучение Java, �
 - [x] `get`
 - [x] `computeIfAbsent`
 - [x] различия реализаций
-- [ ] Повторить внутреннее устройство `HashMap`
-- [ ] Повторить treeification bucket
-- [ ] Повторить resize / load factor
+- [x] treeification bucket
+- [x] resize и load factor
 
 ---
 
@@ -162,7 +172,6 @@ Roadmap ориентирован не просто на изучение Java, �
 - [x] связь `equals` и `hashCode`
 - [x] `==` vs `equals`
 - [x] mutable key в `HashMap`
-- [ ] Повторение
 
 ---
 
@@ -181,7 +190,6 @@ Roadmap ориентирован не просто на изучение Java, �
 - [ ] heap pollution
 - [ ] ограничения `new T()`
 - [ ] generic arrays
-- [ ] Повторение
 
 ---
 
@@ -195,13 +203,12 @@ Roadmap ориентирован не просто на изучение Java, �
 - [x] custom exceptions
 - [x] try-with-resources
 - [x] `AutoCloseable`
-- [ ] suppressed exceptions
-- [ ] multi-catch
-- [ ] Повторение
+- [x] suppressed exceptions
+- [x] multi-catch
 
 ---
 
-## 1.9. Functional Interfaces и Lambda — Не начато системно
+## 1.9. Functional Interfaces и Lambda — Изучено
 
 - [x] lambda expressions
 - [x] method references
@@ -215,7 +222,12 @@ Roadmap ориентирован не просто на изучение Java, �
 - [x] `BinaryOperator`
 - [x] effectively final
 - [x] closure
+- [x] capture by value vs capture by reference
 - [x] lambda vs anonymous class
+- [x] target typing
+- [x] примитивные специализации
+- [x] функциональные интерфейсы вне `java.util.function`
+- [x] `invokedynamic` и `LambdaMetafactory` на концептуальном уровне
 
 ---
 
@@ -234,15 +246,13 @@ Roadmap ориентирован не просто на изучение Java, �
 - [x] `toMap`
 - [x] side effects
 - [x] stream reuse
-- [ ] primitive streams
-- [ ] `IntStream`
-- [ ] parallel streams
-- [ ] ограничения parallel streams
-- [ ] Повторение
+- [x] parallel streams
+- [x] ограничения parallel streams
+- [ ] primitive streams и `IntStream` — дописать разделом в существующий конспект
 
 ---
 
-## 1.11. Optional — Не начато системно
+## 1.11. Optional — Не начато
 
 - [ ] `Optional.of`
 - [ ] `Optional.ofNullable`
@@ -255,40 +265,13 @@ Roadmap ориентирован не просто на изучение Java, �
 - [ ] `orElseThrow`
 - [ ] `ifPresent`
 - [ ] `ifPresentOrElse`
-- [ ] где `Optional` использовать не стоит
 - [ ] `orElse` vs `orElseGet`
+- [ ] где `Optional` использовать не стоит
+- [ ] `Optional` как поле сущности и как параметр метода
 
 ---
 
-## 1.12. Annotations — Не начато системно
-
-- [ ] что такое annotation
-- [ ] built-in annotations
-- [ ] `@Override`
-- [ ] `@Deprecated`
-- [ ] `@SuppressWarnings`
-- [ ] `@FunctionalInterface`
-- [ ] custom annotations
-- [ ] `@Target`
-- [ ] `@Retention`
-- [ ] `RetentionPolicy`
-- [ ] `@Inherited`
-- [ ] reflection + annotations на базовом уровне
-
----
-
-## 1.13. Nested Classes — Не начато системно
-
-- [ ] static nested class
-- [ ] inner class
-- [ ] local class
-- [ ] anonymous class
-- [ ] доступ к outer instance
-- [ ] static nested vs inner class
-
----
-
-## 1.14. Modern Java — Не начато системно
+## 1.12. Modern Java — Не начато
 
 ### Enum
 
@@ -319,12 +302,48 @@ Roadmap ориентирован не просто на изучение Java, �
 - [ ] `sealed`
 - [ ] `permits`
 - [ ] `non-sealed`
-- [ ] `final`
 - [ ] sealed hierarchy
 
 ---
 
-## 1.15. Date and Time API — Не начато системно
+## 1.13. Annotations — Не начато
+
+Нужны как фундамент под Spring: без `RetentionPolicy.RUNTIME` и базовой рефлексии
+не объяснить, как работает `@Transactional`.
+
+- [ ] что такое annotation
+- [ ] built-in annotations
+- [ ] `@Override`
+- [ ] `@Deprecated`
+- [ ] `@SuppressWarnings`
+- [ ] `@FunctionalInterface`
+- [ ] custom annotations
+- [ ] `@Target`
+- [ ] `@Retention`
+- [ ] `RetentionPolicy`
+- [ ] `@Inherited`
+- [ ] reflection + annotations на базовом уровне
+
+---
+
+## 1.14. Nested Classes — Изучено частично
+
+Анонимные классы разобраны в конспекте по лямбдам, остальное дописывается туда же
+отдельным разделом.
+
+- [x] anonymous class
+- [x] anonymous class vs lambda
+- [ ] static nested class
+- [ ] inner class
+- [ ] local class
+- [ ] доступ к outer instance
+- [ ] static nested vs inner class
+
+---
+
+## 1.15. Date and Time API — Отложено
+
+Конспект не пишется. Перед собеседованием прочитать обзорно.
 
 - [ ] `LocalDate`
 - [ ] `LocalTime`
@@ -341,7 +360,9 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ---
 
-## 1.16. Java I/O и NIO — Не начато
+## 1.16. Java I/O и NIO — Отложено
+
+Для backend-интервью спрашивают редко. Конспект не пишется.
 
 ### I/O
 
@@ -360,10 +381,8 @@ Roadmap ориентирован не просто на изучение Java, �
 - [ ] `Path`
 - [ ] `Paths`
 - [ ] `Files`
-- [ ] чтение файла
-- [ ] запись файла
+- [ ] чтение и запись файла
 - [ ] `Files.lines`
-- [ ] file attributes на базовом уровне
 - [ ] blocking I/O vs non-blocking I/O на концептуальном уровне
 
 ---
@@ -374,26 +393,32 @@ Roadmap ориентирован не просто на изучение Java, �
 
 - [x] Heap
 - [x] Stack
+- [x] Stack Frame
+- [x] Operand Stack
+- [x] Method Area
 - [x] Metaspace
 - [x] PC Register
 - [x] Native Method Stack
-- [ ] Повторение
+- [x] `StackOverflowError`
+- [x] `OutOfMemoryError`
 
 ---
 
-## 2.2. Class Loading — Не начато
+## 2.2. Class Loading — Изучено
 
-- [ ] Loading
-- [ ] Linking
-- [ ] Verification
-- [ ] Preparation
-- [ ] Resolution
-- [ ] Initialization
-- [ ] Bootstrap ClassLoader
-- [ ] Platform ClassLoader
-- [ ] Application ClassLoader
-- [ ] Parent Delegation Model
-- [ ] когда выполняется static initialization
+Разобрано в конспекте по памяти JVM.
+
+- [x] Loading
+- [x] Linking
+- [x] Verification
+- [x] Preparation
+- [x] Resolution
+- [x] Initialization
+- [x] Bootstrap ClassLoader
+- [x] Platform ClassLoader
+- [x] Application ClassLoader
+- [x] Parent Delegation Model
+- [x] когда выполняется static initialization
 
 ---
 
@@ -419,6 +444,8 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ## 2.4. Reference Types — Не начато
 
+Пишется вместе с Garbage Collection одним конспектом.
+
 - [ ] strong reference
 - [ ] soft reference
 - [ ] weak reference
@@ -428,17 +455,19 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ---
 
-## 2.5. Bytecode и JIT — Не начато
+## 2.5. Bytecode и JIT — Изучено
 
-- [ ] `.java`
-- [ ] `javac`
-- [ ] `.class`
-- [ ] bytecode
-- [ ] interpreter
-- [ ] JIT compiler
-- [ ] HotSpot
-- [ ] runtime optimization basics
-- [ ] why Java is compiled and interpreted
+Разобрано в конспекте по памяти JVM на нужном для интервью уровне.
+
+- [x] `.java`
+- [x] `javac`
+- [x] `.class`
+- [x] bytecode
+- [x] interpreter
+- [x] JIT compiler
+- [x] HotSpot
+- [x] прогрев JVM
+- [x] why Java is compiled and interpreted
 
 ---
 
@@ -455,7 +484,8 @@ Roadmap ориентирован не просто на изучение Java, �
 - [x] `volatile`
 - [x] `synchronized`
 - [x] safe publication
-- [ ] Повторение
+- [x] final-field guarantees
+- [x] data race vs race condition
 
 ---
 
@@ -481,7 +511,9 @@ Roadmap ориентирован не просто на изучение Java, �
 - [x] livelock
 - [x] starvation
 
-### Locks и Atomics
+---
+
+## 3.3. Locks, Atomics и Executors — Изучено
 
 - [x] `ReentrantLock`
 - [x] `tryLock`
@@ -490,15 +522,15 @@ Roadmap ориентирован не просто на изучение Java, �
 - [x] Atomic classes
 - [x] CAS
 - [x] ABA problem
-
-### Executors
-
 - [x] `ExecutorService`
 - [x] `Future`
 - [x] `ThreadPoolExecutor`
 - [x] rejection policies
+- [x] CPU-bound и I/O-bound pools
 
-### Concurrent Collections
+---
+
+## 3.4. Concurrent Collections — Изучено
 
 - [x] `ConcurrentHashMap`
 - [x] `Collections.synchronizedMap`
@@ -508,8 +540,11 @@ Roadmap ориентирован не просто на изучение Java, �
 - [x] `LinkedBlockingQueue`
 - [x] `SynchronousQueue`
 - [x] `ConcurrentLinkedQueue`
+- [x] weakly consistent iterator vs snapshot iterator
 
-### CompletableFuture
+---
+
+## 3.5. CompletableFuture — Изучено
 
 - [x] `runAsync`
 - [x] `supplyAsync`
@@ -527,7 +562,9 @@ Roadmap ориентирован не просто на изучение Java, �
 - [x] `join`
 - [x] cancellation semantics
 
-### Virtual Threads
+---
+
+## 3.6. Virtual Threads — Изучено
 
 - [x] platform vs virtual threads
 - [x] carrier threads
@@ -543,168 +580,20 @@ Roadmap ориентирован не просто на изучение Java, �
 - [x] daemon lifecycle
 - [x] cancellation and interruption
 
-### Advanced Later
+---
+
+## 3.7. Structured Concurrency и Scoped Values — Отложено
+
+Выходит за рамки Junior / Junior+ интервью.
 
 - [ ] Structured Concurrency
 - [ ] Scoped Values
 
 ---
 
-# 4. Java Ecosystem
+# 4. HTTP и REST — Не начато
 
-## 4.1. Build Tools — Не начато системно
-
-### Gradle
-
-- [ ] зачем нужен Gradle
-- [ ] Gradle Wrapper
-- [ ] `build.gradle`
-- [ ] plugins
-- [ ] dependencies
-- [ ] configurations
-- [ ] tasks
-- [ ] build lifecycle
-- [ ] multi-module basics
-
-### Maven
-
-- [ ] зачем нужен Maven
-- [ ] `pom.xml`
-- [ ] dependencies
-- [ ] plugins
-- [ ] scopes
-- [ ] Maven lifecycle
-- [ ] `clean`
-- [ ] `compile`
-- [ ] `test`
-- [ ] `package`
-- [ ] `install`
-- [ ] Maven vs Gradle
-
----
-
-## 4.2. JDBC — Не начато системно
-
-- [ ] что такое JDBC
-- [ ] JDBC Driver
-- [ ] `Connection`
-- [ ] `Statement`
-- [ ] `PreparedStatement`
-- [ ] `ResultSet`
-- [ ] SQL injection
-- [ ] почему `PreparedStatement` предпочтительнее
-- [ ] transactions в JDBC
-- [ ] `commit`
-- [ ] `rollback`
-- [ ] auto-commit
-- [ ] connection pooling
-- [ ] JDBC vs JPA/Hibernate
-
----
-
-## 4.3. Logging — Не начато системно
-
-- [ ] зачем нужен logging
-- [ ] logging levels
-- [ ] TRACE
-- [ ] DEBUG
-- [ ] INFO
-- [ ] WARN
-- [ ] ERROR
-- [ ] SLF4J
-- [ ] Logback
-- [ ] facade vs implementation
-- [ ] parameterized logging
-- [ ] почему не использовать `System.out.println`
-- [ ] exception logging
-- [ ] structured logging на базовом уровне
-- [ ] correlation / trace id на концептуальном уровне
-
----
-
-# 5. Spring Framework
-
-## 5.1. Spring Core / IoC / DI — Не начато
-
-- [ ] IoC
-- [ ] Dependency Injection
-- [ ] `ApplicationContext`
-- [ ] Bean
-- [ ] component scanning
-- [ ] `@Component`
-- [ ] `@Service`
-- [ ] `@Repository`
-- [ ] constructor injection
-- [ ] setter injection
-- [ ] field injection
-- [ ] почему constructor injection предпочтительнее
-
----
-
-## 5.2. Bean Lifecycle — Не начато
-
-- [ ] bean creation
-- [ ] dependency injection
-- [ ] initialization
-- [ ] destruction
-- [ ] `@PostConstruct`
-- [ ] `@PreDestroy`
-- [ ] `BeanPostProcessor`
-
----
-
-## 5.3. Bean Scopes — Не начато
-
-- [ ] singleton
-- [ ] prototype
-- [ ] request
-- [ ] session
-- [ ] Spring singleton vs GoF Singleton
-
----
-
-## 5.4. Configuration — Не начато
-
-- [ ] `@Configuration`
-- [ ] `@Bean`
-- [ ] `@ComponentScan`
-- [ ] `@Value`
-- [ ] properties
-- [ ] profiles
-- [ ] `@Profile`
-
----
-
-## 5.5. Spring AOP — Не начато
-
-- [ ] AOP
-- [ ] aspect
-- [ ] advice
-- [ ] pointcut
-- [ ] proxy
-- [ ] JDK Dynamic Proxy
-- [ ] CGLIB basics
-
----
-
-# 6. Spring Boot — Не начато
-
-- [ ] зачем Spring Boot
-- [ ] auto-configuration
-- [ ] starters
-- [ ] `application.yml`
-- [ ] `application.properties`
-- [ ] configuration properties
-- [ ] profiles
-- [ ] embedded server
-- [ ] Actuator basics
-- [ ] Spring Boot startup flow на базовом уровне
-
----
-
-# 7. HTTP / REST / Spring MVC
-
-## 7.1. HTTP — Не начато
+## 4.1. HTTP
 
 - [ ] request
 - [ ] response
@@ -728,7 +617,7 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ---
 
-## 7.2. REST — Не начато
+## 4.2. REST
 
 - [ ] resources
 - [ ] URI design
@@ -742,30 +631,9 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ---
 
-## 7.3. Spring MVC — Не начато
+# 5. PostgreSQL и SQL — Не начато
 
-- [ ] `@RestController`
-- [ ] `@RequestMapping`
-- [ ] `@GetMapping`
-- [ ] `@PostMapping`
-- [ ] `@PutMapping`
-- [ ] `@PatchMapping`
-- [ ] `@DeleteMapping`
-- [ ] `@RequestBody`
-- [ ] `@PathVariable`
-- [ ] `@RequestParam`
-- [ ] `ResponseEntity`
-- [ ] DTO
-- [ ] validation
-- [ ] `@Valid`
-- [ ] `@ControllerAdvice`
-- [ ] `@ExceptionHandler`
-
----
-
-# 8. PostgreSQL and SQL
-
-## 8.1. SQL — Не начато системно
+## 5.1. SQL
 
 - [ ] `SELECT`
 - [ ] `WHERE`
@@ -785,7 +653,7 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ---
 
-## 8.2. Indexes — Не начато системно
+## 5.2. Indexes
 
 - [ ] зачем нужны индексы
 - [ ] B-tree
@@ -799,7 +667,7 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ---
 
-## 8.3. Transactions — Не начато системно
+## 5.3. Transactions
 
 - [ ] ACID
 - [ ] isolation levels
@@ -814,9 +682,113 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ---
 
-# 9. JPA and Hibernate
+# 6. Spring Framework — Не начато
 
-## 9.1. JPA Basics — Не начато системно
+## 6.1. Spring Core / IoC / DI
+
+- [ ] IoC
+- [ ] Dependency Injection
+- [ ] `ApplicationContext`
+- [ ] Bean
+- [ ] component scanning
+- [ ] `@Component`
+- [ ] `@Service`
+- [ ] `@Repository`
+- [ ] constructor injection
+- [ ] setter injection
+- [ ] field injection
+- [ ] почему constructor injection предпочтительнее
+
+---
+
+## 6.2. Bean Lifecycle
+
+- [ ] bean creation
+- [ ] dependency injection
+- [ ] initialization
+- [ ] destruction
+- [ ] `@PostConstruct`
+- [ ] `@PreDestroy`
+- [ ] `BeanPostProcessor`
+
+---
+
+## 6.3. Bean Scopes
+
+- [ ] singleton
+- [ ] prototype
+- [ ] request
+- [ ] session
+- [ ] Spring singleton vs GoF Singleton
+
+---
+
+## 6.4. Configuration
+
+- [ ] `@Configuration`
+- [ ] `@Bean`
+- [ ] `@ComponentScan`
+- [ ] `@Value`
+- [ ] properties
+- [ ] profiles
+- [ ] `@Profile`
+
+---
+
+## 6.5. Spring AOP
+
+Ключ к пониманию `@Transactional`, поэтому изучается до транзакций.
+
+- [ ] AOP
+- [ ] aspect
+- [ ] advice
+- [ ] pointcut
+- [ ] proxy
+- [ ] JDK Dynamic Proxy
+- [ ] CGLIB basics
+
+---
+
+# 7. Spring Boot — Не начато
+
+- [ ] зачем Spring Boot
+- [ ] auto-configuration
+- [ ] starters
+- [ ] `application.yml`
+- [ ] `application.properties`
+- [ ] configuration properties
+- [ ] profiles
+- [ ] embedded server
+- [ ] Actuator basics
+- [ ] Spring Boot startup flow на базовом уровне
+
+---
+
+# 8. Spring MVC — Не начато
+
+- [ ] `DispatcherServlet`
+- [ ] `@RestController`
+- [ ] `@RequestMapping`
+- [ ] `@GetMapping`
+- [ ] `@PostMapping`
+- [ ] `@PutMapping`
+- [ ] `@PatchMapping`
+- [ ] `@DeleteMapping`
+- [ ] `@RequestBody`
+- [ ] `@PathVariable`
+- [ ] `@RequestParam`
+- [ ] `ResponseEntity`
+- [ ] DTO
+- [ ] validation
+- [ ] `@Valid`
+- [ ] `@ControllerAdvice`
+- [ ] `@ExceptionHandler`
+
+---
+
+# 9. JPA и Hibernate — Не начато
+
+## 9.1. JPA Basics
 
 - [ ] ORM
 - [ ] Entity
@@ -837,7 +809,7 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ---
 
-## 9.2. Relationships — Не начато системно
+## 9.2. Relationships
 
 - [ ] `@OneToOne`
 - [ ] `@OneToMany`
@@ -849,7 +821,7 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ---
 
-## 9.3. Fetching — Не начато системно
+## 9.3. Fetching
 
 - [ ] LAZY
 - [ ] EAGER
@@ -859,7 +831,7 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ---
 
-## 9.4. Cascade — Не начато системно
+## 9.4. Cascade
 
 - [ ] `PERSIST`
 - [ ] `MERGE`
@@ -869,7 +841,7 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ---
 
-## 9.5. Hibernate Problems — Не начато системно
+## 9.5. Hibernate Problems
 
 - [ ] `equals/hashCode` для Entity
 - [ ] `LazyInitializationException`
@@ -880,6 +852,8 @@ Roadmap ориентирован не просто на изучение Java, �
 ---
 
 # 10. Spring Transactions — Не начато
+
+Точка, где смыкаются Spring-прокси и уровни изоляции из раздела 5.3.
 
 - [ ] `@Transactional`
 - [ ] proxy mechanism
@@ -893,9 +867,75 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ---
 
-# 11. Testing
+# 11. Java Ecosystem — Не начато
 
-## 11.1. JUnit 5 — Не начато системно
+## 11.1. JDBC
+
+- [ ] что такое JDBC
+- [ ] JDBC Driver
+- [ ] `Connection`
+- [ ] `Statement`
+- [ ] `PreparedStatement`
+- [ ] `ResultSet`
+- [ ] SQL injection
+- [ ] почему `PreparedStatement` предпочтительнее
+- [ ] transactions в JDBC
+- [ ] `commit`
+- [ ] `rollback`
+- [ ] auto-commit
+- [ ] connection pooling
+- [ ] JDBC vs JPA/Hibernate
+
+---
+
+## 11.2. Logging
+
+- [ ] зачем нужен logging
+- [ ] logging levels
+- [ ] TRACE / DEBUG / INFO / WARN / ERROR
+- [ ] SLF4J
+- [ ] Logback
+- [ ] facade vs implementation
+- [ ] parameterized logging
+- [ ] почему не использовать `System.out.println`
+- [ ] exception logging
+- [ ] structured logging на базовом уровне
+- [ ] correlation / trace id на концептуальном уровне
+
+---
+
+## 11.3. Build Tools — Отложено
+
+Есть практика. Конспект пишется в последнюю очередь.
+
+### Gradle
+
+- [ ] зачем нужен Gradle
+- [ ] Gradle Wrapper
+- [ ] `build.gradle`
+- [ ] plugins
+- [ ] dependencies
+- [ ] configurations
+- [ ] tasks
+- [ ] build lifecycle
+- [ ] multi-module basics
+
+### Maven
+
+- [ ] зачем нужен Maven
+- [ ] `pom.xml`
+- [ ] dependencies
+- [ ] plugins
+- [ ] scopes
+- [ ] Maven lifecycle
+- [ ] `clean` / `compile` / `test` / `package` / `install`
+- [ ] Maven vs Gradle
+
+---
+
+# 12. Testing — Не начато
+
+## 12.1. JUnit 5
 
 - [ ] `@Test`
 - [ ] assertions
@@ -906,7 +946,7 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ---
 
-## 11.2. Mockito — Не начато системно
+## 12.2. Mockito
 
 - [ ] mock
 - [ ] stub
@@ -920,7 +960,7 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ---
 
-## 11.3. Spring Testing — Не начато системно
+## 12.3. Spring Testing
 
 - [ ] `@SpringBootTest`
 - [ ] `@WebMvcTest`
@@ -931,9 +971,9 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ---
 
-# 12. Apache Kafka — Не начато системно
+# 13. Apache Kafka — Не начато
 
-Практический опыт есть, но знания нужно систематизировать для интервью.
+Практический опыт есть, знания нужно систематизировать для интервью.
 
 - [ ] broker
 - [ ] topic
@@ -944,7 +984,6 @@ Roadmap ориентирован не просто на изучение Java, �
 - [ ] offset
 - [ ] replication
 - [ ] key
-- [ ] ordering
 - [ ] ordering внутри partition
 - [ ] rebalancing
 - [ ] at-most-once
@@ -958,7 +997,7 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ---
 
-# 13. Backend Architecture — Не начато системно
+# 14. Backend Architecture — Не начато
 
 - [ ] layered architecture
 - [ ] controller / service / repository
@@ -978,9 +1017,9 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ---
 
-# 14. System Design — Не начато системно
+# 15. System Design — Не начато
 
-Уровень — Junior / Junior+, без ухода в Senior-level distributed systems.
+Уровень Junior / Junior+, без ухода в Senior-level distributed systems.
 
 - [ ] requirements clarification
 - [ ] API design
@@ -998,7 +1037,9 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ---
 
-# 15. Docker / CI/CD — Есть практика, теория не систематизирована
+# 16. Docker и CI/CD — Не начато
+
+Есть практика, теория не систематизирована.
 
 - [ ] image
 - [ ] container
@@ -1017,7 +1058,9 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ---
 
-# 16. Git — Есть практика, теория не систематизирована
+# 17. Git — Не начато
+
+Есть практика, теория не систематизирована.
 
 - [ ] commit
 - [ ] branch
@@ -1032,81 +1075,63 @@ Roadmap ориентирован не просто на изучение Java, �
 
 ---
 
-# 17. Алгоритмы
+# Порядок прохождения
 
-Алгоритмы ведутся отдельно в репозитории `java-algorithms-prep`.
+## Этап 1. Добить Java Core выборочно
 
-## Пройдено
+1. `Optional`.
+2. `Modern Java`: enum и record.
+3. `Annotations`.
+4. `Nested Classes` — дописать разделом в конспект по лямбдам.
+5. `Primitive streams` — дописать разделом в конспект по Stream API.
 
-- [x] Complexity Analysis
-- [x] Hashing
-- [x] Two Pointers
-- [x] Sliding Window
-- [x] Prefix Sum
+Отложено: `Date and Time API`, `Java I/O / NIO`.
 
-## Далее
+## Этап 2. JVM, минимально необходимое
 
-- [ ] Stack
-- [ ] Queue / Deque
-- [ ] Binary Search
-- [ ] Linked List
-- [ ] Intervals
-- [ ] Trees
-- [ ] DFS
-- [ ] BFS
-- [ ] Heap / Priority Queue
-- [ ] Graphs
-- [ ] Backtracking
-- [ ] Dynamic Programming basics
+6. `Garbage Collection` и `Reference Types` одним конспектом.
+
+`Class Loading` и `Bytecode / JIT` уже покрыты конспектом по памяти JVM.
+
+## Этап 3. Ядро backend-интервью
+
+7. `HTTP и REST`.
+8. `SQL`: выборки, джойны, группировки.
+9. `Indexes` и планы запросов.
+10. `Transactions`: ACID, уровни изоляции, аномалии, MVCC.
+11. `Spring Core`: IoC, DI, bean lifecycle, scopes, configuration.
+12. `Spring AOP` и proxy.
+13. `Spring Boot`.
+14. `Spring MVC`.
+15. `JPA Basics` и Persistence Context.
+16. `Relationships`, `Fetching`, `Cascade`.
+17. `Hibernate Problems`.
+18. `Spring Transactions`.
+
+## Этап 4. Production Backend
+
+19. `JDBC`.
+20. `Logging`.
+21. `Testing`.
+22. `Kafka`.
+23. `Backend Architecture`.
+24. `System Design`.
+25. `Docker / CI/CD`.
+26. `Git`.
+27. `Build Tools`.
 
 ---
 
-# Ближайший порядок прохождения
+# Технический долг репозитория
 
-## Этап 1. Закрыть оставшийся Java Core
+Не про изучение тем, а про приведение конспектов в порядок.
 
-1. `Functional Interfaces` и `Lambda`.
-2. `Optional`.
-3. `Annotations`.
-4. `Nested Classes`.
-5. `Modern Java`.
-6. `Date and Time API`.
-7. `Java I/O / NIO`.
-
-## Этап 2. Закрыть JVM
-
-12. `Class Loading`.
-13. `Garbage Collection`.
-14. `Reference Types`.
-15. `Bytecode / JIT`.
-
-## Этап 3. Java Ecosystem
-
-16. `Gradle / Maven`.
-17. `JDBC`.
-18. `Logging`.
-
-## Этап 4. Backend Frameworks
-
-19. `Spring Core`.
-20. `Spring Boot`.
-21. `HTTP / REST`.
-22. `Spring MVC`.
-
-## Этап 5. Persistence
-
-23. `SQL / PostgreSQL`.
-24. `JPA / Hibernate`.
-25. `Spring Transactions`.
-
-## Этап 6. Production Backend
-
-26. `Testing`.
-27. `Kafka`.
-28. `Backend Architecture`.
-29. `System Design`.
-30. `Docker / CI/CD`.
-31. `Git`.
+- [ ] привести заголовки к единому виду: `#` только для названия темы, разделы `##`
+- [ ] убрать сквозную нумерацию заголовков в конспектах по concurrency
+- [ ] добавить блок «См. также» в конец каждого конспекта
+- [ ] снабдить ответами вопросы для самопроверки в конспекте по исключениям
+- [ ] снабдить ответами вопросы для самопроверки в конспекте по OOP
+- [ ] удалить неиспользуемый `docs/templates`
 
 ---
 
@@ -1117,8 +1142,9 @@ Roadmap ориентирован не просто на изучение Java, �
 1. Отметить соответствующие пункты `[x]`.
 2. Обновить статус темы.
 3. Добавить или обновить конспект в соответствующей директории `docs`.
-4. Обновить `docs/progress/topic-tracker.md`.
-5. Вернуться к изученной теме позже через повторение и контрольные вопросы.
+4. Проставить ссылки «См. также» в связанных конспектах.
+5. Обновить `docs/progress/topic-tracker.md`.
 
-Roadmap не должен превращаться в список технологий ради списка.  
-Темы изучаются с приоритетом на то, что реально требуется Java Backend Developer и регулярно встречается на Junior / Junior+ технических интервью.
+Roadmap не должен превращаться в список технологий ради списка. Темы изучаются с
+приоритетом на то, что реально требуется Java Backend Developer и регулярно
+встречается на Junior / Junior+ технических интервью.

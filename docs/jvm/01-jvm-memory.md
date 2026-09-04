@@ -1361,3 +1361,15 @@ OutOfMemoryError
 48. Чем `StackOverflowError` отличается от `OutOfMemoryError: Java heap space`?
 49. Почему присваивание `null` не удаляет объект немедленно?
 50. Что именно копируется при передаче объекта в параметр метода?
+
+---
+
+## См. также
+
+- [`../concurrency/01-java-memory-model.md`](../concurrency/01-java-memory-model.md) —
+  JMM описывает гарантии наблюдения, а не устройство Runtime Data Areas; эти
+  понятия часто путают
+- [`../java-core/07-oop-object-string-wrappers.md`](../java-core/07-oop-object-string-wrappers.md) —
+  String Pool и immutability строк
+- [`../concurrency/02-multithreading-basics.md`](../concurrency/02-multithreading-basics.md) —
+  почему у каждого потока собственный Stack

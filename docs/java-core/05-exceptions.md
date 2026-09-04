@@ -886,3 +886,13 @@ checked exception → rollbackFor при необходимости
 30. Почему self-invocation может помешать работе `@Transactional`?
 31. Почему `Function<T, R>` не принимает lambda с `IOException` напрямую?
 32. Почему исключения не используют для обычного управления потоком?
+
+---
+
+## См. также
+
+- [`06-stream-api.md`](06-stream-api.md) — checked exceptions внутри lambda
+- [`08-functional-interfaces-lambda.md`](08-functional-interfaces-lambda.md) —
+  почему стандартные функциональные интерфейсы не объявляют checked exceptions
+- [`../concurrency/03-locks-atomics-executors.md`](../concurrency/03-locks-atomics-executors.md) —
+  `ExecutionException` и передача ошибки задачи через `Future.get()`

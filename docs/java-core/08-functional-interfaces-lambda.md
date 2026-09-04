@@ -1159,3 +1159,18 @@ compose  → f(g(x))
 стандартные интерфейсы
 → checked exceptions не объявляют
 ```
+
+---
+
+## См. также
+
+- [`06-stream-api.md`](06-stream-api.md) — где эти интерфейсы применяются на
+  практике, включая merge-функцию `Collectors.toMap()`
+- [`07-oop-object-string-wrappers.md`](07-oop-object-string-wrappers.md) —
+  default- и static-методы интерфейсов, разрешение конфликтов
+- [`01-collections-framework.md`](01-collections-framework.md) — `Comparable` и
+  `Comparator`
+- [`../concurrency/01-java-memory-model.md`](../concurrency/01-java-memory-model.md) —
+  та же ловушка «final-ссылка не делает объект immutable», но со стороны JMM
+- [`../concurrency/03-locks-atomics-executors.md`](../concurrency/03-locks-atomics-executors.md) —
+  `Runnable` и `Callable` в контексте `ExecutorService`

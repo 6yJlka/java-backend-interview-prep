@@ -1170,3 +1170,16 @@ config = created;
 ```
 
 30. Какие гарантии даёт корректное конструирование final-полей, чем опасна утечка `this` и почему `final ArrayList` не является immutable или thread-safe?
+
+---
+
+## См. также
+
+- [`../jvm/01-jvm-memory.md`](../jvm/01-jvm-memory.md) — Runtime Data Areas; JMM
+  отвечает за другое
+- [`02-multithreading-basics.md`](02-multithreading-basics.md) — практические
+  механизмы синхронизации поверх модели памяти
+- [`03-locks-atomics-executors.md`](03-locks-atomics-executors.md) — почему
+  `volatile count++` не атомарен и что с этим делает CAS
+- [`../java-core/08-functional-interfaces-lambda.md`](../java-core/08-functional-interfaces-lambda.md) —
+  capture by value как способ избежать гонок по захваченной переменной

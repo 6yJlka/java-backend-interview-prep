@@ -1773,3 +1773,14 @@ wrapper == primitive
 53. Почему `Integer value = 100L` не компилируется?
 54. Почему `Number value = 100` компилируется?
 55. Как работает `number++`, если `number` имеет тип `Integer`?
+
+---
+
+## См. также
+
+- [`03-equals-hashcode.md`](03-equals-hashcode.md) — подробный разбор контракта
+- [`08-functional-interfaces-lambda.md`](08-functional-interfaces-lambda.md) —
+  анонимные классы против lambda, разрешение default-методов у функциональных
+  интерфейсов
+- [`../jvm/01-jvm-memory.md`](../jvm/01-jvm-memory.md) — String Pool и передача
+  параметров по значению

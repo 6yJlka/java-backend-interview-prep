@@ -2206,3 +2206,14 @@ completeExceptionally(exception)
 
 3. CompletableFuture управляет состоянием асинхронного вычисления, но не гарантирует автоматическую остановку underlying computation при cancel()
 ```
+
+---
+
+## См. также
+
+- [`03-locks-atomics-executors.md`](03-locks-atomics-executors.md) — `Future`,
+  `ExecutorService` и семантика `cancel(true)`, которая здесь работает иначе
+- [`06-virtual-threads.md`](06-virtual-threads.md) — почему это не
+  взаимозаменяемые инструменты
+- [`../java-core/08-functional-interfaces-lambda.md`](../java-core/08-functional-interfaces-lambda.md) —
+  `Function`, `Supplier` и `BiFunction` в сигнатурах continuation-методов

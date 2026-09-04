@@ -1619,3 +1619,16 @@ Rejected task выполняется через `CallerRunsPolicy` и броса
   потоков добавляет switching и overhead.
 - I/O-bound pool может быть больше, но размер определяют метриками и ограничениями
   downstream. 200 workers не превращают 20 DB connections в 200.
+
+---
+
+## См. также
+
+- [`02-multithreading-basics.md`](02-multithreading-basics.md) — `synchronized` и
+  intrinsic monitor, на фоне которых разбирается `ReentrantLock`
+- [`04-concurrent-collections.md`](04-concurrent-collections.md) — выбор очереди
+  напрямую определяет поведение `ThreadPoolExecutor`
+- [`05-completable-future.md`](05-completable-future.md) — чем `CompletableFuture`
+  отличается от обычного `Future`
+- [`../java-core/08-functional-interfaces-lambda.md`](../java-core/08-functional-interfaces-lambda.md) —
+  `Runnable` и `Callable` как функциональные интерфейсы

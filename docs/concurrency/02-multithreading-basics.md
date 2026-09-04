@@ -1027,3 +1027,14 @@ synchronized (lock) {
 
 34. Какие две причины требуют использовать `while`, а не `if`, вокруг `wait()`?
 35. Чем deadlock, livelock и starvation отличаются друг от друга и как единый порядок захвата мониторов устраняет возможность циклического ожидания?
+
+---
+
+## См. также
+
+- [`01-java-memory-model.md`](01-java-memory-model.md) — гарантии, стоящие за
+  `synchronized` и `volatile`
+- [`03-locks-atomics-executors.md`](03-locks-atomics-executors.md) —
+  `ReentrantLock` и `Condition` как развитие `synchronized` и `wait/notify`
+- [`06-virtual-threads.md`](06-virtual-threads.md) — чем virtual threads
+  отличаются от рассмотренных здесь platform threads

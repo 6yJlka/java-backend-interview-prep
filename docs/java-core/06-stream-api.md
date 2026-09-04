@@ -1097,3 +1097,14 @@ Function<T, R>
 36. Почему `Function<T, R>` не принимает `IOException` напрямую?
 37. Для чего используется `UncheckedIOException`?
 38. Когда обычный цикл понятнее Stream API?
+
+---
+
+## См. также
+
+- [`08-functional-interfaces-lambda.md`](08-functional-interfaces-lambda.md) —
+  функциональные интерфейсы, лежащие в основе операций Stream, и почему `reduce`
+  требует `BinaryOperator`
+- [`01-collections-framework.md`](01-collections-framework.md) — источники stream
+- [`../concurrency/03-locks-atomics-executors.md`](../concurrency/03-locks-atomics-executors.md) —
+  `ForkJoinPool.commonPool()`, который использует parallel stream

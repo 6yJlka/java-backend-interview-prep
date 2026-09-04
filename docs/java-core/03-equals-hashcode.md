@@ -876,3 +876,13 @@ equals true
 13. Почему Hibernate-прокси нужно учитывать?
 14. Почему `record` подходит для ключа?
 15. Гарантирует ли `record` глубокую неизменяемость?
+
+---
+
+## См. также
+
+- [`02-map.md`](02-map.md) — как контракт влияет на bucket и поиск записи
+- [`07-oop-object-string-wrappers.md`](07-oop-object-string-wrappers.md) —
+  `equals` и `hashCode` как методы `Object`
+- [`06-stream-api.md`](06-stream-api.md) — почему `distinct()` не решает конфликт
+  ключей в `toMap()`
