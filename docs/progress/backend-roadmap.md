@@ -252,57 +252,57 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 ---
 
-## 1.11. Optional — Не начато
+## 1.11. Optional — Изучено
 
-- [ ] `Optional.of`
-- [ ] `Optional.ofNullable`
-- [ ] `Optional.empty`
-- [ ] `map`
-- [ ] `flatMap`
-- [ ] `filter`
-- [ ] `orElse`
-- [ ] `orElseGet`
-- [ ] `orElseThrow`
-- [ ] `ifPresent`
-- [ ] `ifPresentOrElse`
-- [ ] `orElse` vs `orElseGet`
-- [ ] где `Optional` использовать не стоит
-- [ ] `Optional` как поле сущности и как параметр метода
+- [x] `Optional.of`
+- [x] `Optional.ofNullable`
+- [x] `Optional.empty`
+- [x] `map`
+- [x] `flatMap`
+- [x] `filter`
+- [x] `orElse`
+- [x] `orElseGet`
+- [x] `orElseThrow`
+- [x] `ifPresent`
+- [x] `ifPresentOrElse`
+- [x] `orElse` vs `orElseGet`
+- [x] где `Optional` использовать не стоит
+- [x] `Optional` как поле сущности и как параметр метода
 
 ---
 
-## 1.12. Modern Java — Не начато
+## 1.12. Modern Java — Изучено
 
 ### Enum
 
-- [ ] enum как класс
-- [ ] поля и методы enum
-- [ ] constructor
-- [ ] `values`
-- [ ] `valueOf`
-- [ ] enum в `switch`
-- [ ] `EnumSet`
-- [ ] `EnumMap`
+- [x] enum как класс
+- [x] поля и методы enum
+- [x] constructor
+- [x] `values`
+- [x] `valueOf`
+- [x] enum в `switch`
+- [x] `EnumSet`
+- [x] `EnumMap`
 
 ### Record
 
-- [ ] record syntax
-- [ ] generated members
-- [ ] final components
-- [ ] accessors
-- [ ] `equals`
-- [ ] `hashCode`
-- [ ] `toString`
-- [ ] compact constructor
-- [ ] сценарии применения
-- [ ] ограничения
+- [x] record syntax
+- [x] generated members
+- [x] final components
+- [x] accessors
+- [x] `equals`
+- [x] `hashCode`
+- [x] `toString`
+- [x] compact constructor
+- [x] сценарии применения
+- [x] ограничения
 
 ### Sealed Classes
 
-- [ ] `sealed`
-- [ ] `permits`
-- [ ] `non-sealed`
-- [ ] sealed hierarchy
+- [x] `sealed`
+- [x] `permits`
+- [x] `non-sealed`
+- [x] sealed hierarchy
 
 ---
 
