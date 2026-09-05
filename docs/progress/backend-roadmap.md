@@ -248,7 +248,9 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 - [x] stream reuse
 - [x] parallel streams
 - [x] ограничения parallel streams
-- [x] primitive streams и `IntStream` — дописать разделом в существующий конспект
+- [x] primitive streams
+- [x] `IntStream`, `LongStream`, `DoubleStream`
+- [x] boxing и unboxing в stream
 
 ---
 
@@ -266,6 +268,8 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 - [x] `ifPresent`
 - [x] `ifPresentOrElse`
 - [x] `orElse` vs `orElseGet`
+- [x] `or` и `stream`
+- [x] `isEmpty`
 - [x] где `Optional` использовать не стоит
 - [x] `Optional` как поле сущности и как параметр метода
 
@@ -281,8 +285,11 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 - [x] `values`
 - [x] `valueOf`
 - [x] enum в `switch`
+- [x] constant-specific behaviour
+- [x] enum как singleton
 - [x] `EnumSet`
 - [x] `EnumMap`
+- [x] `ordinal` и `@Enumerated(EnumType.STRING)`
 
 ### Record
 
@@ -294,8 +301,10 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 - [x] `hashCode`
 - [x] `toString`
 - [x] compact constructor
+- [x] поверхностная неизменяемость
 - [x] сценарии применения
 - [x] ограничения
+- [x] record как проекция запроса
 
 ### Sealed Classes
 
@@ -303,13 +312,11 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 - [x] `permits`
 - [x] `non-sealed`
 - [x] sealed hierarchy
+- [x] исчерпывающий `switch`
 
 ---
 
 ## 1.13. Annotations — Изучено
-
-Нужны как фундамент под Spring: без `RetentionPolicy.RUNTIME` и базовой рефлексии
-не объяснить, как работает `@Transactional`.
 
 - [x] что такое annotation
 - [x] built-in annotations
@@ -317,27 +324,33 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 - [x] `@Deprecated`
 - [x] `@SuppressWarnings`
 - [x] `@FunctionalInterface`
+- [x] `@SafeVarargs`
 - [x] custom annotations
+- [x] допустимые типы элементов
 - [x] `@Target`
 - [x] `@Retention`
 - [x] `RetentionPolicy`
 - [x] `@Inherited`
+- [x] `@Repeatable`
 - [x] reflection + annotations на базовом уровне
+- [x] annotation processing на концептуальном уровне
+- [x] как аннотации работают в Spring
 
 ---
 
 ## 1.14. Nested Classes — Изучено
 
-Анонимные классы разобраны в конспекте по лямбдам, остальное дописывается туда же
-отдельным разделом.
+Разобраны в конспекте по функциональным интерфейсам и lambda.
 
-- [x] anonymous class
-- [x] anonymous class vs lambda
 - [x] static nested class
 - [x] inner class
 - [x] local class
+- [x] anonymous class
+- [x] anonymous class vs lambda
 - [x] доступ к outer instance
 - [x] static nested vs inner class
+- [x] скрытая ссылка на внешний экземпляр и утечки
+- [x] nestmates
 
 ---
 
@@ -424,27 +437,37 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 ## 2.3. Garbage Collection — Изучено
 
+Основы в конспекте по памяти JVM, алгоритмы и сборщики — в отдельном конспекте.
+
 - [x] что такое GC
 - [x] GC Roots
 - [x] reachability
+- [x] циклические ссылки
 - [x] young generation
 - [x] old generation
-- [x] allocation
-- [x] promotion
+- [x] generational hypothesis
 - [x] minor GC
 - [x] major GC
 - [x] full GC
 - [x] Stop-The-World
-- [x] generational hypothesis
+- [x] mark-sweep, mark-compact, copying
+- [x] allocation, bump-the-pointer, TLAB
+- [x] escape analysis
+- [x] promotion и `MaxTenuringThreshold`
+- [x] преждевременное продвижение
+- [x] card table и write barrier
+- [x] Serial, Parallel, CMS
 - [x] G1
 - [x] ZGC basics
+- [x] Shenandoah и Epsilon
+- [x] throughput / latency / footprint
+- [x] базовые флаги и GC-логи
 - [x] memory leaks в Java
+- [x] диагностика: heap dump, retained size
 
 ---
 
 ## 2.4. Reference Types — Изучено
-
-Пишется вместе с Garbage Collection одним конспектом.
 
 - [x] strong reference
 - [x] soft reference
@@ -452,6 +475,8 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 - [x] phantom reference
 - [x] `ReferenceQueue`
 - [x] `WeakHashMap`
+- [x] `finalize` и почему он удалён
+- [x] `Cleaner`
 
 ---
 
@@ -1077,61 +1102,66 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 # Порядок прохождения
 
-## Этап 1. Добить Java Core выборочно
+## Этап 1. Java Core — завершён
 
-1. `Optional`.
-2. `Modern Java`: enum и record.
-3. `Annotations`.
-4. `Nested Classes` — дописать разделом в конспект по лямбдам.
-5. `Primitive streams` — дописать разделом в конспект по Stream API.
+- [x] `Optional`
+- [x] `Modern Java`: enum, record, sealed
+- [x] `Annotations`
+- [x] `Nested Classes` — в конспекте по lambda
+- [x] `Primitive streams` — в конспекте по Stream API
 
 Отложено: `Date and Time API`, `Java I/O / NIO`.
 
-## Этап 2. JVM, минимально необходимое
+## Этап 2. JVM — завершён
 
-6. `Garbage Collection` и `Reference Types` одним конспектом.
-
-`Class Loading` и `Bytecode / JIT` уже покрыты конспектом по памяти JVM.
+- [x] `Garbage Collection` и `Reference Types` — отдельный конспект
+- [x] `Class Loading` и `Bytecode / JIT` — в конспекте по памяти JVM
 
 ## Этап 3. Ядро backend-интервью
 
-7. `HTTP и REST`.
-8. `SQL`: выборки, джойны, группировки.
-9. `Indexes` и планы запросов.
-10. `Transactions`: ACID, уровни изоляции, аномалии, MVCC.
-11. `Spring Core`: IoC, DI, bean lifecycle, scopes, configuration.
-12. `Spring AOP` и proxy.
-13. `Spring Boot`.
-14. `Spring MVC`.
-15. `JPA Basics` и Persistence Context.
-16. `Relationships`, `Fetching`, `Cascade`.
-17. `Hibernate Problems`.
-18. `Spring Transactions`.
+- [ ] 1. `HTTP и REST`
+- [ ] 2. `SQL`: выборки, джойны, группировки
+- [ ] 3. `Indexes` и планы запросов
+- [ ] 4. `Transactions`: ACID, уровни изоляции, аномалии, MVCC
+- [ ] 5. `Spring Core`: IoC, DI, bean lifecycle, scopes, configuration
+- [ ] 6. `Spring AOP` и proxy
+- [ ] 7. `Spring Boot`
+- [ ] 8. `Spring MVC`
+- [ ] 9. `JPA Basics` и Persistence Context
+- [ ] 10. `Relationships`, `Fetching`, `Cascade`
+- [ ] 11. `Hibernate Problems`
+- [ ] 12. `Spring Transactions`
 
 ## Этап 4. Production Backend
 
-19. `JDBC`.
-20. `Logging`.
-21. `Testing`.
-22. `Kafka`.
-23. `Backend Architecture`.
-24. `System Design`.
-25. `Docker / CI/CD`.
-26. `Git`.
-27. `Build Tools`.
+- [ ] 13. `JDBC`
+- [ ] 14. `Logging`
+- [ ] 15. `Testing`
+- [ ] 16. `Kafka`
+- [ ] 17. `Backend Architecture`
+- [ ] 18. `System Design`
+- [ ] 19. `Docker / CI/CD`
+- [ ] 20. `Git`
+- [ ] 21. `Build Tools`
 
 ---
 
 # Технический долг репозитория
 
-Не про изучение тем, а про приведение конспектов в порядок.
+Не про изучение тем, а про приведение конспектов в порядок. Делается фоном, когда
+не хочется браться за новую тему.
 
-- [ ] привести заголовки к единому виду: `#` только для названия темы, разделы `##`
-- [ ] убрать сквозную нумерацию заголовков в конспектах по concurrency
-- [ ] добавить блок «См. также» в конец каждого конспекта
-- [ ] снабдить ответами вопросы для самопроверки в конспекте по исключениям
-- [ ] снабдить ответами вопросы для самопроверки в конспекте по OOP
-- [ ] удалить неиспользуемый `docs/templates`
+- [ ] привести заголовки к единому виду в конспектах `00`–`08`: `#` только для
+  названия темы, разделы `##`
+- [ ] в `01-collections-framework.md` дополнительно смешаны оба стиля
+- [ ] убрать сквозную нумерацию заголовков в `concurrency/04`, `concurrency/05`,
+  `concurrency/06`
+- [ ] добавить блок «См. также» в `00-java-language-basics.md` и `04-generics.md`
+- [ ] снабдить ответами вопросы для самопроверки: `00`, `01`, `02`, `03`, `04`,
+  `05`, `06`, `07`
+- [ ] в `06-stream-api.md` сократить разбор `orElse` / `orElseGet` до ссылки на
+  `09-optional.md`
+- [x] удалить неиспользуемый `docs/templates`
 
 ---
 
