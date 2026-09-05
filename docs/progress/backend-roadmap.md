@@ -616,94 +616,94 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 ---
 
-# 4. HTTP и REST — Не начато
+# 4. HTTP и REST — Изучено
 
 ## 4.1. HTTP
 
-- [ ] request
-- [ ] response
-- [ ] GET
-- [ ] POST
-- [ ] PUT
-- [ ] PATCH
-- [ ] DELETE
-- [ ] status codes
-- [ ] headers
-- [ ] body
-- [ ] query params
-- [ ] path params
-- [ ] cookies
-- [ ] idempotency
-- [ ] safe methods
-- [ ] `PUT` vs `PATCH`
-- [ ] `401` vs `403`
-- [ ] `400` vs `404`
-- [ ] `200` vs `201` vs `204`
+- [x] request
+- [x] response
+- [x] GET
+- [x] POST
+- [x] PUT
+- [x] PATCH
+- [x] DELETE
+- [x] status codes
+- [x] headers
+- [x] body
+- [x] query params
+- [x] path params
+- [x] cookies
+- [x] idempotency
+- [x] safe methods
+- [x] `PUT` vs `PATCH`
+- [x] `401` vs `403`
+- [x] `400` vs `404`
+- [x] `200` vs `201` vs `204`
 
 ---
 
 ## 4.2. REST
 
-- [ ] resources
-- [ ] URI design
-- [ ] statelessness
-- [ ] CRUD
-- [ ] pagination
-- [ ] filtering
-- [ ] sorting
-- [ ] API versioning
-- [ ] error response design
+- [x] resources
+- [x] URI design
+- [x] statelessness
+- [x] CRUD
+- [x] pagination
+- [x] filtering
+- [x] sorting
+- [x] API versioning
+- [x] error response design
 
 ---
 
-# 5. PostgreSQL и SQL — Не начато
+# 5. PostgreSQL и SQL — Изучено
 
 ## 5.1. SQL
 
-- [ ] `SELECT`
-- [ ] `WHERE`
-- [ ] `ORDER BY`
-- [ ] `GROUP BY`
-- [ ] `HAVING`
-- [ ] aggregate functions
-- [ ] `INNER JOIN`
-- [ ] `LEFT JOIN`
-- [ ] `RIGHT JOIN`
-- [ ] subqueries
-- [ ] CTE
-- [ ] `UNION`
-- [ ] `DISTINCT`
-- [ ] `NULL`
-- [ ] window functions basics
+- [x] `SELECT`
+- [x] `WHERE`
+- [x] `ORDER BY`
+- [x] `GROUP BY`
+- [x] `HAVING`
+- [x] aggregate functions
+- [x] `INNER JOIN`
+- [x] `LEFT JOIN`
+- [x] `RIGHT JOIN`
+- [x] subqueries
+- [x] CTE
+- [x] `UNION`
+- [x] `DISTINCT`
+- [x] `NULL`
+- [x] window functions basics
 
 ---
 
 ## 5.2. Indexes
 
-- [ ] зачем нужны индексы
-- [ ] B-tree
-- [ ] composite indexes
-- [ ] порядок колонок
-- [ ] selectivity
-- [ ] read vs write cost
-- [ ] когда индекс не используется
-- [ ] `EXPLAIN`
-- [ ] `EXPLAIN ANALYZE`
+- [x] зачем нужны индексы
+- [x] B-tree
+- [x] composite indexes
+- [x] порядок колонок
+- [x] selectivity
+- [x] read vs write cost
+- [x] когда индекс не используется
+- [x] `EXPLAIN`
+- [x] `EXPLAIN ANALYZE`
 
 ---
 
 ## 5.3. Transactions
 
-- [ ] ACID
-- [ ] isolation levels
-- [ ] dirty read
-- [ ] non-repeatable read
-- [ ] phantom read
-- [ ] lost update
-- [ ] locks
-- [ ] optimistic locking
-- [ ] pessimistic locking
-- [ ] MVCC basics
+- [x] ACID
+- [x] isolation levels
+- [x] dirty read
+- [x] non-repeatable read
+- [x] phantom read
+- [x] lost update
+- [x] locks
+- [x] optimistic locking
+- [x] pessimistic locking
+- [x] MVCC basics
 
 ---
 
