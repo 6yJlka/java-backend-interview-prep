@@ -248,7 +248,7 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 - [x] stream reuse
 - [x] parallel streams
 - [x] ограничения parallel streams
-- [ ] primitive streams и `IntStream` — дописать разделом в существующий конспект
+- [x] primitive streams и `IntStream` — дописать разделом в существующий конспект
 
 ---
 
@@ -306,7 +306,7 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 ---
 
-## 1.13. Annotations — Не начато
+## 1.13. Annotations — Изучено
 
 Нужны как фундамент под Spring: без `RetentionPolicy.RUNTIME` и базовой рефлексии
 не объяснить, как работает `@Transactional`.
@@ -326,18 +326,18 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 ---
 
-## 1.14. Nested Classes — Изучено частично
+## 1.14. Nested Classes — Изучено
 
 Анонимные классы разобраны в конспекте по лямбдам, остальное дописывается туда же
 отдельным разделом.
 
 - [x] anonymous class
 - [x] anonymous class vs lambda
-- [ ] static nested class
-- [ ] inner class
-- [ ] local class
-- [ ] доступ к outer instance
-- [ ] static nested vs inner class
+- [x] static nested class
+- [x] inner class
+- [x] local class
+- [x] доступ к outer instance
+- [x] static nested vs inner class
 
 ---
 
