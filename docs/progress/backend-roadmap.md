@@ -422,36 +422,36 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 ---
 
-## 2.3. Garbage Collection — Не начато
+## 2.3. Garbage Collection — Изучено
 
-- [ ] что такое GC
-- [ ] GC Roots
-- [ ] reachability
-- [ ] young generation
-- [ ] old generation
-- [ ] allocation
-- [ ] promotion
-- [ ] minor GC
-- [ ] major GC
-- [ ] full GC
-- [ ] Stop-The-World
-- [ ] generational hypothesis
-- [ ] G1
-- [ ] ZGC basics
-- [ ] memory leaks в Java
+- [x] что такое GC
+- [x] GC Roots
+- [x] reachability
+- [x] young generation
+- [x] old generation
+- [x] allocation
+- [x] promotion
+- [x] minor GC
+- [x] major GC
+- [x] full GC
+- [x] Stop-The-World
+- [x] generational hypothesis
+- [x] G1
+- [x] ZGC basics
+- [x] memory leaks в Java
 
 ---
 
-## 2.4. Reference Types — Не начато
+## 2.4. Reference Types — Изучено
 
 Пишется вместе с Garbage Collection одним конспектом.
 
-- [ ] strong reference
-- [ ] soft reference
-- [ ] weak reference
-- [ ] phantom reference
-- [ ] `ReferenceQueue`
-- [ ] `WeakHashMap`
+- [x] strong reference
+- [x] soft reference
+- [x] weak reference
+- [x] phantom reference
+- [x] `ReferenceQueue`
+- [x] `WeakHashMap`
 
 ---
 
