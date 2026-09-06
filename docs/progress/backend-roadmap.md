@@ -892,40 +892,40 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 ---
 
-# 11. Java Ecosystem — Не начато
+# 11. Java Ecosystem — Изучено
 
 ## 11.1. JDBC
 
-- [ ] что такое JDBC
-- [ ] JDBC Driver
-- [ ] `Connection`
-- [ ] `Statement`
-- [ ] `PreparedStatement`
-- [ ] `ResultSet`
-- [ ] SQL injection
-- [ ] почему `PreparedStatement` предпочтительнее
-- [ ] transactions в JDBC
-- [ ] `commit`
-- [ ] `rollback`
-- [ ] auto-commit
-- [ ] connection pooling
-- [ ] JDBC vs JPA/Hibernate
+- [x] что такое JDBC
+- [x] JDBC Driver
+- [x] `Connection`
+- [x] `Statement`
+- [x] `PreparedStatement`
+- [x] `ResultSet`
+- [x] SQL injection
+- [x] почему `PreparedStatement` предпочтительнее
+- [x] transactions в JDBC
+- [x] `commit`
+- [x] `rollback`
+- [x] auto-commit
+- [x] connection pooling
+- [x] JDBC vs JPA/Hibernate
 
 ---
 
 ## 11.2. Logging
 
-- [ ] зачем нужен logging
-- [ ] logging levels
-- [ ] TRACE / DEBUG / INFO / WARN / ERROR
-- [ ] SLF4J
-- [ ] Logback
-- [ ] facade vs implementation
-- [ ] parameterized logging
-- [ ] почему не использовать `System.out.println`
-- [ ] exception logging
-- [ ] structured logging на базовом уровне
-- [ ] correlation / trace id на концептуальном уровне
+- [x] зачем нужен logging
+- [x] logging levels
+- [x] TRACE / DEBUG / INFO / WARN / ERROR
+- [x] SLF4J
+- [x] Logback
+- [x] facade vs implementation
+- [x] parameterized logging
+- [x] почему не использовать `System.out.println`
+- [x] exception logging
+- [x] structured logging на базовом уровне
+- [x] correlation / trace id на концептуальном уровне
 
 ---
 
