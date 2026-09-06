@@ -774,18 +774,18 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 ---
 
-# 7. Spring Boot — Не начато
+# 7. Spring Boot — Изучено
 
-- [ ] зачем Spring Boot
-- [ ] auto-configuration
-- [ ] starters
-- [ ] `application.yml`
-- [ ] `application.properties`
-- [ ] configuration properties
-- [ ] profiles
-- [ ] embedded server
-- [ ] Actuator basics
-- [ ] Spring Boot startup flow на базовом уровне
+- [x] зачем Spring Boot
+- [x] auto-configuration
+- [x] starters
+- [x] `application.yml`
+- [x] `application.properties`
+- [x] configuration properties
+- [x] profiles
+- [x] embedded server
+- [x] Actuator basics
+- [x] Spring Boot startup flow на базовом уровне
 
 ---
 
