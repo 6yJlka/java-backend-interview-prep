@@ -958,41 +958,41 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 ---
 
-# 12. Testing — Не начато
+# 12. Testing — Изучен
 
 ## 12.1. JUnit 5
 
-- [ ] `@Test`
-- [ ] assertions
-- [ ] lifecycle
-- [ ] `@BeforeEach`
-- [ ] `@AfterEach`
-- [ ] parameterized tests
+- [x] `@Test`
+- [x] assertions
+- [x] lifecycle
+- [x] `@BeforeEach`
+- [x] `@AfterEach`
+- [x] parameterized tests
 
 ---
 
 ## 12.2. Mockito
 
-- [ ] mock
-- [ ] stub
-- [ ] spy
-- [ ] `when`
-- [ ] `thenReturn`
-- [ ] `verify`
-- [ ] `ArgumentCaptor`
-- [ ] `@Mock`
-- [ ] `@InjectMocks`
+- [x] mock
+- [x] stub
+- [x] spy
+- [x] `when`
+- [x] `thenReturn`
+- [x] `verify`
+- [x] `ArgumentCaptor`
+- [x] `@Mock`
+- [x] `@InjectMocks`
 
 ---
 
 ## 12.3. Spring Testing
 
-- [ ] `@SpringBootTest`
-- [ ] `@WebMvcTest`
-- [ ] `@DataJpaTest`
-- [ ] MockMvc
-- [ ] integration tests
-- [ ] Testcontainers basics
+- [x] `@SpringBootTest`
+- [x] `@WebMvcTest`
+- [x] `@DataJpaTest`
+- [x] MockMvc
+- [x] integration tests
+- [x] Testcontainers basics
 
 ---
 
