@@ -876,19 +876,19 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 ---
 
-# 10. Spring Transactions — Не начато
+# 10. Spring Transactions — Изучено
 
 Точка, где смыкаются Spring-прокси и уровни изоляции из раздела 5.3.
 
-- [ ] `@Transactional`
-- [ ] proxy mechanism
-- [ ] transaction boundary
-- [ ] rollback
-- [ ] checked vs unchecked exceptions
-- [ ] propagation
-- [ ] isolation
-- [ ] `readOnly`
-- [ ] self-invocation problem
+- [x] `@Transactional`
+- [x] proxy mechanism
+- [x] transaction boundary
+- [x] rollback
+- [x] checked vs unchecked exceptions
+- [x] propagation
+- [x] isolation
+- [x] `readOnly`
+- [x] self-invocation problem
 
 ---
 
