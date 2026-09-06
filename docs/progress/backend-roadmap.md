@@ -789,25 +789,25 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 ---
 
-# 8. Spring MVC — Не начато
+# 8. Spring MVC — Изучено
 
-- [ ] `DispatcherServlet`
-- [ ] `@RestController`
-- [ ] `@RequestMapping`
-- [ ] `@GetMapping`
-- [ ] `@PostMapping`
-- [ ] `@PutMapping`
-- [ ] `@PatchMapping`
-- [ ] `@DeleteMapping`
-- [ ] `@RequestBody`
-- [ ] `@PathVariable`
-- [ ] `@RequestParam`
-- [ ] `ResponseEntity`
-- [ ] DTO
-- [ ] validation
-- [ ] `@Valid`
-- [ ] `@ControllerAdvice`
-- [ ] `@ExceptionHandler`
+- [x] `DispatcherServlet`
+- [x] `@RestController`
+- [x] `@RequestMapping`
+- [x] `@GetMapping`
+- [x] `@PostMapping`
+- [x] `@PutMapping`
+- [x] `@PatchMapping`
+- [x] `@DeleteMapping`
+- [x] `@RequestBody`
+- [x] `@PathVariable`
+- [x] `@RequestParam`
+- [x] `ResponseEntity`
+- [x] DTO
+- [x] validation
+- [x] `@Valid`
+- [x] `@ControllerAdvice`
+- [x] `@ExceptionHandler`
 
 ---
 
