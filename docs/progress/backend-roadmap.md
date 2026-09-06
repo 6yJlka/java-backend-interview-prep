@@ -811,68 +811,68 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 ---
 
-# 9. JPA и Hibernate — Не начато
+# 9. JPA и Hibernate — Изучено
 
 ## 9.1. JPA Basics
 
-- [ ] ORM
-- [ ] Entity
-- [ ] EntityManager
-- [ ] Persistence Context
-- [ ] entity lifecycle
-- [ ] transient
-- [ ] managed
-- [ ] detached
-- [ ] removed
-- [ ] `persist`
-- [ ] `merge`
-- [ ] dirty checking
-- [ ] flush
-- [ ] `@Entity`
-- [ ] `@Id`
-- [ ] `@GeneratedValue`
+- [x] ORM
+- [x] Entity
+- [x] EntityManager
+- [x] Persistence Context
+- [x] entity lifecycle
+- [x] transient
+- [x] managed
+- [x] detached
+- [x] removed
+- [x] `persist`
+- [x] `merge`
+- [x] dirty checking
+- [x] flush
+- [x] `@Entity`
+- [x] `@Id`
+- [x] `@GeneratedValue`
 
 ---
 
 ## 9.2. Relationships
 
-- [ ] `@OneToOne`
-- [ ] `@OneToMany`
-- [ ] `@ManyToOne`
-- [ ] `@ManyToMany`
-- [ ] owning side
-- [ ] inverse side
-- [ ] `mappedBy`
+- [x] `@OneToOne`
+- [x] `@OneToMany`
+- [x] `@ManyToOne`
+- [x] `@ManyToMany`
+- [x] owning side
+- [x] inverse side
+- [x] `mappedBy`
 
 ---
 
 ## 9.3. Fetching
 
-- [ ] LAZY
-- [ ] EAGER
-- [ ] N+1
-- [ ] join fetch
-- [ ] EntityGraph
+- [x] LAZY
+- [x] EAGER
+- [x] N+1
+- [x] join fetch
+- [x] EntityGraph
 
 ---
 
 ## 9.4. Cascade
 
-- [ ] `PERSIST`
-- [ ] `MERGE`
-- [ ] `REMOVE`
-- [ ] `ALL`
-- [ ] `orphanRemoval`
+- [x] `PERSIST`
+- [x] `MERGE`
+- [x] `REMOVE`
+- [x] `ALL`
+- [x] `orphanRemoval`
 
 ---
 
 ## 9.5. Hibernate Problems
 
-- [ ] `equals/hashCode` для Entity
-- [ ] `LazyInitializationException`
-- [ ] N+1
-- [ ] pagination + join fetch
-- [ ] transaction boundaries
+- [x] `equals/hashCode` для Entity
+- [x] `LazyInitializationException`
+- [x] N+1
+- [x] pagination + join fetch
+- [x] transaction boundaries
 
 ---
 
