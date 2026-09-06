@@ -707,56 +707,56 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 ---
 
-# 6. Spring Framework — Не начато
+# 6. Spring Framework — Изучено
 
 ## 6.1. Spring Core / IoC / DI
 
-- [ ] IoC
-- [ ] Dependency Injection
-- [ ] `ApplicationContext`
-- [ ] Bean
-- [ ] component scanning
-- [ ] `@Component`
-- [ ] `@Service`
-- [ ] `@Repository`
-- [ ] constructor injection
-- [ ] setter injection
-- [ ] field injection
-- [ ] почему constructor injection предпочтительнее
+- [x] IoC
+- [x] Dependency Injection
+- [x] `ApplicationContext`
+- [x] Bean
+- [x] component scanning
+- [x] `@Component`
+- [x] `@Service`
+- [x] `@Repository`
+- [x] constructor injection
+- [x] setter injection
+- [x] field injection
+- [x] почему constructor injection предпочтительнее
 
 ---
 
 ## 6.2. Bean Lifecycle
 
-- [ ] bean creation
-- [ ] dependency injection
-- [ ] initialization
-- [ ] destruction
-- [ ] `@PostConstruct`
-- [ ] `@PreDestroy`
-- [ ] `BeanPostProcessor`
+- [x] bean creation
+- [x] dependency injection
+- [x] initialization
+- [x] destruction
+- [x] `@PostConstruct`
+- [x] `@PreDestroy`
+- [x] `BeanPostProcessor`
 
 ---
 
 ## 6.3. Bean Scopes
 
-- [ ] singleton
-- [ ] prototype
-- [ ] request
-- [ ] session
-- [ ] Spring singleton vs GoF Singleton
+- [x] singleton
+- [x] prototype
+- [x] request
+- [x] session
+- [x] Spring singleton vs GoF Singleton
 
 ---
 
 ## 6.4. Configuration
 
-- [ ] `@Configuration`
-- [ ] `@Bean`
-- [ ] `@ComponentScan`
-- [ ] `@Value`
-- [ ] properties
-- [ ] profiles
-- [ ] `@Profile`
+- [x] `@Configuration`
+- [x] `@Bean`
+- [x] `@ComponentScan`
+- [x] `@Value`
+- [x] properties
+- [x] profiles
+- [x] `@Profile`
 
 ---
 
@@ -764,13 +764,13 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 Ключ к пониманию `@Transactional`, поэтому изучается до транзакций.
 
-- [ ] AOP
-- [ ] aspect
-- [ ] advice
-- [ ] pointcut
-- [ ] proxy
-- [ ] JDK Dynamic Proxy
-- [ ] CGLIB basics
+- [x] AOP
+- [x] aspect
+- [x] advice
+- [x] pointcut
+- [x] proxy
+- [x] JDK Dynamic Proxy
+- [x] CGLIB basics
 
 ---
 
