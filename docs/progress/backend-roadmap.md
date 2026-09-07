@@ -1042,23 +1042,23 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 ---
 
-# 15. System Design — Не начато
+# 15. System Design — Изучено
 
 Уровень Junior / Junior+, без ухода в Senior-level distributed systems.
 
-- [ ] requirements clarification
-- [ ] API design
-- [ ] DB schema
-- [ ] indexes
-- [ ] cache
-- [ ] concurrency
-- [ ] queues
-- [ ] horizontal scaling basics
-- [ ] failure handling
-- [ ] URL Shortener
-- [ ] Notification Service
-- [ ] Incident Management System
-- [ ] Order Service
+- [x] requirements clarification
+- [x] API design
+- [x] DB schema
+- [x] indexes
+- [x] cache
+- [x] concurrency
+- [x] queues
+- [x] horizontal scaling basics
+- [x] failure handling
+- [x] URL Shortener
+- [x] Notification Service
+- [x] Incident Management System
+- [x] Order Service
 
 ---
 
