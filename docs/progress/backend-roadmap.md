@@ -1062,24 +1062,24 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 ---
 
-# 16. Docker и CI/CD — Не начато
+# 16. Docker и CI/CD — Изучено
 
 Есть практика, теория не систематизирована.
 
-- [ ] image
-- [ ] container
-- [ ] Dockerfile
-- [ ] layers basics
-- [ ] volume
-- [ ] network
-- [ ] ports
-- [ ] environment variables
-- [ ] Docker Compose
-- [ ] healthcheck
-- [ ] CI
-- [ ] CD
-- [ ] GitHub Actions
-- [ ] basic deployment flow
+- [x] image
+- [x] container
+- [x] Dockerfile
+- [x] layers basics
+- [x] volume
+- [x] network
+- [x] ports
+- [x] environment variables
+- [x] Docker Compose
+- [x] healthcheck
+- [x] CI
+- [x] CD
+- [x] GitHub Actions
+- [x] basic deployment flow
 
 ---
 
