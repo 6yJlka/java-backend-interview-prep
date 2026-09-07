@@ -100,19 +100,19 @@ void print(String value)
 ```java
 public class Box<T> {
 
-    private T value;
+  private T value;
 
-    public Box(T value) {
-        this.value = value;
-    }
+  public Box(T value) {
+    this.value = value;
+  }
 
-    public T getValue() {
-        return value;
-    }
+  public T getValue() {
+    return value;
+  }
 
-    public void setValue(T value) {
-        this.value = value;
-    }
+  public void setValue(T value) {
+    this.value = value;
+  }
 }
 ```
 
@@ -141,21 +141,21 @@ Integer number = integerBox.getValue();
 ```java
 public class Pair<K, V> {
 
-    private final K key;
-    private final V value;
+  private final K key;
+  private final V value;
 
-    public Pair(K key, V value) {
-        this.key = key;
-        this.value = value;
-    }
+  public Pair(K key, V value) {
+    this.key = key;
+    this.value = value;
+  }
 
-    public K getKey() {
-        return key;
-    }
+  public K getKey() {
+    return key;
+  }
 
-    public V getValue() {
-        return value;
-    }
+  public V getValue() {
+    return value;
+  }
 }
 ```
 
@@ -187,7 +187,7 @@ N → Number
 
 ```java
 public static <T> T first(List<T> values) {
-    return values.getFirst();
+  return values.getFirst();
 }
 ```
 
@@ -196,7 +196,7 @@ public static <T> T first(List<T> values) {
 ```java
 public static <T> T first(...)
               ↑   ↑
-       параметр   возвращаемый тип
+параметр   возвращаемый тип
 ```
 
 Использование:
@@ -220,9 +220,9 @@ Generic-класс:
 ```java
 public class Box<T> {
 
-    public T getValue() {
-        return value;
-    }
+  public T getValue() {
+    return value;
+  }
 }
 ```
 
@@ -236,7 +236,7 @@ Generic-метод:
 
 ```java
 public static <T> T identity(T value) {
-    return value;
+  return value;
 }
 ```
 
@@ -350,9 +350,9 @@ List<?>
 
 ```java
 public static void print(List<?> values) {
-    for (Object value : values) {
-        System.out.println(value);
-    }
+  for (Object value : values) {
+    System.out.println(value);
+  }
 }
 ```
 
@@ -411,13 +411,13 @@ List<Double>
 public static double sum(
         List<? extends Number> values
 ) {
-    double result = 0;
+  double result = 0;
 
-    for (Number value : values) {
-        result += value.doubleValue();
-    }
+  for (Number value : values) {
+    result += value.doubleValue();
+  }
 
-    return result;
+  return result;
 }
 ```
 
@@ -477,8 +477,8 @@ List<Object>
 public static void addNumbers(
         List<? super Integer> values
 ) {
-    values.add(10);
-    values.add(20);
+  values.add(10);
+  values.add(20);
 }
 ```
 
@@ -550,9 +550,9 @@ public static <T> void copy(
         List<? extends T> source,
         List<? super T> destination
 ) {
-    for (T value : source) {
-        destination.add(value);
-    }
+  for (T value : source) {
+    destination.add(value);
+  }
 }
 ```
 
@@ -583,13 +583,13 @@ copy(source, destination);
 public static <T extends Number> double sum(
         List<T> values
 ) {
-    double result = 0;
+  double result = 0;
 
-    for (T value : values) {
-        result += value.doubleValue();
-    }
+  for (T value : values) {
+    result += value.doubleValue();
+  }
 
-    return result;
+  return result;
 }
 ```
 
@@ -624,10 +624,10 @@ sum(List.of("A", "B"));
 ```java
 public static <
         T extends Number & Comparable<T>
-> T max(T first, T second) {
-    return first.compareTo(second) >= 0
-            ? first
-            : second;
+        > T max(T first, T second) {
+  return first.compareTo(second) >= 0
+          ? first
+          : second;
 }
 ```
 
@@ -680,7 +680,7 @@ public static <T> void add(
         List<T> values,
         T value
 ) {
-    values.add(value);
+  values.add(value);
 }
 ```
 
@@ -745,9 +745,9 @@ String value =
 ```java
 public class Factory<T> {
 
-    public T create() {
-        return new T();
-    }
+  public T create() {
+    return new T();
+  }
 }
 ```
 
@@ -762,15 +762,15 @@ public class Factory<T> {
 ```java
 public class Factory<T> {
 
-    private final Supplier<T> supplier;
+  private final Supplier<T> supplier;
 
-    public Factory(Supplier<T> supplier) {
-        this.supplier = supplier;
-    }
+  public Factory(Supplier<T> supplier) {
+    this.supplier = supplier;
+  }
 
-    public T create() {
-        return supplier.get();
-    }
+  public T create() {
+    return supplier.get();
+  }
 }
 ```
 
@@ -837,7 +837,7 @@ values.add(10);
 
 ```java
 if (value instanceof List<String>) {
-}
+        }
 ```
 
 После стирания JVM не различает:
@@ -851,7 +851,7 @@ List<Integer>
 
 ```java
 if (value instanceof List<?>) {
-}
+        }
 ```
 
 ---
@@ -861,7 +861,7 @@ if (value instanceof List<?>) {
 ```java
 public class Box<T> {
 
-    private static T value;
+  private static T value;
 }
 ```
 
@@ -897,16 +897,16 @@ List<? super Number>
 
 ```java
 Number
-Integer
+        Integer
 Long
-Double
+        Double
 ```
 
 Нельзя добавлять:
 
 ```java
 Object
-String
+        String
 ```
 
 ---
@@ -994,30 +994,129 @@ Type erasure
 
 ---
 
-## Вопросы для самопроверки
+## Вопросы на собеседовании
 
-1. Для чего нужны generics?
-2. Чем параметр типа отличается от аргумента типа?
-3. Что такое generic-класс?
-4. Что такое generic-метод?
-5. Что такое raw type?
-6. Почему raw type опасен?
-7. Что означает инвариантность generics?
-8. Почему `List<Integer>` не является `List<Number>`?
-9. Что означает `List<?>`?
-10. Что можно читать и добавлять в `List<?>`?
-11. Что означает `? extends T`?
-12. Что означает `? super T`?
-13. Как расшифровывается PECS?
-14. Чем wildcard отличается от `<T>`?
-15. Что означает `<T extends Number>`?
-16. Как указать несколько ограничений?
-17. Что такое type erasure?
-18. Почему нельзя создать `new T()`?
-19. Почему нельзя создать массив `T[]`?
-20. Почему нельзя использовать `List<int>`?
-21. Почему нельзя проверить `instanceof List<String>`?
-22. Почему нельзя объявить статическое поле типа `T`?
+### 1. Для чего нужны generics?
+
+**Ответ:** для типобезопасности на этапе компиляции и избавления от приведения
+типов. Ошибка обнаруживается компилятором, а не как `ClassCastException` во время
+выполнения.
+
+### 2. Чем параметр типа отличается от аргумента типа?
+
+**Ответ:** параметр — это заполнитель в объявлении, например `T` в `class Box<T>`.
+Аргумент — конкретный тип при использовании, например `String` в `Box<String>`.
+
+### 3. Что такое generic-класс?
+
+**Ответ:** класс, объявленный с параметрами типа, которые используются в его полях
+и методах. Конкретные типы задаются при создании экземпляра.
+
+### 4. Что такое generic-метод?
+
+**Ответ:** метод с собственными параметрами типа, объявленными перед возвращаемым
+типом. Может находиться и в обычном классе, а тип обычно выводится из аргументов.
+
+### 5. Что такое raw type?
+
+**Ответ:** использование обобщённого типа без указания аргументов, например просто
+`List`. Осталось ради совместимости с кодом, написанным до Java 5.
+
+### 6. Почему raw type опасен?
+
+**Ответ:** проверки типов отключаются, и в коллекцию можно положить что угодно.
+Ошибка проявится позже, при чтении, в виде `ClassCastException` — то есть
+теряется всё преимущество generics.
+
+### 7. Что означает инвариантность generics?
+
+**Ответ:** `List<Integer>` не является ни подтипом, ни супертипом `List<Number>`,
+несмотря на отношение между `Integer` и `Number`.
+
+### 8. Почему List<Integer> не является List<Number>?
+
+**Ответ:** иначе через ссылку типа `List<Number>` можно было бы добавить `Double` в
+список целых, и последующее чтение дало бы `ClassCastException`. Именно так
+устроены массивы, и там эта дыра закрыта проверкой во время выполнения с
+`ArrayStoreException`.
+
+### 9. Что означает `List<?>`?
+
+**Ответ:** список с неизвестным типом элементов. Подходит, когда конкретный тип не
+важен — например, для подсчёта размера.
+
+### 10. Что можно читать и добавлять в `List<?>`?
+
+**Ответ:** читать можно как `Object`, добавлять нельзя ничего, кроме `null`. Тип
+элементов неизвестен, поэтому компилятор не может гарантировать безопасность
+записи.
+
+### 11. Что означает `? extends T`?
+
+**Ответ:** неизвестный тип, являющийся `T` или его наследником. Из такой коллекции
+можно безопасно читать как `T`, но нельзя добавлять — неизвестно, какой именно
+подтип там хранится.
+
+### 12. Что означает `? super T`?
+
+**Ответ:** неизвестный тип, являющийся `T` или его предком. В такую коллекцию можно
+добавлять `T` и его наследников, а чтение возможно только как `Object`.
+
+### 13. Как расшифровывается PECS?
+
+**Ответ:** producer extends, consumer super. Если структура отдаёт данные,
+используется `extends`; если принимает — `super`.
+
+### 14. Чем wildcard отличается от `<T>`?
+
+**Ответ:** параметр `T` именует тип и позволяет ссылаться на него в нескольких
+местах сигнатуры, связывая их между собой. Wildcard анонимен и годится, когда тип
+упоминается однократно и связывать нечего.
+
+### 15. Что означает `<T extends Number>`?
+
+**Ответ:** ограничение сверху: аргументом типа может быть только `Number` или его
+наследник. Внутри класса или метода к `T` применимы методы `Number`.
+
+### 16. Как указать несколько ограничений?
+
+**Ответ:** через амперсанд: `<T extends Number & Comparable<T>>`. Класс, если он
+присутствует, указывается первым, остальные ограничения — интерфейсы.
+
+### 17. Что такое type erasure?
+
+**Ответ:** удаление информации о типовых аргументах при компиляции. В байт-коде
+остаётся либо `Object`, либо верхняя граница, а компилятор вставляет необходимые
+приведения. Сделано ради совместимости с кодом, написанным до появления generics.
+
+### 18. Почему нельзя создать `new T()`?
+
+**Ответ:** во время выполнения тип `T` неизвестен из-за стирания, и JVM не знает,
+конструктор какого класса вызывать. Обходной путь — передать фабрику или объект
+`Class<T>`.
+
+### 19. Почему нельзя создать массив `T[]`?
+
+**Ответ:** массивы хранят информацию о типе элементов во время выполнения и
+проверяют её при записи. Из-за стирания подставить нужный тип невозможно, поэтому
+такое создание запрещено. Используют `Object[]` с приведением или коллекции.
+
+### 20. Почему нельзя использовать `List<int>`?
+
+**Ответ:** аргументом типа может быть только ссылочный тип, поскольку после
+стирания остаётся `Object`, а примитив им не является. Применяют обёртки либо
+специализированные структуры без упаковки.
+
+### 21. Почему нельзя проверить `instanceof List<String>`?
+
+**Ответ:** во время выполнения информация об аргументе типа отсутствует, и все
+списки неотличимы. Допустима лишь проверка `instanceof List<?>`.
+
+### 22. Почему нельзя объявить статическое поле типа T?
+
+**Ответ:** статическое поле принадлежит классу, а не экземпляру, тогда как аргумент
+типа задаётся при создании конкретного экземпляра. Одно поле не может
+соответствовать разным типам одновременно.
 
 ---
 

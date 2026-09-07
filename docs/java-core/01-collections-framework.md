@@ -150,7 +150,7 @@ Iterator<E> iterator();
 List<String> names = List.of("Alice", "Bob", "Charlie");
 
 for (String name : names) {
-    System.out.println(name);
+        System.out.println(name);
 }
 ```
 
@@ -162,7 +162,7 @@ for (String name : names) {
 Iterator<String> iterator = names.iterator();
 
 while (iterator.hasNext()) {
-    String name = iterator.next();
+String name = iterator.next();
     System.out.println(name);
 }
 ```
@@ -202,7 +202,7 @@ String first = names.get(0);
 
 ```java
 ArrayList
-LinkedList
+        LinkedList
 ```
 
 ## Set
@@ -233,7 +233,7 @@ names.add("Alice");
 
 ```java
 HashSet
-LinkedHashSet
+        LinkedHashSet
 TreeSet
 ```
 
@@ -355,7 +355,7 @@ Bob   → 30
 
 ```java
 HashMap
-LinkedHashMap
+        LinkedHashMap
 TreeMap
 ```
 
@@ -803,7 +803,7 @@ boolean second = names.add("Alice"); // false
 
 ```java
 HashSet
-LinkedHashSet
+        LinkedHashSet
 TreeSet
 ```
 
@@ -964,7 +964,7 @@ Set<String> names = new TreeSet<>();
 ```java
 Set<String> names = new TreeSet<>(
         Comparator.comparingInt(String::length)
-                  .thenComparing(Comparator.naturalOrder())
+                .thenComparing(Comparator.naturalOrder())
 );
 ```
 
@@ -1340,7 +1340,7 @@ Comparator
 ```java
 Comparator<User> comparator =
         Comparator.comparingInt(User::getAge)
-                  .thenComparing(User::getName);
+                .thenComparing(User::getName);
 ```
 
 Также можно развернуть порядок:
@@ -1388,7 +1388,7 @@ remove();
 
 ```java
 for (String value : list) {
-    System.out.println(value);
+        System.out.println(value);
 }
 ```
 
@@ -1398,7 +1398,7 @@ for (String value : list) {
 Iterator<String> iterator = list.iterator();
 
 while (iterator.hasNext()) {
-    String value = iterator.next();
+String value = iterator.next();
     System.out.println(value);
 }
 ```
@@ -1432,12 +1432,12 @@ remove();
 ListIterator<String> iterator = list.listIterator();
 
 while (iterator.hasNext()) {
-    String value = iterator.next();
+String value = iterator.next();
 
     if (value.equals("old")) {
         iterator.set("new");
     }
-}
+            }
 ```
 
 Кратко:
@@ -1464,10 +1464,10 @@ ListIterator
 
 ```java
 for (String value : list) {
-    if (value.equals("delete")) {
+        if (value.equals("delete")) {
         list.remove(value);
     }
-}
+            }
 ```
 
 `for-each` использует `Iterator`, а изменение выполняется напрямую через `list`.
@@ -1503,12 +1503,12 @@ ConcurrentModificationException
 Iterator<String> iterator = list.iterator();
 
 while (iterator.hasNext()) {
-    String value = iterator.next();
+String value = iterator.next();
 
     if (value.equals("delete")) {
         iterator.remove();
     }
-}
+            }
 ```
 
 Здесь изменение выполняется через сам итератор, поэтому его внутреннее состояние обновляется корректно.
@@ -1838,28 +1838,119 @@ Map.of
 → повторные ключи запрещены
 ```
 
-## Дополнительные вопросы для самопроверки
+## Вопросы на собеседовании
 
-1. Чем `Comparable` отличается от `Comparator`?
-2. Где находится логика естественного порядка?
-3. Можно ли иметь несколько `Comparator` для одного класса?
-4. Что означает результат `compare(...) == 0` для `TreeSet`?
-5. Чем `Iterator` отличается от `ListIterator`?
-6. Почему `ConcurrentModificationException` можно получить в одном потоке?
-7. Что означает `fail-fast`?
-8. Почему `iterator.remove()` допустим во время обхода?
-9. Чем immutable collection отличается от unmodifiable view?
-10. Чем `List.copyOf()` отличается от `Collections.unmodifiableList()`?
-11. Обязана ли `List.copyOf()` создавать новый объект?
-12. Можно ли передать `null` в `List.of()`?
-13. Что произойдёт при дубликате в `Set.of()`?
-14. Какие ограничения есть у `Map.of()`?
-15. Делает ли immutable collection неизменяемыми её элементы?
-16. Как устроена `PriorityQueue`?
-17. Как сделать max-heap?
-18. Почему `PriorityQueue` не гарантирует полностью отсортированный порядок обхода?
-19. Почему для стека предпочтительнее `ArrayDeque`, а не `Stack`?
-20. Чем `Collections.sort(list)` отличается от `list.sort(comparator)`?
+### 1. Чем Comparable отличается от Comparator?
+
+**Ответ:** `Comparable` реализуется самим классом и задаёт его естественный
+порядок через `compareTo()`. `Comparator` — внешний объект с методом `compare()`,
+описывающий произвольный порядок сортировки.
+
+### 2. Где находится логика естественного порядка?
+
+**Ответ:** внутри самого класса, в методе `compareTo()`. Поэтому естественный
+порядок может быть только один.
+
+### 3. Можно ли иметь несколько Comparator для одного класса?
+
+**Ответ:** да, сколько угодно. Это и есть основное преимущество: сортировка по
+имени, по дате, по сумме описывается отдельными компараторами, не меняя класс.
+
+### 4. Что означает результат compare(...) == 0 для TreeSet?
+
+**Ответ:** элементы считаются одинаковыми, и второй не будет добавлен. `TreeSet`
+определяет уникальность именно сравнением, а не через `equals`, поэтому
+несогласованность этих операций приводит к неожиданной потере элементов.
+
+### 5. Чем Iterator отличается от ListIterator?
+
+**Ответ:** `Iterator` идёт только вперёд и умеет удалять. `ListIterator` доступен
+для списков, ходит в обе стороны, знает индексы и позволяет вставлять и заменять
+элементы.
+
+### 6. Почему ConcurrentModificationException можно получить в одном потоке?
+
+**Ответ:** исключение сигнализирует не о конкуренции потоков, а о структурном
+изменении коллекции во время обхода. Удаление элемента из списка внутри цикла
+`for-each` даёт его в одном потоке.
+
+### 7. Что означает fail-fast?
+
+**Ответ:** итератор отслеживает счётчик модификаций коллекции и при расхождении
+немедленно выбрасывает исключение вместо того, чтобы продолжать работу с
+неопределённым результатом.
+
+### 8. Почему iterator.remove() допустим во время обхода?
+
+**Ответ:** он изменяет коллекцию через сам итератор и синхронизирует счётчик
+модификаций, поэтому расхождения не возникает.
+
+### 9. Чем immutable collection отличается от unmodifiable view?
+
+**Ответ:** неизменяемая коллекция не может быть изменена вообще. Неизменяемое
+представление лишь запрещает изменения через себя, но остаётся связанным с исходной
+коллекцией: изменения оригинала в нём видны.
+
+### 10. Чем List.copyOf() отличается от Collections.unmodifiableList()?
+
+**Ответ:** `copyOf()` создаёт независимую неизменяемую копию, `unmodifiableList()`
+возвращает представление исходного списка.
+
+### 11. Обязана ли List.copyOf() создавать новый объект?
+
+**Ответ:** нет. Если аргумент уже является неизменяемым списком нужного типа,
+реализация вправе вернуть его же — копирование было бы бессмысленным.
+
+### 12. Можно ли передать null в List.of()?
+
+**Ответ:** нет, будет `NullPointerException`. Фабричные методы Java 9 запрещают
+`null` как элемент.
+
+### 13. Что произойдёт при дубликате в Set.of()?
+
+**Ответ:** `IllegalArgumentException`. В отличие от `HashSet`, где дубликат просто
+игнорируется, фабричный метод считает его ошибкой вызывающего кода.
+
+### 14. Какие ограничения есть у Map.of()?
+
+**Ответ:** запрет на `null` в ключах и значениях, запрет на дублирующиеся ключи, а
+также ограничение в десять пар. Для большего числа существует `Map.ofEntries()`.
+
+### 15. Делает ли immutable collection неизменяемыми её элементы?
+
+**Ответ:** нет, неизменяемость поверхностная. Изменить состав коллекции нельзя, а
+состояние объектов внутри — можно.
+
+### 16. Как устроена PriorityQueue?
+
+**Ответ:** это двоичная куча в массиве. Наименьший элемент всегда находится в
+корне, поэтому извлечение минимума выполняется быстро, а вставка и удаление стоят
+`O(log n)`.
+
+### 17. Как сделать max-heap?
+
+**Ответ:** передать компаратор с обратным порядком, например
+`Comparator.reverseOrder()`.
+
+### 18. Почему PriorityQueue не гарантирует полностью отсортированный порядок обхода?
+
+**Ответ:** куча упорядочена лишь частично — гарантируется только положение
+минимума. Обход через итератор идёт по внутреннему массиву и порядка не соблюдает;
+упорядоченную последовательность даёт лишь последовательное извлечение через
+`poll()`.
+
+### 19. Почему для стека предпочтительнее ArrayDeque, а не Stack?
+
+**Ответ:** `Stack` наследует `Vector` и потому синхронизирован, что даёт лишние
+накладные расходы. Кроме того, наследование от вектора открывает доступ по индексу,
+нарушающий семантику стека. `ArrayDeque` быстрее и предоставляет только нужные
+операции.
+
+### 20. Чем Collections.sort(list) отличается от list.sort(comparator)?
+
+**Ответ:** это статический метод-утилита и метод самого списка, появившийся в
+Java 8. Внутри `Collections.sort()` делегирует вызов `list.sort()`, так что
+разницы в поведении нет, и в новом коде используют второй вариант.
 
 ---
 

@@ -56,11 +56,11 @@ System.out.println(first == second); // true
 ```java
 public final class UserKey {
 
-  private final Long id;
+    private final Long id;
 
-  public UserKey(Long id) {
-    this.id = id;
-  }
+    public UserKey(Long id) {
+        this.id = id;
+    }
 }
 ```
 
@@ -84,15 +84,15 @@ first.equals(second); // false
 ```java
 @Override
 public boolean equals(Object object) {
-  if (this == object) {
-    return true;
-  }
+    if (this == object) {
+        return true;
+    }
 
-  if (!(object instanceof UserKey other)) {
-    return false;
-  }
+    if (!(object instanceof UserKey other)) {
+        return false;
+    }
 
-  return id.equals(other.id);
+    return id.equals(other.id);
 }
 ```
 
@@ -130,7 +130,7 @@ x.equals(y) == y.equals(x)
 
 ```java
 x.equals(y) == true
-        y.equals(z) == true
+y.equals(z) == true
 ```
 
 то:
@@ -166,15 +166,15 @@ x.equals(null) == false
 ```java
 @Override
 public boolean equals(Object object) {
-  if (this == object) {
-    return true;
-  }
+    if (this == object) {
+        return true;
+    }
 
-  if (!(object instanceof UserKey other)) {
-    return false;
-  }
+    if (!(object instanceof UserKey other)) {
+        return false;
+    }
 
-  return id.equals(other.id);
+    return id.equals(other.id);
 }
 ```
 
@@ -182,8 +182,8 @@ public boolean equals(Object object) {
 
 ```java
 if (this == object) {
-        return true;
-        }
+    return true;
+}
 ```
 
 Если ссылки одинаковые, дополнительное сравнение не требуется.
@@ -192,8 +192,8 @@ if (this == object) {
 
 ```java
 if (!(object instanceof UserKey other)) {
-        return false;
-        }
+    return false;
+}
 ```
 
 Эта конструкция:
@@ -301,11 +301,11 @@ first.equals(second) == true
 ```java
 @Override
 public boolean equals(Object object) {
-  if (!(object instanceof UserKey other)) {
-    return false;
-  }
+    if (!(object instanceof UserKey other)) {
+        return false;
+    }
 
-  return id.equals(other.id);
+    return id.equals(other.id);
 }
 ```
 
@@ -346,29 +346,29 @@ String value = map.get(second); // может вернуть null
 ```java
 public final class UserKey {
 
-  private final Long id;
+    private final Long id;
 
-  public UserKey(Long id) {
-    this.id = Objects.requireNonNull(id);
-  }
-
-  @Override
-  public boolean equals(Object object) {
-    if (this == object) {
-      return true;
+    public UserKey(Long id) {
+        this.id = Objects.requireNonNull(id);
     }
 
-    if (!(object instanceof UserKey other)) {
-      return false;
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+
+        if (!(object instanceof UserKey other)) {
+            return false;
+        }
+
+        return id.equals(other.id);
     }
 
-    return id.equals(other.id);
-  }
-
-  @Override
-  public int hashCode() {
-    return id.hashCode();
-  }
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }
 ```
 
@@ -381,35 +381,35 @@ public final class UserKey {
 ```java
 public final class IncidentKey {
 
-  private final String category;
-  private final IncidentPriority priority;
+    private final String category;
+    private final IncidentPriority priority;
 
-  public IncidentKey(
-          String category,
-          IncidentPriority priority
-  ) {
-    this.category = category;
-    this.priority = priority;
-  }
-
-  @Override
-  public boolean equals(Object object) {
-    if (this == object) {
-      return true;
+    public IncidentKey(
+            String category,
+            IncidentPriority priority
+    ) {
+        this.category = category;
+        this.priority = priority;
     }
 
-    if (!(object instanceof IncidentKey other)) {
-      return false;
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+
+        if (!(object instanceof IncidentKey other)) {
+            return false;
+        }
+
+        return Objects.equals(category, other.category)
+                && priority == other.priority;
     }
 
-    return Objects.equals(category, other.category)
-            && priority == other.priority;
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(category, priority);
-  }
+    @Override
+    public int hashCode() {
+        return Objects.hash(category, priority);
+    }
 }
 ```
 
@@ -451,7 +451,7 @@ return Objects.equals(email, other.email);
 ```java
 @Override
 public int hashCode() {
-  return Objects.hash(category, priority);
+    return Objects.hash(category, priority);
 }
 ```
 
@@ -501,12 +501,12 @@ public record Money(
 ```java
 public class UserKey {
 
-  private String email;
+    private String email;
 
-  @Override
-  public int hashCode() {
-    return email.hashCode();
-  }
+    @Override
+    public int hashCode() {
+        return email.hashCode();
+    }
 }
 ```
 
@@ -583,8 +583,8 @@ PRESENT         → служебное значение
 
 ```java
 if (!(object instanceof UserKey other)) {
-        return false;
-        }
+    return false;
+}
 ```
 
 Принимает объект указанного класса и его наследников.
@@ -593,8 +593,8 @@ if (!(object instanceof UserKey other)) {
 
 ```java
 if (object == null || getClass() != object.getClass()) {
-        return false;
-        }
+    return false;
+}
 ```
 
 Требует точного совпадения классов.
@@ -610,13 +610,13 @@ if (object == null || getClass() != object.getClass()) {
 ```java
 class Point {
 
-  private int x;
-  private int y;
+    private int x;
+    private int y;
 }
 
 class ColoredPoint extends Point {
 
-  private String color;
+    private String color;
 }
 ```
 
@@ -678,7 +678,7 @@ Set<Incident> incidents = new HashSet<>();
 
 Incident incident = new Incident(...);
 
-        incidents.add(incident);
+incidents.add(incident);
 
 entityManager.persist(incident);
 ```
@@ -859,23 +859,91 @@ equals true
 
 ---
 
-## Вопросы для самопроверки
+## Вопросы на собеседовании
 
-1. Чем `==` отличается от `equals()`?
-2. Какие требования входят в контракт `equals()`?
-3. Какое правило связывает `equals()` и `hashCode()`?
-4. Означает ли одинаковый хеш равенство объектов?
-5. Что произойдёт, если переопределить только `equals()`?
-6. Почему изменяемый ключ опасен?
-7. Как `HashMap` использует `hashCode()` и `equals()`?
-8. Почему `HashSet` зависит от этих методов?
-9. Чем `instanceof` отличается от `getClass()`?
-10. Какие проблемы возникают при наследовании?
-11. Почему JPA-сущности сложно сравнивать?
-12. Как generated ID влияет на `hashCode()`?
-13. Почему Hibernate-прокси нужно учитывать?
-14. Почему `record` подходит для ключа?
-15. Гарантирует ли `record` глубокую неизменяемость?
+### 1. Чем == отличается от equals()?
+
+**Ответ:** `==` сравнивает ссылки, то есть отвечает на вопрос, один ли это объект.
+`equals()` сравнивает содержимое по правилам, заданным классом. Для примитивов
+`==` сравнивает значения.
+
+### 2. Какие требования входят в контракт equals()?
+
+**Ответ:** рефлексивность, симметричность, транзитивность, согласованность при
+неизменном состоянии и то, что сравнение с `null` всегда даёт `false`.
+
+### 3. Какое правило связывает equals() и hashCode()?
+
+**Ответ:** равные объекты обязаны иметь одинаковый хеш-код. Обратное не требуется:
+разные объекты могут иметь совпадающий хеш.
+
+### 4. Означает ли одинаковый хеш равенство объектов?
+
+**Ответ:** нет. Хеш отображает бесконечное множество значений в ограниченный
+диапазон, поэтому совпадения неизбежны. Окончательное решение принимает `equals()`.
+
+### 5. Что произойдёт, если переопределить только equals()?
+
+**Ответ:** хеш-коды равных объектов окажутся разными, и они попадут в разные
+бакеты. `HashMap` не найдёт запись по равному ключу, а `HashSet` примет дубликат.
+
+### 6. Почему изменяемый ключ опасен?
+
+**Ответ:** изменение поля, участвующего в `hashCode()`, меняет бакет, где карта
+будет искать ключ. Запись остаётся в прежнем бакете и становится недостижимой.
+
+### 7. Как HashMap использует hashCode() и equals()?
+
+**Ответ:** по хешу вычисляется бакет, а внутри бакета нужный ключ находится
+сравнением через `equals()`.
+
+### 8. Почему HashSet зависит от этих методов?
+
+**Ответ:** он построен на `HashMap`, где элементы выступают ключами. Уникальность
+проверяется той же связкой хеша и равенства.
+
+### 9. Чем instanceof отличается от getClass() в equals()?
+
+**Ответ:** `getClass()` требует точного совпадения типов, поэтому объекты родителя
+и наследника никогда не равны — зато симметричность соблюдается всегда.
+`instanceof` допускает сравнение с наследником, но легко нарушает симметричность,
+если наследник переопределит `equals()` по-своему.
+
+### 10. Какие проблемы возникают при наследовании?
+
+**Ответ:** добавление поля в наследник делает корректное сравнение с родителем
+невозможным без нарушения контракта. Общая рекомендация — предпочитать композицию
+либо делать класс `final`.
+
+### 11. Почему JPA-сущности сложно сравнивать?
+
+**Ответ:** гарантия единственности экземпляра действует только внутри контекста
+персистентности. Для отсоединённых сущностей и разных транзакций одна строка базы
+представлена разными объектами, поэтому сравнение по ссылке не работает.
+
+### 12. Как generated ID влияет на hashCode()?
+
+**Ответ:** до сохранения идентификатор `null`, после — присвоен базой. Значение
+`hashCode()` изменится, и объект, добавленный в `HashSet` до сохранения, в нём
+потеряется.
+
+### 13. Почему Hibernate-прокси нужно учитывать?
+
+**Ответ:** ленивая связь подставляет прокси — сгенерированный подкласс. Сравнение
+через `getClass()` вернёт `false` для одной и той же строки, поэтому используют
+`instanceof` или `Hibernate.getClass()`.
+
+### 14. Почему record подходит для ключа?
+
+**Ответ:** компилятор генерирует `equals()` и `hashCode()` по всем компонентам, а
+компоненты неизменяемы. Контракт соблюдается по построению, и хеш не меняется в
+течение жизни объекта.
+
+### 15. Гарантирует ли record глубокую неизменяемость?
+
+**Ответ:** нет. Неизменяемы ссылки на компоненты, но объекты за ними могут
+меняться. Изменяемую коллекцию внутри record нужно копировать в компактном
+конструкторе.
 
 ---
 

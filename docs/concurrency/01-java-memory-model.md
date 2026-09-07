@@ -60,12 +60,12 @@ Visibility, или видимость, отвечает на вопрос: ко�
 private boolean ready = false;
 
 void writer() {
-    ready = true;
+  ready = true;
 }
 
 void reader() {
-    while (!ready) {
-    }
+  while (!ready) {
+  }
 }
 ```
 
@@ -97,11 +97,11 @@ happens-before.
 private boolean ready;
 
 synchronized void markReady() {
-    ready = true;
+  ready = true;
 }
 
 synchronized boolean isReady() {
-    return ready;
+  return ready;
 }
 ```
 
@@ -156,7 +156,7 @@ write 1              write 1
 private volatile int count;
 
 void increment() {
-    count++;
+  count++;
 }
 ```
 
@@ -196,14 +196,14 @@ private int value;
 private boolean ready;
 
 void writer() {
-    value = 42;
-    ready = true;
+  value = 42;
+  ready = true;
 }
 
 void reader() {
-    if (ready) {
-        System.out.println(value);
-    }
+  if (ready) {
+    System.out.println(value);
+  }
 }
 ```
 
@@ -267,11 +267,11 @@ Program order задаёт отношения внутри потока. Что�
 private int value;
 
 synchronized void write() {
-    value = 42;
+  value = 42;
 }
 
 synchronized int read() {
-    return value;
+  return value;
 }
 ```
 
@@ -300,14 +300,14 @@ private int value;
 private volatile boolean ready;
 
 void write() {
-    value = 42;
-    ready = true;
+  value = 42;
+  ready = true;
 }
 
 void read() {
-    if (ready) {
-        System.out.println(value);
-    }
+  if (ready) {
+    System.out.println(value);
+  }
 }
 ```
 
@@ -386,8 +386,8 @@ A HB C
 value = 42;       // A
 ready = true;     // B, volatile write
 
-if (ready) {      // C, volatile read
-    print(value); // D
+        if (ready) {      // C, volatile read
+print(value); // D
 }
 ```
 
@@ -428,14 +428,14 @@ private volatile boolean ready;
 private int value;
 
 void writer() {
-    value = 42;
-    ready = true;
+  value = 42;
+  ready = true;
 }
 
 void reader() {
-    if (ready) {
-        System.out.println(value);
-    }
+  if (ready) {
+    System.out.println(value);
+  }
 }
 ```
 
@@ -469,8 +469,8 @@ private int value;
 private volatile boolean ready;
 
 void writer() {
-    value = 42;
-    ready = true;
+  value = 42;
+  ready = true;
 }
 ```
 
@@ -492,8 +492,8 @@ private int value;
 private volatile boolean ready;
 
 void writer() {
-    ready = true;
-    value = 42;
+  ready = true;
+  value = 42;
 }
 ```
 
@@ -529,7 +529,7 @@ writer: value = 42 находится после публикации
 private int count;
 
 public synchronized void increment() {
-    count++;
+  count++;
 }
 ```
 
@@ -567,7 +567,7 @@ unlock this
 
 ```java
 public static synchronized void increment() {
-    count++;
+  count++;
 }
 ```
 
@@ -581,11 +581,11 @@ public static synchronized void increment() {
 private int count;
 
 public synchronized void increment() {
-    count++;
+  count++;
 }
 
 public int getCount() {
-    return count;
+  return count;
 }
 ```
 
@@ -608,11 +608,11 @@ reader: обычный read count
 private int count;
 
 public synchronized void increment() {
-    count++;
+  count++;
 }
 
 public synchronized int getCount() {
-    return count;
+  return count;
 }
 ```
 
@@ -643,13 +643,13 @@ public synchronized int getCount() {
 private volatile boolean stopped;
 
 void stop() {
-    stopped = true;
+  stopped = true;
 }
 
 void work() {
-    while (!stopped) {
-        doOneIteration();
-    }
+  while (!stopped) {
+    doOneIteration();
+  }
 }
 ```
 
@@ -662,12 +662,12 @@ void work() {
 
 ```java
 public synchronized boolean withdraw(int amount) {
-    if (balance < amount) {
-        return false;
-    }
+  if (balance < amount) {
+    return false;
+  }
 
-    balance -= amount;
-    return true;
+  balance -= amount;
+  return true;
 }
 ```
 
@@ -682,13 +682,13 @@ public synchronized boolean withdraw(int amount) {
 private int value;
 
 void example() {
-    value = 42;
+  value = 42;
 
-    Thread thread = new Thread(() ->
-            System.out.println(value)
-    );
+  Thread thread = new Thread(() ->
+          System.out.println(value)
+  );
 
-    thread.start();
+  thread.start();
 }
 ```
 
@@ -734,12 +734,12 @@ start
 private int value;
 
 void example() throws InterruptedException {
-    Thread worker = new Thread(() -> value = 42);
+  Thread worker = new Thread(() -> value = 42);
 
-    worker.start();
-    worker.join();
+  worker.start();
+  worker.join();
 
-    System.out.println(value);
+  System.out.println(value);
 }
 ```
 
@@ -801,7 +801,7 @@ Race condition — более широкое логическое понятие
 
 ```java
 if (balance >= amount) {
-    balance -= amount;
+balance -= amount;
 }
 ```
 
@@ -840,8 +840,8 @@ Race condition
 
 ```java
 class Config {
-    int timeout;
-    String url;
+  int timeout;
+  String url;
 }
 
 private Config config;
@@ -861,7 +861,7 @@ Reader:
 
 ```java
 if (config != null) {
-    System.out.println(config.timeout);
+        System.out.println(config.timeout);
     System.out.println(config.url);
 }
 ```
@@ -892,7 +892,7 @@ Reader:
 Config local = config;
 
 if (local != null) {
-    System.out.println(local.timeout);
+        System.out.println(local.timeout);
     System.out.println(local.url);
 }
 ```
@@ -977,13 +977,13 @@ JMM предоставляет специальные гарантии для `f
 ```java
 final class Config {
 
-    private final String host;
-    private final int timeout;
+  private final String host;
+  private final int timeout;
 
-    Config(String host, int timeout) {
-        this.host = host;
-        this.timeout = timeout;
-    }
+  Config(String host, int timeout) {
+    this.host = host;
+    this.timeout = timeout;
+  }
 }
 ```
 
@@ -999,12 +999,12 @@ guarantees для значений, присвоенных этим полям �
 ```java
 class Listener {
 
-    private final int threshold;
+  private final int threshold;
 
-    Listener(Registry registry) {
-        registry.register(this);
-        threshold = 10;
-    }
+  Listener(Registry registry) {
+    registry.register(this);
+    threshold = 10;
+  }
 }
 ```
 
@@ -1124,33 +1124,149 @@ ordering для доступа к полю, но не mutual exclusion и не �
 JMM не следует смешивать с JVM Runtime Data Areas: Heap, Stack и Method Area
 описывают логические области памяти, а не правила межпоточного наблюдения.
 
-## Вопросы для самопроверки
+## Вопросы на собеседовании
 
-1. На какой вопрос отвечает Java Memory Model?
-2. Чем JMM отличается от JVM Runtime Data Areas?
-3. Почему неверно говорить, что у каждого потока есть собственная копия Heap?
-4. Что означают visibility, atomicity и ordering?
-5. Почему обычный `boolean ready` не является надёжным механизмом передачи сигнала между потоками?
-6. Из каких логических шагов состоит `count++`?
-7. Как возникает lost update при двух конкурентных инкрементах?
-8. Почему `volatile int count` не делает `count++` потокобезопасным?
-9. Что означает as-if-serial semantics?
-10. Почему as-if-serial semantics не создаёт межпоточные гарантии?
-11. Почему reordering нельзя описывать как случайную перестановку строк JVM?
-12. Что означает отношение happens-before?
-13. Почему happens-before не равно физическому порядку по времени?
-14. Какое happens-before правило задаёт program order?
-15. Какое отношение возникает между `unlock` и последующим `lock` того же монитора?
-16. Что изменится, если writer и reader синхронизируются на разных объектах?
-17. Какое happens-before правило связано с записью и чтением `volatile`-поля?
-18. Как транзитивность связывает обычную запись, volatile-флаг и последующее обычное чтение?
-19. Почему в коде `value = 42; ready = true;` volatile-поле `ready` может публиковать `value`?
-20. Почему порядок `ready = true; value = 42;` не даёт той же гарантии?
-21. Какие гарантии предоставляет `synchronized` помимо mutual exclusion?
-22. Почему synchronized writer и обычный reader не образуют monitor happens-before связь?
-23. Какой монитор используют два instance synchronized-метода одного объекта?
-24. Почему новый поток видит данные, записанные до `thread.start()`, без `volatile`?
-25. Почему следующий код не гарантирует чтение `42` запускающим потоком?
+### 1. На какой вопрос отвечает Java Memory Model?
+
+**Ответ:** при каких условиях изменение, сделанное одним потоком, гарантированно
+становится видно другому и в каком порядке эти изменения наблюдаются. Это набор
+правил, а не описание физического устройства памяти.
+
+### 2. Чем JMM отличается от JVM Runtime Data Areas?
+
+**Ответ:** области памяти описывают, где физически хранятся данные: куча, стеки,
+Metaspace. JMM описывает правила видимости и упорядочивания между потоками. Это
+ортогональные вопросы.
+
+### 3. Почему неверно говорить, что у каждого потока есть собственная копия Heap?
+
+**Ответ:** куча одна на всю JVM. Расхождения возникают из-за кешей процессора,
+буферов записи и переупорядочивания инструкций, а не из-за копии кучи. Модель
+памяти описывает эти эффекты абстрактно, не привязываясь к конкретному железу.
+
+### 4. Что означают visibility, atomicity и ordering?
+
+**Ответ:** видимость — станет ли запись одного потока заметна другому. Атомарность
+— выполняется ли операция целиком, без промежуточных наблюдаемых состояний.
+Упорядочивание — в каком порядке другой поток может увидеть операции.
+
+### 5. Почему обычный boolean ready не является надёжным механизмом передачи сигнала?
+
+**Ответ:** без happens-before связи компилятор и процессор вправе кешировать
+значение в регистре или переупорядочить обращения. Читающий поток может неограниченно
+долго видеть старое значение, и цикл ожидания не завершится.
+
+### 6. Из каких логических шагов состоит count++?
+
+**Ответ:** чтение текущего значения, увеличение на единицу и запись результата. Три
+отдельных действия, между которыми возможно вмешательство другого потока.
+
+### 7. Как возникает lost update при двух конкурентных инкрементах?
+
+**Ответ:** оба потока читают одно и то же значение, каждый увеличивает свою копию и
+записывает результат. Вторая запись затирает первую, и вместо двух инкрементов
+получается один.
+
+### 8. Почему volatile int count не делает count++ потокобезопасным?
+
+**Ответ:** `volatile` обеспечивает видимость и упорядочивание, но не атомарность
+составной операции. Между чтением и записью по-прежнему может вклиниться другой
+поток. Нужен `AtomicInteger` или синхронизация.
+
+### 9. Что означает as-if-serial semantics?
+
+**Ответ:** оптимизации обязаны сохранять результат, наблюдаемый в пределах одного
+потока. Внутри потока программа ведёт себя так, будто инструкции выполнялись в
+исходном порядке.
+
+### 10. Почему as-if-serial semantics не создаёт межпоточных гарантий?
+
+**Ответ:** правило говорит только о том, что видит сам поток. Другой поток может
+наблюдать переупорядоченные операции, поскольку для него результат первого потока
+не является наблюдаемым результатом в смысле этого правила.
+
+### 11. Почему reordering нельзя описывать как случайную перестановку строк?
+
+**Ответ:** переупорядочивание происходит на нескольких уровнях — компилятор,
+процессор, буферы записи — и подчиняется правилам, а не случайности. Зависимые
+операции переставлены не будут. Правильнее говорить, что порядок наблюдения не
+гарантирован без happens-before связи, чем представлять это как хаотичную
+перестановку.
+
+### 12. Что означает отношение happens-before?
+
+**Ответ:** если действие A happens-before действия B, то результаты A гарантированно
+видны при выполнении B, и порядок между ними соблюдён.
+
+### 13. Почему happens-before не равно физическому порядку по времени?
+
+**Ответ:** это логическое отношение, устанавливаемое правилами модели. Операция
+может произойти раньше по часам, но без happens-before связи её результат не
+обязан быть виден. Верно и обратное: связь может существовать между действиями,
+физический порядок которых на конкретном железе иной.
+
+### 14. Какое happens-before правило задаёт program order?
+
+**Ответ:** в пределах одного потока каждое действие happens-before следующего по
+тексту программы.
+
+### 15. Какое отношение возникает между unlock и последующим lock того же монитора?
+
+**Ответ:** освобождение монитора happens-before последующего его захвата. Всё, что
+поток сделал внутри синхронизированного блока, видно потоку, который затем вошёл в
+блок на том же мониторе.
+
+### 16. Что изменится, если writer и reader синхронизируются на разных объектах?
+
+**Ответ:** связь не возникнет. Правило действует только для одного и того же
+монитора, поэтому гарантий видимости не будет, а взаимного исключения — тем более.
+
+### 17. Какое happens-before правило связано с volatile?
+
+**Ответ:** запись в `volatile`-поле happens-before последующего чтения того же
+поля.
+
+### 18. Как транзитивность связывает обычную запись, volatile-флаг и обычное чтение?
+
+**Ответ:** обычная запись happens-before записи флага по правилу порядка программы,
+запись флага happens-before его чтения по правилу `volatile`, а чтение флага
+happens-before последующего обычного чтения. Отношение транзитивно, поэтому первая
+запись видна последнему чтению.
+
+### 19. Почему в коде `value = 42; ready = true;` volatile-поле ready публикует value?
+
+**Ответ:** обычная запись предшествует записи флага в порядке программы, а флаг
+создаёт связь с читающим потоком. Увидев `ready == true`, он гарантированно увидит и
+`value == 42`.
+
+### 20. Почему порядок `ready = true; value = 42;` не даёт той же гарантии?
+
+**Ответ:** запись `value` идёт после установки флага, поэтому в цепочку
+happens-before не попадает. Читающий поток может увидеть флаг, но ещё не увидеть
+значение.
+
+### 21. Какие гарантии даёт synchronized помимо взаимного исключения?
+
+**Ответ:** видимость и упорядочивание. При входе в блок поток видит все изменения,
+сделанные до выхода из блока на том же мониторе.
+
+### 22. Почему synchronized writer и обычный reader не образуют happens-before связь?
+
+**Ответ:** правило требует пары «освобождение — захват» одного монитора. Если
+читающий поток не входит в синхронизированный блок, второй половины пары нет, и
+гарантий не возникает.
+
+### 23. Какой монитор используют два instance synchronized-метода одного объекта?
+
+**Ответ:** один и тот же — сам объект. Поэтому два таких метода не могут
+выполняться параллельно на одном экземпляре.
+
+### 24. Почему новый поток видит данные, записанные до thread.start()?
+
+**Ответ:** действует отдельное правило: всё, выполненное до вызова `start()`,
+happens-before любого действия в запущенном потоке.
+
+### 25. Почему следующий код не гарантирует чтение 42 запускающим потоком?
 
 ```java
 Thread worker = new Thread(() -> value = 42);
@@ -1158,10 +1274,31 @@ worker.start();
 System.out.println(value);
 ```
 
-26. Почему после успешного `worker.join()` поле `value` не обязано быть `volatile`?
-27. По каким четырём признакам определяется data race?
-28. Чем race condition отличается от data race на примере check-then-act?
-29. Почему следующая публикация объекта небезопасна и как исправить её через `volatile`?
+**Ответ:** правило `start()` работает в одну сторону — от запускающего потока к
+запущенному. Обратной гарантии нет, и печать может произойти до записи либо не
+увидеть её результат. Нужен `join()` или иная синхронизация.
+
+### 26. Почему после успешного worker.join() поле value не обязано быть volatile?
+
+**Ответ:** действует правило: все действия завершившегося потока happens-before
+успешного возврата из `join()`. Этого достаточно для видимости без дополнительных
+средств.
+
+### 27. По каким четырём признакам определяется data race?
+
+**Ответ:** два или более потока обращаются к одной переменной, хотя бы одно
+обращение является записью, обращения не упорядочены отношением happens-before, и
+переменная не объявлена `volatile` и не защищена синхронизацией.
+
+### 28. Чем race condition отличается от data race на примере check-then-act?
+
+**Ответ:** гонка данных — свойство доступа к памяти, состояние гонки — свойство
+логики. Проверка наличия ключа и последующая вставка могут быть корректны с точки
+зрения модели памяти, если каждая операция атомарна, но между ними вклинивается
+другой поток, и результат оказывается неверным. Отсюда следствие: устранение гонки
+данных не устраняет состояние гонки.
+
+### 29. Почему следующая публикация небезопасна и как исправить её через volatile?
 
 ```java
 Config created = new Config();
@@ -1169,7 +1306,21 @@ created.timeout = 5000;
 config = created;
 ```
 
-30. Какие гарантии даёт корректное конструирование final-полей, чем опасна утечка `this` и почему `final ArrayList` не является immutable или thread-safe?
+**Ответ:** запись поля `timeout` и запись ссылки `config` могут быть
+переупорядочены, поэтому другой поток способен увидеть ненулевую ссылку на объект с
+неинициализированным полем. Если объявить `config` как `volatile`, запись ссылки
+создаст happens-before связь, и все предшествующие записи станут видны вместе с
+ней.
+
+### 30. Какие гарантии даёт корректное конструирование final-полей?
+
+**Ответ:** если объект правильно сконструирован, любой поток, получивший на него
+ссылку, увидит корректно инициализированные `final`-поля без дополнительной
+синхронизации. Гарантия теряется при утечке `this` из конструктора — например,
+регистрации объекта в слушателях до завершения конструктора: другой поток получит
+ссылку на недостроенный объект. Кроме того, `final ArrayList` означает лишь
+неизменяемость ссылки: сам список остаётся изменяемым и не является
+потокобезопасным.
 
 ---
 
