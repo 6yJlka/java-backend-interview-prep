@@ -17,7 +17,7 @@ public class Object {
 
 ---
 
-# Оператор == и метод equals
+## Оператор == и метод equals
 
 Для ссылочных типов оператор `==` проверяет, указывают ли две переменные на один объект.
 
@@ -49,7 +49,7 @@ System.out.println(first == second); // true
 
 ---
 
-# Зачем переопределять equals
+## Зачем переопределять equals
 
 Рассмотрим объект, представляющий идентификатор пользователя.
 
@@ -104,11 +104,11 @@ first.equals(second); // true
 
 ---
 
-# Контракт equals
+## Контракт equals
 
 Корректный метод `equals()` обязан соблюдать пять требований.
 
-## Рефлексивность
+### Рефлексивность
 
 Объект равен самому себе.
 
@@ -116,7 +116,7 @@ first.equals(second); // true
 x.equals(x) == true
 ```
 
-## Симметричность
+### Симметричность
 
 Если `x` равен `y`, то `y` должен быть равен `x`.
 
@@ -124,7 +124,7 @@ x.equals(x) == true
 x.equals(y) == y.equals(x)
 ```
 
-## Транзитивность
+### Транзитивность
 
 Если:
 
@@ -139,7 +139,7 @@ y.equals(z) == true
 x.equals(z) == true
 ```
 
-## Согласованность
+### Согласованность
 
 Если объекты не изменялись, повторные вызовы должны возвращать одинаковый результат.
 
@@ -149,7 +149,7 @@ x.equals(y);
 x.equals(y);
 ```
 
-## Сравнение с null
+### Сравнение с null
 
 Ненулевой объект не равен `null`.
 
@@ -161,7 +161,7 @@ x.equals(null) == false
 
 ---
 
-# Структура equals
+## Структура equals
 
 ```java
 @Override
@@ -178,7 +178,7 @@ public boolean equals(Object object) {
 }
 ```
 
-## Проверка ссылки
+### Проверка ссылки
 
 ```java
 if (this == object) {
@@ -188,7 +188,7 @@ if (this == object) {
 
 Если ссылки одинаковые, дополнительное сравнение не требуется.
 
-## Проверка типа
+### Проверка типа
 
 ```java
 if (!(object instanceof UserKey other)) {
@@ -202,7 +202,7 @@ if (!(object instanceof UserKey other)) {
 - проверяет тип объекта
 - приводит объект к нужному типу
 
-## Сравнение полей
+### Сравнение полей
 
 ```java
 return id.equals(other.id);
@@ -212,7 +212,7 @@ return id.equals(other.id);
 
 ---
 
-# Метод hashCode
+## Метод hashCode
 
 Метод `hashCode()` возвращает число типа `int`.
 
@@ -243,7 +243,7 @@ int hash = object.hashCode();
 
 ---
 
-# Контракт hashCode
+## Контракт hashCode
 
 Главное правило:
 
@@ -275,7 +275,7 @@ first.equals(second) == true
 
 ---
 
-# Почему коллизии допустимы
+## Почему коллизии допустимы
 
 `hashCode()` возвращает `int`.
 
@@ -294,7 +294,7 @@ first.equals(second) == true
 
 ---
 
-# Почему нужно переопределять оба метода
+## Почему нужно переопределять оба метода
 
 Плохой вариант:
 
@@ -341,7 +341,7 @@ String value = map.get(second); // может вернуть null
 
 ---
 
-# Корректная реализация
+## Корректная реализация
 
 ```java
 public final class UserKey {
@@ -376,7 +376,7 @@ public final class UserKey {
 
 ---
 
-# Сравнение нескольких полей
+## Сравнение нескольких полей
 
 ```java
 public final class IncidentKey {
@@ -424,7 +424,7 @@ Enum можно сравнивать через `==`, потому что каж
 
 ---
 
-# Objects.equals
+## Objects.equals
 
 ```java
 Objects.equals(first, second);
@@ -446,7 +446,7 @@ return Objects.equals(email, other.email);
 
 ---
 
-# Objects.hash
+## Objects.hash
 
 ```java
 @Override
@@ -461,11 +461,11 @@ public int hashCode() {
 
 ---
 
-# Какие поля включать в equals и hashCode
+## Какие поля включать в equals и hashCode
 
 Нужно определить, что означает логическое равенство объектов.
 
-## Value Object
+### Value Object
 
 Объект-значение обычно сравнивается по всем значимым полям.
 
@@ -479,7 +479,7 @@ public record Money(
 
 Два объекта `Money` равны, если совпадают сумма и валюта.
 
-## Entity
+### Entity
 
 Сущность обладает идентичностью.
 
@@ -494,7 +494,7 @@ public record Money(
 
 ---
 
-# Изменяемые поля
+## Изменяемые поля
 
 Поля, участвующие в `equals()` и `hashCode()`, желательно делать неизменяемыми.
 
@@ -543,7 +543,7 @@ map.remove(key); // может вернуть null
 
 ---
 
-# HashSet и hashCode
+## HashSet и hashCode
 
 `HashSet` внутри использует `HashMap`.
 
@@ -575,11 +575,11 @@ PRESENT         → служебное значение
 
 ---
 
-# instanceof и getClass
+## instanceof и getClass
 
 Существует два распространённых способа проверки типа.
 
-## instanceof
+### instanceof
 
 ```java
 if (!(object instanceof UserKey other)) {
@@ -589,7 +589,7 @@ if (!(object instanceof UserKey other)) {
 
 Принимает объект указанного класса и его наследников.
 
-## getClass
+### getClass
 
 ```java
 if (object == null || getClass() != object.getClass()) {
@@ -605,7 +605,7 @@ if (object == null || getClass() != object.getClass()) {
 
 ---
 
-# Наследование и equals
+## Наследование и equals
 
 ```java
 class Point {
@@ -649,7 +649,7 @@ public final class UserKey {
 
 ---
 
-# JPA-сущности
+## JPA-сущности
 
 Реализация равенства JPA-сущностей сложнее обычных классов.
 
@@ -687,7 +687,7 @@ entityManager.persist(incident);
 
 ---
 
-# Hibernate-прокси
+## Hibernate-прокси
 
 Для ленивых связей Hibernate может вернуть прокси.
 
@@ -722,7 +722,7 @@ getClass() != object.getClass()
 
 ---
 
-# record как ключ
+## record как ключ
 
 Для составных неизменяемых ключей удобно использовать `record`.
 
@@ -767,17 +767,17 @@ public record MutableKey(List<String> values) {
 
 ---
 
-# Типичные ошибки
+## Типичные ошибки
 
-## Переопределён только equals
+### Переопределён только equals
 
 Нарушается контракт с `hashCode()`.
 
-## Переопределён только hashCode
+### Переопределён только hashCode
 
 `equals()` продолжает сравнивать ссылки.
 
-## Методы используют разные поля
+### Методы используют разные поля
 
 Плохо:
 
@@ -786,11 +786,11 @@ equals   → id
 hashCode → email
 ```
 
-## Используются изменяемые поля
+### Используются изменяемые поля
 
 Объект может перестать находиться в хешированной коллекции.
 
-## Строки сравниваются через ==
+### Строки сравниваются через ==
 
 Плохо:
 
@@ -804,7 +804,7 @@ email == other.email
 Objects.equals(email, other.email)
 ```
 
-## Не учитывается null
+### Не учитывается null
 
 ```java
 object.getClass()
@@ -812,7 +812,7 @@ object.getClass()
 
 при `object == null` выбросит `NullPointerException`.
 
-## Требование уникального hashCode
+### Требование уникального hashCode
 
 `hashCode()` не обязан быть уникальным.
 
@@ -826,7 +826,7 @@ object.getClass()
 
 ---
 
-# Краткая памятка
+## Краткая памятка
 
 ```text
 ==       → ссылки
@@ -859,7 +859,7 @@ equals true
 
 ---
 
-# Вопросы для самопроверки
+## Вопросы для самопроверки
 
 1. Чем `==` отличается от `equals()`?
 2. Какие требования входят в контракт `equals()`?
@@ -879,7 +879,7 @@ equals true
 
 ---
 
-## См. также
+### См. также
 
 - [`02-map.md`](02-map.md) — как контракт влияет на bucket и поиск записи
 - [`07-oop-object-string-wrappers.md`](07-oop-object-string-wrappers.md) —

@@ -1,6 +1,6 @@
 # Concurrent Collections в Java
 
-## 1. Зачем нужны concurrent-коллекции
+### Зачем нужны concurrent-коллекции
 
 Обычные коллекции Java, например `HashMap` и `ArrayList`, не гарантируют корректную работу при одновременном изменении из нескольких потоков.
 
@@ -33,7 +33,7 @@ map.put("B", 2);
 
 ---
 
-# 2. Collections.synchronizedMap
+## Collections.synchronizedMap
 
 Один из простых способов сделать обычную `Map` потокобезопасной:
 
@@ -83,7 +83,7 @@ synchronized (map) {
 
 ---
 
-# 3. ConcurrentHashMap
+## ConcurrentHashMap
 
 `ConcurrentHashMap` — потокобезопасная реализация `Map`, специально разработанная для конкурентного доступа.
 
@@ -110,7 +110,7 @@ map.remove(key);
 
 ---
 
-# 4. Compound operations
+## Compound operations
 
 Рассмотрим:
 
@@ -154,7 +154,7 @@ put("user", 1)
 
 ---
 
-# 5. putIfAbsent
+## putIfAbsent
 
 Вместо:
 
@@ -181,7 +181,7 @@ map.putIfAbsent("user", 1);
 
 ---
 
-# 6. computeIfAbsent
+## computeIfAbsent
 
 Если значение необходимо создать только при отсутствии ключа:
 
@@ -256,7 +256,7 @@ Thread-safe контейнер не делает автоматически thre
 
 ---
 
-# 7. compute и merge
+## compute и merge
 
 Рассмотрим счётчик:
 
@@ -382,7 +382,7 @@ counts.merge(key, 1, Integer::sum);
 
 ---
 
-# 8. Итераторы ConcurrentHashMap
+## Итераторы ConcurrentHashMap
 
 Итераторы `ConcurrentHashMap` являются `weakly consistent`.
 
@@ -419,7 +419,7 @@ ConcurrentHashMap iterator
 
 ---
 
-# 9. ConcurrentHashMap и synchronizedMap
+## ConcurrentHashMap и synchronizedMap
 
 Упрощённое сравнение:
 
@@ -444,7 +444,7 @@ ConcurrentHashMap
 
 ---
 
-# 10. CopyOnWriteArrayList
+## CopyOnWriteArrayList
 
 `CopyOnWriteArrayList` — потокобезопасный список, оптимизированный для сценариев, где чтений намного больше, чем изменений.
 
@@ -515,7 +515,7 @@ set()
 
 ---
 
-# 11. Когда использовать CopyOnWriteArrayList
+## Когда использовать CopyOnWriteArrayList
 
 Основной сценарий:
 
@@ -544,7 +544,7 @@ for (Listener listener : listeners) {
 
 ---
 
-# 12. Итератор CopyOnWriteArrayList
+## Итератор CopyOnWriteArrayList
 
 Итератор `CopyOnWriteArrayList` работает со snapshot массива.
 
@@ -618,7 +618,7 @@ CopyOnWriteArrayList iterator
 
 ---
 
-# 13. BlockingQueue
+## BlockingQueue
 
 `BlockingQueue` — интерфейс потокобезопасной очереди, поддерживающей блокирующие операции.
 
@@ -663,7 +663,7 @@ Task task = queue.take();
 
 ---
 
-# 14. Добавление элементов в BlockingQueue
+## Добавление элементов в BlockingQueue
 
 Допустим:
 
@@ -682,7 +682,7 @@ BlockingQueue<String> queue =
 
 Существуют разные варианты добавления.
 
-## add()
+### add()
 
 ```java
 queue.add("C");
@@ -698,7 +698,7 @@ IllegalStateException
 
 ---
 
-## offer()
+### offer()
 
 ```java
 boolean result = queue.offer("C");
@@ -716,7 +716,7 @@ result = false
 
 ---
 
-## put()
+### put()
 
 ```java
 queue.put("C");
@@ -759,7 +759,7 @@ put()   → нет места → ожидание
 
 ---
 
-# 15. offer с таймаутом
+## offer с таймаутом
 
 Есть промежуточный вариант:
 
@@ -788,7 +788,7 @@ false
 
 ---
 
-# 16. Получение элементов из BlockingQueue
+## Получение элементов из BlockingQueue
 
 Теперь очередь пуста:
 
@@ -799,7 +799,7 @@ BlockingQueue<String> queue =
 
 Есть три основных варианта.
 
-## remove()
+### remove()
 
 ```java
 queue.remove();
@@ -813,7 +813,7 @@ NoSuchElementException
 
 ---
 
-## poll()
+### poll()
 
 ```java
 String value = queue.poll();
@@ -827,7 +827,7 @@ value = null
 
 ---
 
-## take()
+### take()
 
 ```java
 String value = queue.take();
@@ -853,7 +853,7 @@ take()   → ожидание
 
 ---
 
-# 17. poll с таймаутом
+## poll с таймаутом
 
 Можно ждать элемент ограниченное время:
 
@@ -875,7 +875,7 @@ null
 
 ---
 
-# 18. BlockingQueue и interrupt
+## BlockingQueue и interrupt
 
 Блокирующие операции `BlockingQueue` реагируют на interrupt.
 
@@ -933,7 +933,7 @@ Thread.currentThread().interrupt();
 
 ---
 
-# 19. Backpressure
+## Backpressure
 
 Одна из главных причин использовать ограниченную `BlockingQueue` — backpressure.
 
@@ -1001,7 +1001,7 @@ producer продолжает работу
 
 ---
 
-# 20. ArrayBlockingQueue
+## ArrayBlockingQueue
 
 `ArrayBlockingQueue` — ограниченная блокирующая очередь на основе массива.
 
@@ -1054,7 +1054,7 @@ put()   → ждёт
 
 ---
 
-# 21. LinkedBlockingQueue
+## LinkedBlockingQueue
 
 `LinkedBlockingQueue` — ещё одна реализация `BlockingQueue`.
 
@@ -1100,7 +1100,7 @@ LinkedBlockingQueue<>()
 
 ---
 
-# 22. SynchronousQueue
+## SynchronousQueue
 
 `SynchronousQueue` сильно отличается от обычных очередей.
 
@@ -1155,7 +1155,7 @@ put("task")  ───────→ take()
 
 ---
 
-# 23. SynchronousQueue и CachedThreadPool
+## SynchronousQueue и CachedThreadPool
 
 `SynchronousQueue` используется внутри `Executors.newCachedThreadPool()`.
 
@@ -1233,7 +1233,7 @@ SynchronousQueue
 
 ---
 
-# 24. ConcurrentLinkedQueue
+## ConcurrentLinkedQueue
 
 `ConcurrentLinkedQueue` — потокобезопасная неблокирующая очередь.
 
@@ -1270,7 +1270,7 @@ queue.offer(task);
 
 ---
 
-# 25. Busy waiting
+## Busy waiting
 
 Рассмотрим consumer:
 
@@ -1327,7 +1327,7 @@ while (!Thread.currentThread().isInterrupted()) {
 
 ---
 
-# 26. BlockingQueue и ConcurrentLinkedQueue
+## BlockingQueue и ConcurrentLinkedQueue
 
 Основное различие:
 
@@ -1351,9 +1351,9 @@ ConcurrentLinkedQueue
 
 ---
 
-# 27. Как выбрать concurrent-коллекцию
+## Как выбрать concurrent-коллекцию
 
-## ConcurrentHashMap
+### ConcurrentHashMap
 
 Использовать, когда:
 
@@ -1382,7 +1382,7 @@ merge()
 
 ---
 
-## CopyOnWriteArrayList
+### CopyOnWriteArrayList
 
 Использовать, когда:
 
@@ -1402,7 +1402,7 @@ CopyOnWriteArrayList<Listener> listeners;
 
 ---
 
-## ArrayBlockingQueue
+### ArrayBlockingQueue
 
 Использовать, когда:
 
@@ -1422,7 +1422,7 @@ new ArrayBlockingQueue<>(500);
 
 ---
 
-## LinkedBlockingQueue
+### LinkedBlockingQueue
 
 Использовать как blocking queue.
 
@@ -1444,7 +1444,7 @@ new LinkedBlockingQueue<>();
 
 ---
 
-## SynchronousQueue
+### SynchronousQueue
 
 Использовать, когда нужна непосредственная передача элемента между потоками без промежуточного хранения.
 
@@ -1460,7 +1460,7 @@ CachedThreadPool
 
 ---
 
-## ConcurrentLinkedQueue
+### ConcurrentLinkedQueue
 
 Использовать, когда нужна:
 
@@ -1476,11 +1476,11 @@ non-blocking
 
 ---
 
-# 28. Сравнение итераторов
+## Сравнение итераторов
 
 Важно различать поведение разных concurrent-коллекций.
 
-## ConcurrentHashMap
+### ConcurrentHashMap
 
 ```text
 weakly consistent iterator
@@ -1496,7 +1496,7 @@ weakly consistent iterator
 
 При обычных конкурентных изменениях не требуется поведение fail-fast обычного `HashMap`.
 
-## CopyOnWriteArrayList
+### CopyOnWriteArrayList
 
 ```text
 snapshot iterator
@@ -1508,11 +1508,11 @@ snapshot iterator
 
 ---
 
-# 29. Основные методы BlockingQueue
+## Основные методы BlockingQueue
 
 Краткая шпаргалка.
 
-## Добавление
+### Добавление
 
 ```text
 add(element)
@@ -1529,7 +1529,7 @@ offer(element, timeout, unit)
 → true или false
 ```
 
-## Извлечение
+### Извлечение
 
 ```text
 remove()
@@ -1548,9 +1548,9 @@ poll(timeout, unit)
 
 ---
 
-# 30. Типичные ошибки
+## Типичные ошибки
 
-## Ошибка 1. Считать несколько thread-safe операций одной атомарной операцией
+### Ошибка 1. Считать несколько thread-safe операций одной атомарной операцией
 
 Плохо:
 
@@ -1568,7 +1568,7 @@ map.putIfAbsent(key, value);
 
 ---
 
-## Ошибка 2. Делать read-modify-write вручную
+### Ошибка 2. Делать read-modify-write вручную
 
 Плохо:
 
@@ -1584,7 +1584,7 @@ map.merge(key, 1, Integer::sum);
 
 ---
 
-## Ошибка 3. Считать value внутри ConcurrentHashMap автоматически thread-safe
+### Ошибка 3. Считать value внутри ConcurrentHashMap автоматически thread-safe
 
 ```java
 ConcurrentHashMap<String, List<String>> map =
@@ -1595,7 +1595,7 @@ ConcurrentHashMap<String, List<String>> map =
 
 ---
 
-## Ошибка 4. Использовать CopyOnWriteArrayList при частых изменениях
+### Ошибка 4. Использовать CopyOnWriteArrayList при частых изменениях
 
 Каждая запись требует копирования внутреннего массива.
 
@@ -1603,7 +1603,7 @@ ConcurrentHashMap<String, List<String>> map =
 
 ---
 
-## Ошибка 5. Использовать неограниченную очередь при постоянной перегрузке
+### Ошибка 5. Использовать неограниченную очередь при постоянной перегрузке
 
 Если producer быстрее consumer:
 
@@ -1617,7 +1617,7 @@ producer → очередь → consumer
 
 ---
 
-## Ошибка 6. Делать бесконечный poll() пустой ConcurrentLinkedQueue
+### Ошибка 6. Делать бесконечный poll() пустой ConcurrentLinkedQueue
 
 ```java
 while (true) {
@@ -1629,7 +1629,7 @@ while (true) {
 
 ---
 
-## Ошибка 7. Считать, что bounded queue всегда блокирует producer
+### Ошибка 7. Считать, что bounded queue всегда блокирует producer
 
 Например:
 
@@ -1647,7 +1647,7 @@ put()   → ожидание
 
 ---
 
-# 31. Связь с ThreadPoolExecutor
+## Связь с ThreadPoolExecutor
 
 Concurrent queues напрямую связаны с устройством `ThreadPoolExecutor`.
 
@@ -1703,9 +1703,9 @@ SynchronousQueue
 
 ---
 
-# 32. Типичные вопросы на собеседовании
+## Типичные вопросы на собеседовании
 
-## Почему ConcurrentHashMap не делает этот код атомарным?
+### Почему ConcurrentHashMap не делает этот код атомарным?
 
 ```java
 if (!map.containsKey(key)) {
@@ -1725,7 +1725,7 @@ putIfAbsent()
 
 ---
 
-## Почему get() + put() небезопасны для счётчика?
+### Почему get() + put() небезопасны для счётчика?
 
 ```java
 map.put(key, map.get(key) + 1);
@@ -1749,7 +1749,7 @@ merge()
 
 ---
 
-## Чем ConcurrentHashMap отличается от synchronizedMap?
+### Чем ConcurrentHashMap отличается от synchronizedMap?
 
 `synchronizedMap` является синхронизирующей обёрткой над обычной `Map` и сильнее опирается на общий монитор.
 
@@ -1757,7 +1757,7 @@ merge()
 
 ---
 
-## Как ведёт себя iterator ConcurrentHashMap?
+### Как ведёт себя iterator ConcurrentHashMap?
 
 Он weakly consistent.
 
@@ -1765,19 +1765,19 @@ merge()
 
 ---
 
-## Почему CopyOnWriteArrayList подходит для большого количества чтений?
+### Почему CopyOnWriteArrayList подходит для большого количества чтений?
 
 Потому что изменение создаёт новую копию внутреннего массива, а существующие читатели могут продолжать работать со старой неизменяемой версией.
 
 ---
 
-## Почему CopyOnWriteArrayList плох при частых записях?
+### Почему CopyOnWriteArrayList плох при частых записях?
 
 Потому что при каждой изменяющей операции необходимо копировать внутренний массив.
 
 ---
 
-## Увидит ли существующий iterator CopyOnWriteArrayList новый элемент?
+### Увидит ли существующий iterator CopyOnWriteArrayList новый элемент?
 
 Нет.
 
@@ -1785,7 +1785,7 @@ merge()
 
 ---
 
-## Чем offer() отличается от put()?
+### Чем offer() отличается от put()?
 
 Для заполненной `BlockingQueue`:
 
@@ -1799,7 +1799,7 @@ put()
 
 ---
 
-## Чем poll() отличается от take()?
+### Чем poll() отличается от take()?
 
 Для пустой `BlockingQueue`:
 
@@ -1813,7 +1813,7 @@ take()
 
 ---
 
-## Что такое backpressure?
+### Что такое backpressure?
 
 Это механизм, при котором более медленная часть системы ограничивает скорость источника нагрузки.
 
@@ -1831,7 +1831,7 @@ producer замедляется
 
 ---
 
-## Какова capacity SynchronousQueue?
+### Какова capacity SynchronousQueue?
 
 ```text
 0
@@ -1841,7 +1841,7 @@ producer замедляется
 
 ---
 
-## Почему CachedThreadPool может создать очень много потоков?
+### Почему CachedThreadPool может создать очень много потоков?
 
 Потому что он использует `SynchronousQueue`, которая не хранит задачи.
 
@@ -1851,7 +1851,7 @@ producer замедляется
 
 ---
 
-## Чем ConcurrentLinkedQueue отличается от BlockingQueue?
+### Чем ConcurrentLinkedQueue отличается от BlockingQueue?
 
 `ConcurrentLinkedQueue` неблокирующая.
 
@@ -1873,7 +1873,7 @@ take();
 
 ---
 
-## Что такое busy waiting?
+### Что такое busy waiting?
 
 Это ситуация, когда поток постоянно проверяет условие вместо того, чтобы заблокироваться и ждать события.
 
@@ -1893,7 +1893,7 @@ while (true) {
 
 ---
 
-# 33. Итоговая шпаргалка
+## Итоговая шпаргалка
 
 ```text
 ConcurrentHashMap
@@ -1936,7 +1936,7 @@ ConcurrentLinkedQueue
 → нет встроенного backpressure
 ```
 
-## Методы BlockingQueue
+### Методы BlockingQueue
 
 ```text
 Добавление:
@@ -1953,7 +1953,7 @@ poll()   → null
 take()   → wait
 ```
 
-## Главное правило
+### Главное правило
 
 Потокобезопасная коллекция решает проблему конкурентного доступа к самой структуре данных, но не делает автоматически атомарной любую бизнес-операцию и не делает автоматически потокобезопасными объекты, которые хранятся внутри неё.
 

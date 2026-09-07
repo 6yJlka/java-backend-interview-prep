@@ -1,6 +1,6 @@
 # Stream API в Java
 
-# Что такое Stream API
+## Что такое Stream API
 
 Stream API предоставляет декларативный способ обработки последовательности
 элементов.
@@ -16,7 +16,7 @@ List<String> activeEmails = users.stream()
 
 Stream не является структурой данных. Он представляет вычислительный pipeline.
 
-# Stream и Collection
+## Stream и Collection
 
 | Collection | Stream |
 |---|---|
@@ -30,7 +30,7 @@ Collection → где лежат элементы
 Stream     → что сделать с элементами
 ```
 
-# Структура pipeline
+## Структура pipeline
 
 Pipeline состоит из трёх частей:
 
@@ -52,15 +52,15 @@ long criticalCount = incidents.stream()             // источник
 Промежуточная операция возвращает новый `Stream` и выполняется лениво.
 Терминальная операция запускает pipeline и завершает использование Stream.
 
-# Создание Stream
+## Создание Stream
 
-## collection.stream()
+### collection.stream()
 
 ```java
 Stream<User> users = userList.stream();
 ```
 
-## Arrays.stream()
+### Arrays.stream()
 
 ```java
 Incident[] incidents = loadIncidents();
@@ -73,7 +73,7 @@ Stream<Incident> stream = Arrays.stream(incidents);
 IntStream numbers = Arrays.stream(new int[]{1, 2, 3});
 ```
 
-## Stream.of()
+### Stream.of()
 
 ```java
 Stream<String> priorities = Stream.of(
@@ -83,7 +83,7 @@ Stream<String> priorities = Stream.of(
 );
 ```
 
-## Stream.empty()
+### Stream.empty()
 
 ```java
 Stream<User> users = Stream.empty();
@@ -91,7 +91,7 @@ Stream<User> users = Stream.empty();
 
 Пустой stream удобен вместо `null`.
 
-## Stream.iterate()
+### Stream.iterate()
 
 `Stream.iterate()` создаёт последовательность по правилу.
 
@@ -116,7 +116,7 @@ Stream.iterate(1, value -> value <= 5, value -> value + 1)
         .toList();
 ```
 
-# Ленивость промежуточных операций
+## Ленивость промежуточных операций
 
 Вызов промежуточной операции только строит следующий этап pipeline.
 
@@ -136,7 +136,7 @@ List<User> result = activeUsers.toList();
 
 Теперь pipeline запускается.
 
-# Поэлементное выполнение pipeline
+## Поэлементное выполнение pipeline
 
 Операции часто выполняются не отдельными полными проходами, а поэлементно.
 
@@ -158,7 +158,7 @@ user 3 → filter → map → limit → достаточно элементов
 
 `limit()` может остановить обработку источника раньше.
 
-# filter и Predicate
+## filter и Predicate
 
 `filter()` оставляет элементы, для которых условие возвращает `true`.
 
@@ -178,7 +178,7 @@ boolean test(T value);
 Predicate<User> active = User::isActive;
 ```
 
-# map и Function
+## map и Function
 
 `map()` преобразует каждый элемент в другой элемент.
 
@@ -200,7 +200,7 @@ R apply(T value);
 User → String
 ```
 
-# flatMap
+## flatMap
 
 `flatMap()` преобразует каждый элемент в stream и объединяет вложенные stream в
 один плоский stream.
@@ -226,7 +226,7 @@ flatMap
 
 `flatMap` раскрывает вложенные структуры.
 
-# map и flatMap
+## map и flatMap
 
 ```java
 Stream<Stream<String>> nested = groups.stream()
@@ -243,7 +243,7 @@ map     → один вход превращается в одно значен�
 flatMap → один вход превращается в несколько значений, затем уровни объединяются
 ```
 
-# distinct
+## distinct
 
 `distinct()` удаляет дубликаты по `equals()` и `hashCode()`.
 
@@ -256,7 +256,7 @@ List<User> uniqueUsers = users.stream()
 Если контракт `equals()` и `hashCode()` нарушен или равенство сущности выбрано
 неверно, результат `distinct()` тоже будет неверным.
 
-# sorted и Comparator
+## sorted и Comparator
 
 Без аргумента `sorted()` использует естественный порядок.
 
@@ -278,7 +278,7 @@ List<Incident> sorted = incidents.stream()
 Если элементы не реализуют `Comparable` и comparator не передан, выполнение
 завершится `ClassCastException`.
 
-# limit и skip
+## limit и skip
 
 `limit(n)` оставляет не более первых `n` элементов.
 
@@ -291,7 +291,7 @@ List<Incident> page = incidents.stream()
         .toList();
 ```
 
-## Почему это не пагинация в базе данных
+### Почему это не пагинация в базе данных
 
 Если данные уже загружены в коллекцию, база передала приложению все строки.
 `skip()` и `limit()` уменьшают только результат обработки в памяти.
@@ -307,7 +307,7 @@ List<Incident> page = incidents.stream()
 Пагинацию нужно выполнять запросом репозитория. `partitioningBy()` к пагинации
 отношения не имеет.
 
-# peek
+## peek
 
 `peek()` позволяет наблюдать элементы при прохождении pipeline и главным образом
 предназначен для отладки.
@@ -326,9 +326,9 @@ List<String> emails = users.stream()
 pipeline, short-circuit операций и оптимизаций. Изменение состояния в `peek()`
 делает код неочевидным.
 
-# Терминальные операции
+## Терминальные операции
 
-## toList
+### toList
 
 ```java
 List<String> emails = users.stream()
@@ -351,7 +351,7 @@ UnsupportedOperationException
 Контракт `Stream.toList()` допускает `null`, в отличие от некоторых способов
 сбора через collectors.
 
-## collect
+### collect
 
 `collect()` выполняет изменяемое свёртывание результата.
 
@@ -372,7 +372,7 @@ List<User> result = users.stream()
 изменяемость. Если нужен гарантированно изменяемый `ArrayList`, следует использовать
 `Collectors.toCollection(ArrayList::new)`.
 
-## forEach
+### forEach
 
 ```java
 users.stream()
@@ -383,7 +383,7 @@ users.stream()
 У parallel stream `forEach()` не гарантирует encounter order. Для сохранения
 порядка существует `forEachOrdered()`.
 
-## count
+### count
 
 ```java
 long criticalCount = incidents.stream()
@@ -391,7 +391,7 @@ long criticalCount = incidents.stream()
         .count();
 ```
 
-## findFirst и findAny
+### findFirst и findAny
 
 ```java
 Optional<Incident> firstCritical = incidents.stream()
@@ -409,7 +409,7 @@ Incident incident = incidents.stream()
         .orElseThrow(() -> new IncidentNotFoundException(incidentId));
 ```
 
-## anyMatch, allMatch и noneMatch
+### anyMatch, allMatch и noneMatch
 
 ```java
 boolean hasCritical = incidents.stream()
@@ -427,7 +427,7 @@ boolean noActive = users.stream()
 Для пустого stream `allMatch()` и `noneMatch()` возвращают `true`, а `anyMatch()`
 возвращает `false`.
 
-## min и max
+### min и max
 
 ```java
 Optional<Incident> newest = incidents.stream()
@@ -436,7 +436,7 @@ Optional<Incident> newest = incidents.stream()
 
 Результат является `Optional`, потому что stream может быть пустым.
 
-## reduce
+### reduce
 
 `reduce()` объединяет элементы в одно неизменяемое значение.
 
@@ -456,7 +456,7 @@ Optional<Integer> maximumTitleLength = incidents.stream()
         .reduce(Integer::max);
 ```
 
-# reduce и collect
+## reduce и collect
 
 `reduce()` подходит для комбинирования значений без изменения общего контейнера.
 
@@ -496,7 +496,7 @@ List<User> result = users.stream()
 Здесь нарушается идея неизменяемого накопления `reduce()` и появляется опасное
 общее изменяемое состояние.
 
-# Collectors.joining
+## Collectors.joining
 
 `joining()` соединяет строки.
 
@@ -514,7 +514,7 @@ String emails = users.stream()
         .collect(Collectors.joining(", ", "[", "]"));
 ```
 
-# Collectors.groupingBy
+## Collectors.groupingBy
 
 `groupingBy()` создаёт группы по произвольному ключу.
 
@@ -535,7 +535,7 @@ Map<IncidentPriority, Long> countByPriority = incidents.stream()
         ));
 ```
 
-# Collectors.partitioningBy
+## Collectors.partitioningBy
 
 `partitioningBy()` делит элементы по boolean-условию.
 
@@ -551,7 +551,7 @@ true  → активные пользователи
 false → неактивные пользователи
 ```
 
-## groupingBy и partitioningBy
+### groupingBy и partitioningBy
 
 | Операция | Ключ | Количество групп |
 |---|---|---|
@@ -560,7 +560,7 @@ false → неактивные пользователи
 
 `partitioningBy()` означает разделение по условию и не связано с пагинацией.
 
-# Collectors.toMap
+## Collectors.toMap
 
 `toMap()` собирает элементы в карту.
 
@@ -580,7 +580,7 @@ Map<String, User> usersByEmail = users.stream()
         ));
 ```
 
-## Duplicate key
+### Duplicate key
 
 Если два элемента дают одинаковый ключ, перегрузка без merge-функции выбросит
 `IllegalStateException` с сообщением о повторяющемся ключе.
@@ -589,7 +589,7 @@ Map<String, User> usersByEmail = users.stream()
 Duplicate key
 ```
 
-## Merge-функция
+### Merge-функция
 
 Для ожидаемых повторов нужно явно решить, какое значение сохранить.
 
@@ -616,7 +616,7 @@ replacement → новое значение с тем же ключом
 Выбор merge-правила должен отражать бизнес-смысл, а не случайно скрывать плохие
 данные.
 
-## Почему distinct не решает конфликт ключей
+### Почему distinct не решает конфликт ключей
 
 `distinct()` сравнивает целые элементы через `equals()` и `hashCode()`. `toMap()`
 определяет конфликт по результату key mapper.
@@ -625,7 +625,7 @@ replacement → новое значение с тем же ключом
 одинаковый email. Они пройдут `distinct()`, после чего `toMap()` обнаружит
 повторяющийся ключ. Поэтому `distinct()` не является универсальным решением.
 
-# Method references
+## Method references
 
 Method reference является компактной записью lambda, когда она только вызывает
 существующий метод.
@@ -647,7 +647,7 @@ Objects::nonNull        // статический метод
 Method reference не создаёт новый механизм вызова. Он должен соответствовать
 сигнатуре функционального интерфейса.
 
-# Одноразовость Stream
+## Одноразовость Stream
 
 После терминальной операции stream закрыт для повторного использования.
 
@@ -662,7 +662,7 @@ List<User> result = stream.toList();
 
 Для повторной обработки нужно создать новый stream из источника.
 
-# Stateless и stateful операции
+## Stateless и stateful операции
 
 Stateless-операции обрабатывают элемент независимо от остальных.
 
@@ -684,7 +684,7 @@ limit и skip для упорядоченного parallel stream
 Например, `sorted()` обычно должен накопить элементы до выдачи отсортированного
 результата, а `distinct()` должен отслеживать уже встреченные значения.
 
-# Порядок операций и эффективность
+## Порядок операций и эффективность
 
 Сначала полезно уменьшить число элементов дешёвой операцией, а затем выполнять
 дорогую обработку.
@@ -705,7 +705,7 @@ List<IncidentView> views = incidents.stream()
 значения, а `sorted()`, `distinct()` и `limit()` меняют семантику в зависимости от
 расположения.
 
-# Побочные эффекты
+## Побочные эффекты
 
 Lambda с побочным эффектом изменяет состояние вне своего результата.
 
@@ -736,7 +736,7 @@ List<String> emails = users.stream()
 
 Даже синхронизированный контейнер не всегда делает алгоритм логически корректным.
 
-# Parallel Stream
+## Parallel Stream
 
 Parallel stream разбивает обработку на части и выполняет их параллельно.
 
@@ -771,7 +771,7 @@ users.parallelStream().forEach(result::add);
 на реалистичных данных и проверки корректности. Для запросов к базе или внешним
 сервисам обычно нужен явно управляемый механизм конкурентности.
 
-# IntStream, LongStream и DoubleStream
+## IntStream, LongStream и DoubleStream
 
 Для примитивов существуют специализированные stream:
 
@@ -792,7 +792,7 @@ double average = incidents.stream()
 Они предоставляют операции `sum()`, `average()` и `summaryStatistics()` без
 создания wrapper-объекта для каждого значения.
 
-# Boxing и unboxing
+## Boxing и unboxing
 
 `Stream<Integer>` хранит ссылки на wrapper-объекты. `IntStream` работает с `int`.
 
@@ -810,7 +810,7 @@ Stream<Integer> boxed = ids.boxed();
 Boxing преобразует примитив в wrapper, unboxing выполняет обратное преобразование.
 На больших объёмах лишний boxing создаёт дополнительные объекты и нагрузку на GC.
 
-# Optional в Stream API
+## Optional в Stream API
 
 Операции, которые могут не найти значение, возвращают `Optional`.
 
@@ -830,7 +830,7 @@ Incident found = incident.orElseThrow(
 
 Не следует без проверки вызывать `get()`.
 
-# orElse и orElseGet
+## orElse и orElseGet
 
 Аргумент `orElse()` вычисляется заранее, даже если значение в `Optional` есть.
 
@@ -850,7 +850,7 @@ User user = optionalUser.orElseGet(this::createGuestUser);
 Для дешёвой константы подходит `orElse()`. Для вычисления или побочного эффекта
 обычно нужен `orElseGet()`.
 
-# Checked exceptions внутри lambda
+## Checked exceptions внутри lambda
 
 Стандартные функциональные интерфейсы Stream API не объявляют checked exceptions.
 
@@ -893,7 +893,7 @@ List<String> contents = paths.stream()
 сбой через API, не объявляющий checked exception. Если исключение нужно обработать
 для каждого элемента отдельно, обычный цикл часто читается лучше.
 
-# Когда обычный цикл лучше
+## Когда обычный цикл лучше
 
 Цикл предпочтительнее, когда:
 
@@ -920,68 +920,68 @@ for (Incident incident : incidents) {
 
 Stream API является инструментом, а не обязательной заменой циклов.
 
-# Типичные ошибки
+## Типичные ошибки
 
-## Отсутствие терминальной операции
+### Отсутствие терминальной операции
 
 Промежуточные операции остаются ленивыми и ничего не выполняют.
 
-## Повторное использование Stream
+### Повторное использование Stream
 
 После терминальной операции тот же stream использовать нельзя.
 
-## Изменение списка из Stream.toList
+### Изменение списка из Stream.toList
 
 Результат `Stream.toList()` немодифицируемый.
 
-## Бизнес-логика в peek
+### Бизнес-логика в peek
 
 Выполнение `peek()` зависит от фактического прохождения элемента через pipeline.
 
-## Побочные эффекты во внешней коллекции
+### Побочные эффекты во внешней коллекции
 
 Результат зависит от порядка, плохо тестируется и становится опасным при
 параллельной обработке.
 
-## Автоматический parallelStream
+### Автоматический parallelStream
 
 Параллелизм имеет накладные расходы, использует общую pool и может замедлить
 операцию.
 
-## toMap без merge-функции
+### toMap без merge-функции
 
 Повторяющийся ключ приводит к `IllegalStateException`.
 
-## distinct перед toMap как универсальное решение
+### distinct перед toMap как универсальное решение
 
 Равенство целых объектов не совпадает с уникальностью выбранного ключа.
 
-## limit и skip после загрузки всех строк
+### limit и skip после загрузки всех строк
 
 Это не уменьшает объём данных, прочитанных из базы.
 
-## Дорогая операция перед filter
+### Дорогая операция перед filter
 
 Лишние элементы обрабатываются до того, как будут отброшены.
 
-## reduce для изменяемого контейнера
+### reduce для изменяемого контейнера
 
 Списки и карты нужно накапливать через `collect()`.
 
-## Игнорирование Optional
+### Игнорирование Optional
 
 Безусловный `get()` приводит к `NoSuchElementException` для пустого результата.
 
-## Непонимание orElse
+### Непонимание orElse
 
 Запасное значение вычисляется даже при непустом `Optional`.
 
-## Checked exception напрямую в Function
+### Checked exception напрямую в Function
 
 `Function<T, R>` не объявляет `throws IOException`, поэтому lambda не
 компилируется без обработки или оборачивания.
 
-# Краткий ответ для собеседования
+## Краткий ответ для собеседования
 
 Stream API описывает одноразовый pipeline обработки данных. Collection хранит
 элементы, а Stream задаёт вычисление над источником. Pipeline состоит из источника,
@@ -1000,7 +1000,7 @@ Stream API описывает одноразовый pipeline обработки
 
 ---
 
-# Краткая памятка
+## Краткая памятка
 
 ```text
 источник
@@ -1057,7 +1057,7 @@ Function<T, R>
 
 ---
 
-# Вопросы для самопроверки
+## Вопросы для самопроверки
 
 1. Что такое Stream API?
 2. Чем Stream отличается от Collection?
@@ -1100,7 +1100,7 @@ Function<T, R>
 
 ---
 
-## См. также
+### См. также
 
 - [`08-functional-interfaces-lambda.md`](08-functional-interfaces-lambda.md) —
   функциональные интерфейсы, лежащие в основе операций Stream, и почему `reduce`

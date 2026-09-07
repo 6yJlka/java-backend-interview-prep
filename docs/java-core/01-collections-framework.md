@@ -475,7 +475,7 @@ Map — отдельная структура ключ → значение
 Нужно соответствие ключу      → Map
 ```
 
-# List
+## List
 
 `List<E>` — упорядоченная коллекция элементов.
 
@@ -501,7 +501,7 @@ values.add("A");
 [A, B, A]
 ```
 
-## Основные методы List
+### Основные методы List
 
 ```java
 list.add(element);
@@ -542,7 +542,7 @@ numbers.remove(1);
 numbers.remove(Integer.valueOf(1));
 ```
 
-## ArrayList
+### ArrayList
 
 `ArrayList` основан на динамическом массиве.
 
@@ -562,7 +562,7 @@ Object[] elementData;
 копирование элементов
 ```
 
-## Сложность ArrayList
+### Сложность ArrayList
 
 | Операция | Сложность |
 |---|---:|
@@ -574,7 +574,7 @@ Object[] elementData;
 | Поиск по значению | `O(n)` |
 | Проверка `contains()` | `O(n)` |
 
-## Почему доступ по индексу O(1)
+### Почему доступ по индексу O(1)
 
 Элемент массива можно получить напрямую по его индексу:
 
@@ -584,7 +584,7 @@ list.get(index);
 
 Для доступа не требуется обходить предшествующие элементы.
 
-## Почему вставка в середину O(n)
+### Почему вставка в середину O(n)
 
 При вставке элементы после выбранной позиции необходимо сдвинуть вправо.
 
@@ -597,7 +597,7 @@ list.get(index);
 
 Элементы `C` и `D` должны быть перемещены.
 
-## Амортизированное добавление
+### Амортизированное добавление
 
 Обычное добавление в конец:
 
@@ -615,7 +615,7 @@ list.add(element);
 
 Отдельное расширение стоит `O(n)`, но оно происходит не при каждом добавлении. Поэтому средняя стоимость последовательности добавлений считается амортизированным `O(1)`.
 
-## Capacity и size
+### Capacity и size
 
 `size` — количество элементов, фактически находящихся в списке.
 
@@ -639,7 +639,7 @@ List<Order> orders = new ArrayList<>(expectedCount);
 
 Это может сократить количество расширений и копирований массива.
 
-## LinkedList
+### LinkedList
 
 `LinkedList` основан на двусвязном списке.
 
@@ -666,7 +666,7 @@ null ← [A] ⇄ [B] ⇄ [C] → null
 - двустороннюю очередь;
 - стек.
 
-## Сложность LinkedList
+### Сложность LinkedList
 
 | Операция | Сложность |
 |---|---:|
@@ -679,7 +679,7 @@ null ← [A] ⇄ [B] ⇄ [C] → null
 | Вставка по индексу | `O(n)` |
 | Удаление по индексу | `O(n)` |
 
-## Почему вставка по индексу не O(1)
+### Почему вставка по индексу не O(1)
 
 Изменение ссылок узлов действительно занимает `O(1)`.
 
@@ -693,7 +693,7 @@ null ← [A] ⇄ [B] ⇄ [C] → null
 
 Вставка будет `O(1)`, только если ссылка на нужный узел уже имеется, например при работе через `ListIterator`.
 
-## ArrayList и LinkedList
+### ArrayList и LinkedList
 
 | Критерий | ArrayList | LinkedList |
 |---|---|---|
@@ -706,7 +706,7 @@ null ← [A] ⇄ [B] ⇄ [C] → null
 | Локальность данных | Хорошая | Хуже |
 | Реализует Deque | Нет | Да |
 
-## Что выбирать
+### Что выбирать
 
 В большинстве случаев следует начинать с:
 
@@ -735,17 +735,17 @@ ArrayDeque
 
 а не `LinkedList`.
 
-## Типичные ошибки
+### Типичные ошибки
 
-### Считать вставку в LinkedList по индексу операцией O(1)
+#### Считать вставку в LinkedList по индексу операцией O(1)
 
 Поиск позиции занимает `O(n)`.
 
-### Использовать LinkedList только потому, что часто выполняются вставки
+#### Использовать LinkedList только потому, что часто выполняются вставки
 
 Нужно учитывать стоимость поиска места вставки.
 
-### Использовать List для частых удалений с начала
+#### Использовать List для частых удалений с начала
 
 ```java
 arrayList.remove(0);
@@ -759,11 +759,11 @@ arrayList.remove(0);
 Queue<Element> queue = new ArrayDeque<>();
 ```
 
-### Путать size и capacity
+#### Путать size и capacity
 
 Начальная ёмкость не создаёт элементы и не изменяет `size()`.
 
-# Set
+## Set
 
 `Set<E>` — коллекция уникальных элементов.
 
@@ -799,7 +799,7 @@ boolean first = names.add("Alice");  // true
 boolean second = names.add("Alice"); // false
 ```
 
-## Основные реализации
+### Основные реализации
 
 ```java
 HashSet
@@ -809,7 +809,7 @@ TreeSet
 
 Они отличаются порядком хранения, внутренней структурой и сложностью операций.
 
-# HashSet
+## HashSet
 
 `HashSet` основан на хешировании.
 
@@ -837,7 +837,7 @@ numbers.add(20);
 
 Порядок элементов не является частью контракта `HashSet`.
 
-## Устройство HashSet
+### Устройство HashSet
 
 Элементы множества хранятся как ключи внутреннего `HashMap`.
 
@@ -856,7 +856,7 @@ equals()
 hashCode()
 ```
 
-## Сложность HashSet
+### Сложность HashSet
 
 | Операция | Средняя сложность |
 |---|---:|
@@ -867,7 +867,7 @@ hashCode()
 
 Худший случай может быть хуже при большом количестве коллизий.
 
-# LinkedHashSet
+## LinkedHashSet
 
 `LinkedHashSet` сочетает:
 
@@ -915,7 +915,7 @@ Set<Integer> unique = new LinkedHashSet<>(values);
 [3, 1, 2]
 ```
 
-# TreeSet
+## TreeSet
 
 `TreeSet` хранит элементы в отсортированном порядке.
 
@@ -949,7 +949,7 @@ numbers.add(20);
 10, 20, 30
 ```
 
-## Естественный порядок
+### Естественный порядок
 
 Если компаратор не передан, элементы должны реализовывать `Comparable`.
 
@@ -959,7 +959,7 @@ Set<String> names = new TreeSet<>();
 
 Строки будут храниться в естественном лексикографическом порядке.
 
-## Пользовательский Comparator
+### Пользовательский Comparator
 
 ```java
 Set<String> names = new TreeSet<>(
@@ -970,7 +970,7 @@ Set<String> names = new TreeSet<>(
 
 Элементы будут отсортированы сначала по длине, затем по алфавиту.
 
-## Важная особенность TreeSet
+### Важная особенность TreeSet
 
 Для `HashSet` равенство определяется через:
 
@@ -1014,7 +1014,7 @@ Comparator.comparingInt(String::length)
           .thenComparing(Comparator.naturalOrder())
 ```
 
-# NavigableSet
+## NavigableSet
 
 `TreeSet` предоставляет методы навигации по отсортированным данным.
 
@@ -1047,7 +1047,7 @@ numbers.tailSet(30);
 numbers.subSet(20, true, 40, false);
 ```
 
-# Сравнение реализаций Set
+## Сравнение реализаций Set
 
 | Критерий | HashSet | LinkedHashSet | TreeSet |
 |---|---|---|---|
@@ -1061,7 +1061,7 @@ numbers.subSet(20, true, 40, false);
 | Механизм уникальности | `equals/hashCode` | `equals/hashCode` | `compareTo/Comparator` |
 | `null` | Один | Один | Обычно нельзя |
 
-# Что выбирать
+## Что выбирать
 
 ```text
 Нужна только уникальность
@@ -1076,9 +1076,9 @@ numbers.subSet(20, true, 40, false);
 
 В большинстве задач начинаем с `HashSet`, если дополнительных требований к порядку нет.
 
-# Типичные ошибки
+## Типичные ошибки
 
-## Ожидать порядок от HashSet
+### Ожидать порядок от HashSet
 
 ```java
 Set<Integer> values = new HashSet<>();
@@ -1086,7 +1086,7 @@ Set<Integer> values = new HashSet<>();
 
 Порядок обхода не гарантирован.
 
-## Использовать TreeSet только для удаления дубликатов
+### Использовать TreeSet только для удаления дубликатов
 
 Если сортировка не нужна, `HashSet` обычно быстрее:
 
@@ -1095,15 +1095,15 @@ HashSet → O(1) в среднем
 TreeSet → O(log n)
 ```
 
-## Забыть про equals и hashCode
+### Забыть про equals и hashCode
 
 Для пользовательских объектов в `HashSet` необходимо корректно переопределить оба метода.
 
-## Некорректный Comparator
+### Некорректный Comparator
 
 Если компаратор возвращает `0` для разных объектов, `TreeSet` считает их дубликатами.
 
-## Использовать изменяемый объект как элемент HashSet
+### Использовать изменяемый объект как элемент HashSet
 
 Если поля, участвующие в `equals()` и `hashCode()`, изменить после добавления объекта, множество может перестать корректно его находить.
 
@@ -1124,7 +1124,7 @@ users.contains(user);
 
 может вернуть неожиданный результат, потому что объект находится уже не в той корзине, которая соответствует его новому хешу.
 
-# Что нужно запомнить
+## Что нужно запомнить
 
 ```text
 HashSet       → уникальность
@@ -1139,7 +1139,7 @@ HashSet и LinkedHashSet → equals() + hashCode()
 TreeSet                 → compareTo() или Comparator
 ```
 
-## Queue
+### Queue
 
 `Queue` представляет структуру данных, в которой элементы обычно обрабатываются
 по принципу FIFO: first in, first out.
@@ -1165,7 +1165,7 @@ int first = queue.poll();
 int next = queue.peek();
 ```
 
-## Deque
+### Deque
 
 `Deque` — двусторонняя очередь, которая позволяет добавлять, удалять и
 просматривать элементы с обоих концов.
@@ -1185,7 +1185,7 @@ deque.offerLast(20);
 int first = deque.pollFirst();
 int last = deque.pollLast();
 ```
-# PriorityQueue
+## PriorityQueue
 
 `PriorityQueue<E>` — очередь с приоритетом. Внутри она основана на куче (`heap`).
 
@@ -1206,7 +1206,7 @@ queue.poll(); // 3
 - естественным порядком через `Comparable`;
 - переданным `Comparator`.
 
-## Max-heap
+### Max-heap
 
 Чтобы первым извлекался максимальный элемент, можно передать обратный компаратор.
 
@@ -1229,7 +1229,7 @@ PriorityQueue<User> queue = new PriorityQueue<>(
 );
 ```
 
-## Сложность PriorityQueue
+### Сложность PriorityQueue
 
 | Операция | Сложность |
 |---|---:|
@@ -1251,11 +1251,11 @@ scheduler по приоритету
 heap-задачи
 ```
 
-# Comparable и Comparator
+## Comparable и Comparator
 
 Оба интерфейса задают порядок объектов, но делают это по-разному.
 
-## Comparable
+### Comparable
 
 `Comparable<T>` задаёт естественный порядок самого класса.
 
@@ -1293,7 +1293,7 @@ Collections.sort(users);
 
 Если `Comparator` явно не передан, элементы должны иметь естественный порядок.
 
-## Comparator
+### Comparator
 
 `Comparator<T>` задаёт внешнюю стратегию сравнения.
 
@@ -1321,7 +1321,7 @@ Comparator<User> bySalary =
 int compare(T first, T second);
 ```
 
-## Comparable и Comparator
+### Comparable и Comparator
 
 ```text
 Comparable
@@ -1350,7 +1350,7 @@ Comparator<User> byAgeDescending =
         Comparator.comparingInt(User::getAge).reversed();
 ```
 
-## Collections.sort и List.sort
+### Collections.sort и List.sort
 
 Оба варианта сортируют список на месте.
 
@@ -1368,7 +1368,7 @@ list.sort(comparator);
 
 Ни один из этих вызовов не создаёт новый отсортированный список.
 
-# Iterator и ListIterator
+## Iterator и ListIterator
 
 `Iterator<E>` — интерфейс последовательного обхода элементов.
 
@@ -1403,7 +1403,7 @@ while (iterator.hasNext()) {
 }
 ```
 
-## ListIterator
+### ListIterator
 
 `ListIterator<E>` расширяет `Iterator<E>` и предназначен специально для `List`.
 
@@ -1454,7 +1454,7 @@ ListIterator
 → add / set
 ```
 
-# Fail-fast Iterator
+## Fail-fast Iterator
 
 Многие итераторы обычных коллекций Java являются `fail-fast`.
 
@@ -1497,7 +1497,7 @@ ConcurrentModificationException
 
 Его можно получить и в одном потоке.
 
-## Безопасное удаление через Iterator
+### Безопасное удаление через Iterator
 
 ```java
 Iterator<String> iterator = list.iterator();
@@ -1519,7 +1519,7 @@ while (iterator.hasNext()) {
 list.removeIf(value -> value.equals("delete"));
 ```
 
-## Что означает fail-fast
+### Что означает fail-fast
 
 `fail-fast` — механизм раннего обнаружения неправильного структурного изменения.
 
@@ -1535,11 +1535,11 @@ fail-fast
 ≠ гарантия исключения при абсолютно любом неправильном изменении
 ```
 
-# Immutable и Unmodifiable Collections
+## Immutable и Unmodifiable Collections
 
 Важно различать неизменяемую коллекцию и неизменяемое представление другой коллекции.
 
-## Immutable collection
+### Immutable collection
 
 Коллекцию нельзя структурно изменить после создания.
 
@@ -1562,7 +1562,7 @@ list.remove(...);
 list.set(...);
 ```
 
-## Unmodifiable view
+### Unmodifiable view
 
 ```java
 List<String> original = new ArrayList<>();
@@ -1608,7 +1608,7 @@ unmodifiable view
 → backing collection может измениться через другую ссылку
 ```
 
-# List.copyOf, Set.copyOf и Map.copyOf
+## List.copyOf, Set.copyOf и Map.copyOf
 
 `copyOf()` возвращает неизменяемый snapshot текущего содержимого.
 
@@ -1641,11 +1641,11 @@ List<String> copy = List.copyOf(original);
 
 Гарантируется неизменяемость результата, а не новая identity объекта.
 
-# List.of, Set.of и Map.of
+## List.of, Set.of и Map.of
 
 Фабричные методы создают неизменяемые коллекции.
 
-## List.of
+### List.of
 
 ```java
 List<String> values = List.of("A", "B");
@@ -1657,7 +1657,7 @@ List<String> values = List.of("A", "B");
 List.of("A", null); // NullPointerException
 ```
 
-## Set.of
+### Set.of
 
 ```java
 Set<String> values = Set.of("A", "B");
@@ -1675,7 +1675,7 @@ null запрещён
 Set.of("A", "A"); // IllegalArgumentException
 ```
 
-## Map.of
+### Map.of
 
 ```java
 Map<String, Integer> map = Map.of(
@@ -1693,7 +1693,7 @@ null-значения запрещены
 изменение карты запрещено
 ```
 
-# Поверхностная неизменяемость
+## Поверхностная неизменяемость
 
 Неизменяемость коллекции не делает автоматически неизменяемыми объекты внутри неё.
 
@@ -1713,7 +1713,7 @@ immutable collection
 ≠ deep immutability объектов внутри неё
 ```
 
-# Stack в современном Java-коде
+## Stack в современном Java-коде
 
 Класс:
 
@@ -1737,7 +1737,7 @@ stack.peek(); // 10
 
 `Stack` формально не помечен `@Deprecated`, но `Deque` является предпочтительным API для LIFO.
 
-# Финальная памятка по Collections Framework
+## Финальная памятка по Collections Framework
 
 ```text
 ArrayList
@@ -1838,7 +1838,7 @@ Map.of
 → повторные ключи запрещены
 ```
 
-# Дополнительные вопросы для самопроверки
+## Дополнительные вопросы для самопроверки
 
 1. Чем `Comparable` отличается от `Comparator`?
 2. Где находится логика естественного порядка?

@@ -1,6 +1,6 @@
 # Java Language Basics
 
-# Примитивные и ссылочные типы
+## Примитивные и ссылочные типы
 
 В Java типы данных делятся на две большие группы:
 
@@ -9,7 +9,7 @@
 ссылочные типы
 ```
 
-## Примитивные типы
+### Примитивные типы
 
 К примитивам относятся:
 
@@ -32,7 +32,7 @@ boolean active = true;
 char grade = 'A';
 ```
 
-## Ссылочные типы
+### Ссылочные типы
 
 К ссылочным типам относятся классы, интерфейсы, массивы, `enum`, `record`, `String` и wrapper-классы.
 
@@ -69,7 +69,7 @@ second ──┘
 
 ---
 
-# Pass-by-value в Java
+## Pass-by-value в Java
 
 Java всегда передаёт аргументы в методы **по значению**.
 
@@ -86,7 +86,7 @@ primitive type → копируется примитивное значение
 reference type → копируется значение ссылки
 ```
 
-## Передача примитива
+### Передача примитива
 
 ```java
 public static void change(int value) {
@@ -110,7 +110,7 @@ public static void main(String[] args) {
 
 В метод передаётся копия значения. Изменение `value` не влияет на `number`.
 
-## Передача ссылки на объект
+### Передача ссылки на объект
 
 ```java
 static class User {
@@ -131,7 +131,7 @@ public static void change(User user) {
 
 Здесь в метод передаётся копия ссылки, но обе ссылки указывают на один объект. Поэтому изменение поля видно снаружи.
 
-## Переназначение ссылки внутри метода
+### Переназначение ссылки внутри метода
 
 ```java
 public static void change(User user) {
@@ -149,7 +149,7 @@ public static void change(User user) {
 → снаружи ссылка не меняется
 ```
 
-## Почему swap не работает
+### Почему swap не работает
 
 ```java
 public static void swap(User first, User second) {
@@ -161,7 +161,7 @@ public static void swap(User first, User second) {
 
 Метод меняет местами только локальные копии ссылок. Ссылки вызывающего кода не изменяются.
 
-## Immutable-объекты
+### Immutable-объекты
 
 `String` и wrapper-классы вроде `Integer` immutable.
 
@@ -183,7 +183,7 @@ public static void change(Integer value) {
 
 `value = 100` не меняет существующий объект `Integer`, а переназначает локальную ссылку.
 
-## Изменяемый объект
+### Изменяемый объект
 
 ```java
 public static void change(List<Integer> list) {
@@ -193,13 +193,13 @@ public static void change(List<Integer> list) {
 
 Если передан `ArrayList`, метод меняет тот же объект, поэтому изменение видно снаружи.
 
-## Краткий ответ для собеседования
+### Краткий ответ для собеседования
 
 > Java всегда использует pass-by-value. Для примитивов копируется само значение. Для ссылочных типов копируется значение ссылки на объект. Поэтому через параметр можно изменить состояние объекта, если обе ссылки указывают на него, но переназначение параметра не изменяет ссылку у вызывающего кода.
 
 ---
 
-# Casting примитивных типов
+## Casting примитивных типов
 
 Для примитивов важно различать:
 
@@ -208,7 +208,7 @@ widening
 narrowing
 ```
 
-## Widening conversion
+### Widening conversion
 
 ```java
 int number = 10;
@@ -224,7 +224,7 @@ byte → short → int → long → float → double
 char → int → long → float → double
 ```
 
-## Narrowing conversion
+### Narrowing conversion
 
 ```java
 long value = 100L;
@@ -240,7 +240,7 @@ int number = (int) value;
 
 `int` не способен представить исходное значение, поэтому результат изменится.
 
-## Приведение double к int
+### Приведение double к int
 
 ```java
 double value = 10.9;
@@ -265,7 +265,7 @@ int number = (int) value;
 
 ---
 
-# Numeric promotion
+## Numeric promotion
 
 В арифметических выражениях Java автоматически расширяет `byte`, `short` и `char` до `int`.
 
@@ -284,7 +284,7 @@ byte c = a + b;
 byte c = (byte) (a + b);
 ```
 
-## Compile-time constants
+### Compile-time constants
 
 ```java
 byte value = 10 + 20;
@@ -292,7 +292,7 @@ byte value = 10 + 20;
 
 Такой код компилируется, потому что компилятор заранее вычисляет `30` и видит, что значение помещается в `byte`.
 
-## Составные операторы присваивания
+### Составные операторы присваивания
 
 ```java
 byte number = 10;
@@ -309,7 +309,7 @@ number = (byte) (number + 20)
 
 Но это не защищает от переполнения.
 
-## Инкремент и декремент
+### Инкремент и декремент
 
 Аналогичная логика работает для `++` и `--`.
 
@@ -330,7 +330,7 @@ value = value + 1;
 
 ---
 
-# Casting ссылочных типов
+## Casting ссылочных типов
 
 Рассмотрим:
 
@@ -340,7 +340,7 @@ class Dog extends Animal {}
 class Cat extends Animal {}
 ```
 
-## Upcasting
+### Upcasting
 
 ```java
 Dog dog = new Dog();
@@ -355,7 +355,7 @@ Dog → Animal
 
 Upcasting безопасен и выполняется автоматически.
 
-## Downcasting
+### Downcasting
 
 ```java
 Animal animal = new Dog();
@@ -370,7 +370,7 @@ Animal → Dog
 
 Явный cast обязателен.
 
-## ClassCastException
+### ClassCastException
 
 ```java
 Animal animal = new Cat();
@@ -385,7 +385,7 @@ ClassCastException
 
 Реальный объект является `Cat`, а не `Dog`.
 
-## instanceof
+### instanceof
 
 Перед downcasting можно проверить реальный тип объекта:
 
@@ -412,7 +412,7 @@ null instanceof SomeType
 
 Исключение не возникает.
 
-## Cast и conversion
+### Cast и conversion
 
 ```java
 Object value = "Java";
@@ -444,7 +444,7 @@ conversion
 
 ---
 
-# Arrays
+## Arrays
 
 Массив является объектом и относится к ссылочным типам.
 
@@ -452,7 +452,7 @@ conversion
 int[] numbers = {1, 2, 3};
 ```
 
-## Присваивание массива
+### Присваивание массива
 
 ```java
 int[] a = {1, 2, 3};
@@ -467,7 +467,7 @@ b[0] = 100;
 System.out.println(a[0]); // 100
 ```
 
-## Передача массива в метод
+### Передача массива в метод
 
 ```java
 public static void change(int[] numbers) {
@@ -477,7 +477,7 @@ public static void change(int[] numbers) {
 
 Изменяется тот же объект массива, поэтому изменение видно снаружи.
 
-## Переназначение массива внутри метода
+### Переназначение массива внутри метода
 
 ```java
 public static void change(int[] numbers) {
@@ -487,7 +487,7 @@ public static void change(int[] numbers) {
 
 Такое присваивание меняет только локальную копию ссылки.
 
-## clone массива примитивов
+### clone массива примитивов
 
 ```java
 int[] a = {1, 2, 3};
@@ -496,7 +496,7 @@ int[] b = a.clone();
 
 Создаётся отдельный массив со скопированными значениями.
 
-## clone массива объектов
+### clone массива объектов
 
 ```java
 User[] a = {new User("Dima")};
@@ -511,7 +511,7 @@ array.clone()
 → shallow copy для ссылочных элементов
 ```
 
-## Многомерные массивы
+### Многомерные массивы
 
 Двумерный массив в Java фактически является массивом массивов.
 
@@ -528,7 +528,7 @@ int[][] copy = matrix.clone();
 
 копирует только внешний массив. Внутренние массивы остаются общими.
 
-## Длина массива
+### Длина массива
 
 ```java
 int[] numbers = new int[3];
@@ -546,7 +546,7 @@ numbers.length = 10;
 
 Для другого размера создаётся новый массив, например через `Arrays.copyOf()`.
 
-## Значения по умолчанию
+### Значения по умолчанию
 
 Элементы массива автоматически инициализируются.
 
@@ -558,7 +558,7 @@ numbers.length = 10;
 | `char` | `'\u0000'` |
 | ссылочный тип | `null` |
 
-## Ковариантность массивов
+### Ковариантность массивов
 
 Массивы в Java ковариантны.
 
@@ -603,7 +603,7 @@ generics → инвариантны
 
 ---
 
-# Локальные переменные и default values
+## Локальные переменные и default values
 
 Поля объектов и элементы массивов получают значения по умолчанию.
 
@@ -623,7 +623,7 @@ public static void main(String[] args) {
 
 ---
 
-# Scope
+## Scope
 
 Scope — область программы, в которой имя переменной доступно.
 
@@ -650,7 +650,7 @@ public static void main(String[] args) {
 → переменная снаружи недоступна
 ```
 
-## Scope переменной цикла
+### Scope переменной цикла
 
 ```java
 for (int i = 0; i < 3; i++) {
@@ -662,7 +662,7 @@ System.out.println(i);
 
 Последняя строка не скомпилируется.
 
-## Повторное объявление локальной переменной
+### Повторное объявление локальной переменной
 
 ```java
 int number = 10;
@@ -676,7 +676,7 @@ if (true) {
 
 Локальную переменную нельзя повторно объявить во вложенной области, пока внешняя переменная всё ещё находится в scope.
 
-## Shadowing поля класса
+### Shadowing поля класса
 
 Поле класса можно скрыть параметром или локальной переменной.
 
@@ -698,7 +698,7 @@ this.name → поле объекта
 
 ---
 
-# Varargs
+## Varargs
 
 Varargs позволяет передать в метод переменное количество аргументов одного типа.
 
@@ -728,7 +728,7 @@ String[] values = {"A", "B"};
 print(values);
 ```
 
-## Пустой вызов
+### Пустой вызов
 
 ```java
 public static void print(String... values) {
@@ -746,7 +746,7 @@ print();
 
 При обычном вызове без аргументов передаётся пустой массив.
 
-## Явная передача null
+### Явная передача null
 
 Технически можно написать:
 
@@ -756,7 +756,7 @@ print((String[]) null);
 
 Тогда `values == null`.
 
-## Ограничения varargs
+### Ограничения varargs
 
 Varargs-параметр должен быть последним.
 
@@ -783,7 +783,7 @@ void test(String... names, int... numbers) {
 
 ---
 
-# Package
+## Package
 
 `package` определяет пакет, к которому относится текущий класс.
 
@@ -806,7 +806,7 @@ com.example.service.UserService
 
 ---
 
-# Import
+## Import
 
 `import` позволяет использовать тип по короткому имени.
 
@@ -828,7 +828,7 @@ java.util.List<String> values;
 
 `import` не загружает библиотеку во время выполнения. Он влияет на разрешение имён компилятором.
 
-## Wildcard import
+### Wildcard import
 
 ```java
 import java.util.*;
@@ -838,7 +838,7 @@ import java.util.*;
 
 Подпакеты не импортируются. Например, `java.util.concurrent.*` сюда не входит.
 
-## Static import
+### Static import
 
 ```java
 import static java.lang.Math.*;
@@ -872,7 +872,7 @@ import static
 
 ---
 
-# Access modifiers
+## Access modifiers
 
 Для полей и методов используются четыре уровня доступа:
 
@@ -895,17 +895,17 @@ class Example {
 }
 ```
 
-## private
+### private
 
 Доступен только внутри класса, в котором объявлен.
 
-## package-private
+### package-private
 
 Доступен только внутри того же package.
 
 Наследование из другого package не даёт доступ к package-private члену.
 
-## protected
+### protected
 
 Доступен:
 
@@ -933,11 +933,11 @@ public class Child extends Parent {
 }
 ```
 
-## public
+### public
 
 Доступен из любого места, если сам класс тоже доступен.
 
-## Таблица access modifiers
+### Таблица access modifiers
 
 | Модификатор | Тот же класс | Тот же package | Наследник в другом package | Любой код |
 |---|---:|---:|---:|---:|
@@ -948,9 +948,9 @@ public class Child extends Parent {
 
 ---
 
-# Типичные ошибки
+## Типичные ошибки
 
-## Считать Java pass-by-reference
+### Считать Java pass-by-reference
 
 Неверно:
 
@@ -964,7 +964,7 @@ public class Child extends Parent {
 ссылка передаётся по значению
 ```
 
-## Путать изменение объекта и переназначение ссылки
+### Путать изменение объекта и переназначение ссылки
 
 ```java
 user.name = "Alex";
@@ -978,11 +978,11 @@ user = new User("Alex");
 
 меняет только локальную ссылку.
 
-## Считать Integer изменяемым
+### Считать Integer изменяемым
 
 `Integer` immutable.
 
-## Ожидать округление при double → int
+### Ожидать округление при double → int
 
 ```java
 (int) 10.9
@@ -990,7 +990,7 @@ user = new User("Alex");
 
 даёт `10`, а не `11`.
 
-## Забывать про numeric promotion
+### Забывать про numeric promotion
 
 ```java
 byte a = 10;
@@ -1000,7 +1000,7 @@ byte c = a + b;
 
 не компилируется, потому что результат имеет тип `int`.
 
-## Выполнять небезопасный downcast
+### Выполнять небезопасный downcast
 
 ```java
 Dog dog = (Dog) animal;
@@ -1008,7 +1008,7 @@ Dog dog = (Dog) animal;
 
 может привести к `ClassCastException`.
 
-## Путать cast и conversion
+### Путать cast и conversion
 
 ```java
 (String) value
@@ -1016,11 +1016,11 @@ Dog dog = (Dog) animal;
 
 не превращает произвольный объект в строку.
 
-## Считать clone глубоким копированием
+### Считать clone глубоким копированием
 
 Для массива объектов копируются ссылки, а не сами объекты.
 
-## Забывать про ковариантность массивов
+### Забывать про ковариантность массивов
 
 ```java
 Animal[] animals = new Dog[2];
@@ -1029,21 +1029,21 @@ animals[0] = new Cat();
 
 приведёт к `ArrayStoreException`.
 
-## Ожидать default value у локальной переменной
+### Ожидать default value у локальной переменной
 
 Локальные переменные должны быть инициализированы до чтения.
 
-## Ставить varargs не последним
+### Ставить varargs не последним
 
 Varargs обязан быть последним параметром метода.
 
-## Считать import загрузкой библиотеки
+### Считать import загрузкой библиотеки
 
 `import` только позволяет компилятору разрешать короткие имена типов.
 
 ---
 
-# Краткий ответ для собеседования
+## Краткий ответ для собеседования
 
 Java делит типы на примитивные и ссылочные. Примитивная переменная хранит значение, ссылочная — ссылку на объект.
 
@@ -1061,7 +1061,7 @@ Java всегда использует pass-by-value. Для примитиво�
 
 ---
 
-# Краткая памятка
+## Краткая памятка
 
 ```text
 Java
@@ -1171,7 +1171,7 @@ import static
 
 ---
 
-# Вопросы для самопроверки
+## Вопросы для самопроверки
 
 1. Чем примитивный тип отличается от ссылочного?
 2. Что именно хранит ссылочная переменная?
@@ -1218,3 +1218,16 @@ import static
 43. Какие четыре уровня доступа есть в Java?
 44. Чем `protected` отличается от package-private?
 45. Как коротко объяснить pass-by-value на собеседовании?
+
+---
+
+## См. также
+
+- [`07-oop-object-string-wrappers.md`](07-oop-object-string-wrappers.md) —
+  `String`, обёртки, кеш `Integer` и подробности автоупаковки
+- [`04-generics.md`](04-generics.md) — ковариантность массивов против
+  инвариантности generics
+- [`08-functional-interfaces-lambda.md`](08-functional-interfaces-lambda.md) —
+  effectively final и захват переменных, продолжение темы pass-by-value
+- [`../jvm/01-jvm-memory.md`](../jvm/01-jvm-memory.md) — где физически лежат
+  примитивы, ссылки и объекты

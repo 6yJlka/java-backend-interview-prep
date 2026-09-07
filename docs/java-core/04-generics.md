@@ -11,7 +11,7 @@ Generics позволяют задавать типы, с которыми ра�
 
 ---
 
-# Код без generics
+## Код без generics
 
 ```java
 List values = new ArrayList();
@@ -45,7 +45,7 @@ ClassCastException
 
 ---
 
-# Код с generics
+## Код с generics
 
 ```java
 List<String> values = new ArrayList<>();
@@ -68,7 +68,7 @@ values.add(10);
 
 ---
 
-# Параметр и аргумент типа
+## Параметр и аргумент типа
 
 ```java
 public class Box<T> {
@@ -95,7 +95,7 @@ void print(String value)
 
 ---
 
-# Generic-класс
+## Generic-класс
 
 ```java
 public class Box<T> {
@@ -136,7 +136,7 @@ Integer number = integerBox.getValue();
 
 ---
 
-# Несколько параметров типа
+## Несколько параметров типа
 
 ```java
 public class Pair<K, V> {
@@ -181,7 +181,7 @@ N → Number
 
 ---
 
-# Generic-метод
+## Generic-метод
 
 Метод может иметь собственный параметр типа.
 
@@ -213,7 +213,7 @@ Integer firstNumber =
 
 ---
 
-# Generic-класс и generic-метод
+## Generic-класс и generic-метод
 
 Generic-класс:
 
@@ -249,7 +249,7 @@ Integer number = identity(10);
 
 ---
 
-# Raw types
+## Raw types
 
 Raw type — использование generic-типа без аргумента типа.
 
@@ -290,7 +290,7 @@ ClassCastException
 
 ---
 
-# Инвариантность generics
+## Инвариантность generics
 
 `Integer` наследует `Number`.
 
@@ -338,7 +338,7 @@ List<Integer> является List<Number>
 
 ---
 
-# Wildcard
+## Wildcard
 
 Wildcard обозначается символом `?`.
 
@@ -387,7 +387,7 @@ values.add(null);
 
 ---
 
-# Upper bounded wildcard
+## Upper bounded wildcard
 
 ```java
 List<? extends Number>
@@ -453,7 +453,7 @@ List<Long>
 
 ---
 
-# Lower bounded wildcard
+## Lower bounded wildcard
 
 ```java
 List<? super Integer>
@@ -498,7 +498,7 @@ List<Object>
 
 ---
 
-# PECS
+## PECS
 
 PECS:
 
@@ -507,7 +507,7 @@ Producer Extends
 Consumer Super
 ```
 
-## Producer Extends
+### Producer Extends
 
 Структура производит значения для чтения.
 
@@ -519,7 +519,7 @@ List<? extends Number>
 Number value = values.get(0);
 ```
 
-## Consumer Super
+### Consumer Super
 
 Структура принимает значения.
 
@@ -543,7 +543,7 @@ values.add(10);
 
 ---
 
-# Пример копирования
+## Пример копирования
 
 ```java
 public static <T> void copy(
@@ -577,7 +577,7 @@ copy(source, destination);
 
 ---
 
-# Ограниченный параметр типа
+## Ограниченный параметр типа
 
 ```java
 public static <T extends Number> double sum(
@@ -610,7 +610,7 @@ sum(List.of("A", "B"));
 
 ---
 
-# Несколько ограничений
+## Несколько ограничений
 
 ```java
 <T extends Number & Comparable<T>>
@@ -655,7 +655,7 @@ public static <
 
 ---
 
-# Wildcard и параметр типа
+## Wildcard и параметр типа
 
 Wildcard:
 
@@ -697,7 +697,7 @@ T → именованный тип,
 
 ---
 
-# Type erasure
+## Type erasure
 
 Generics в Java реализованы в основном через стирание типов.
 
@@ -738,9 +738,9 @@ String value =
 
 ---
 
-# Ограничения generics
+## Ограничения generics
 
-## Нельзя создать new T
+### Нельзя создать new T
 
 ```java
 public class Factory<T> {
@@ -783,7 +783,7 @@ Factory<ArrayList<String>> factory =
 
 ---
 
-## Нельзя создать массив T
+### Нельзя создать массив T
 
 ```java
 T[] values = new T[10];
@@ -802,7 +802,7 @@ Generic-типы стираются.
 
 ---
 
-## Нельзя использовать примитивы
+### Нельзя использовать примитивы
 
 Нельзя:
 
@@ -831,7 +831,7 @@ values.add(10);
 
 ---
 
-## Нельзя instanceof List<String>
+### Нельзя instanceof List<String>
 
 Нельзя:
 
@@ -856,7 +856,7 @@ if (value instanceof List<?>) {
 
 ---
 
-## Нельзя static T
+### Нельзя static T
 
 ```java
 public class Box<T> {
@@ -878,7 +878,7 @@ Box<Integer>
 
 ---
 
-# Таблица wildcard
+## Таблица wildcard
 
 | Тип | Чтение | Добавление |
 |---|---|---|
@@ -911,9 +911,9 @@ String
 
 ---
 
-# Типичные ошибки
+## Типичные ошибки
 
-## Raw type
+### Raw type
 
 ```java
 List values = new ArrayList();
@@ -921,7 +921,7 @@ List values = new ArrayList();
 
 Теряется проверка типов.
 
-## Нарушение инвариантности
+### Нарушение инвариантности
 
 ```java
 List<Integer> integers =
@@ -932,7 +932,7 @@ List<Number> numbers = integers;
 
 Такой код не компилируется.
 
-## Запись в extends
+### Запись в extends
 
 ```java
 List<? extends Number> values
@@ -940,7 +940,7 @@ List<? extends Number> values
 
 Предназначен в первую очередь для чтения.
 
-## Точное чтение из super
+### Точное чтение из super
 
 ```java
 List<? super Integer> values
@@ -948,13 +948,13 @@ List<? super Integer> values
 
 Читать безопасно можно только как `Object`.
 
-## Неправильное применение wildcard
+### Неправильное применение wildcard
 
 Когда нужно связать типы нескольких аргументов или результата, следует использовать `<T>`.
 
 ---
 
-# Краткая памятка
+## Краткая памятка
 
 ```text
 Generics
@@ -994,7 +994,7 @@ Type erasure
 
 ---
 
-# Вопросы для самопроверки
+## Вопросы для самопроверки
 
 1. Для чего нужны generics?
 2. Чем параметр типа отличается от аргумента типа?
@@ -1018,3 +1018,15 @@ Type erasure
 20. Почему нельзя использовать `List<int>`?
 21. Почему нельзя проверить `instanceof List<String>`?
 22. Почему нельзя объявить статическое поле типа `T`?
+
+---
+
+## См. также
+
+- [`01-collections-framework.md`](01-collections-framework.md) — generics в
+  сигнатурах коллекций и ковариантность массивов
+- [`00-java-language-basics.md`](00-java-language-basics.md) — приведение типов
+  и различие cast и conversion
+- [`08-functional-interfaces-lambda.md`](08-functional-interfaces-lambda.md) —
+  обобщённые функциональные интерфейсы и примитивные специализации
+- [`06-stream-api.md`](06-stream-api.md) — где PECS встречается на практике

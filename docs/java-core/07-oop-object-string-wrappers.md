@@ -1,6 +1,6 @@
 # OOP, Object, String и Wrapper Classes в Java
 
-# Основные принципы ООП
+## Основные принципы ООП
 
 Классическая четвёрка принципов ООП:
 
@@ -13,7 +13,7 @@
 
 Композиция не входит в классическую четвёрку, но является важным принципом проектирования.
 
-# Инкапсуляция
+## Инкапсуляция
 
 Инкапсуляция — это сокрытие внутреннего состояния и деталей реализации за контролируемым интерфейсом.
 
@@ -66,7 +66,7 @@ account.deposit(amount);
 account.setBalance(...);
 ```
 
-# Абстракция
+## Абстракция
 
 Абстракция — выделение существенного контракта и сокрытие деталей реализации.
 
@@ -86,7 +86,7 @@ interface PaymentService {
 → какие детали пользователю объекта вообще не нужно знать
 ```
 
-# Наследование
+## Наследование
 
 Наследование выражает отношение:
 
@@ -106,7 +106,7 @@ class Dog extends Animal {
 Dog is an Animal
 ```
 
-# Композиция
+## Композиция
 
 Композиция выражает отношение:
 
@@ -140,7 +140,7 @@ favor composition over inheritance
 
 Композиция обычно уменьшает связанность и позволяет легче менять реализацию.
 
-# Полиморфизм
+## Полиморфизм
 
 Полиморфизм позволяет работать через общий тип, но получать разное поведение в зависимости от реального объекта.
 
@@ -172,7 +172,7 @@ Dog
 
 Для переопределённых instance-методов реализация выбирается во время выполнения по реальному типу объекта.
 
-# Тип ссылки и реальный тип
+## Тип ссылки и реальный тип
 
 ```java
 class Animal {
@@ -216,7 +216,7 @@ runtime
 → реальный тип определяет, какая override-реализация вызывается
 ```
 
-# Overriding
+## Overriding
 
 Overriding — переопределение метода родителя в наследнике.
 
@@ -243,7 +243,7 @@ overriding
 → runtime
 ```
 
-# Overloading
+## Overloading
 
 Overloading — несколько методов с одним именем и разными параметрами.
 
@@ -264,7 +264,7 @@ overloading
 → compile time
 ```
 
-# Нельзя перегрузить метод только по возвращаемому типу
+## Нельзя перегрузить метод только по возвращаемому типу
 
 Так нельзя:
 
@@ -280,7 +280,7 @@ String getValue() {
 
 Возвращаемый тип сам по себе не различает overload.
 
-# Overloading и тип ссылки
+## Overloading и тип ссылки
 
 ```java
 class Parent {
@@ -309,7 +309,7 @@ Object
 
 На этапе компиляции через ссылку `Parent` виден только `print(Object)`.
 
-# Сначала overloading, потом overriding
+## Сначала overloading, потом overriding
 
 ```java
 class Parent {
@@ -351,7 +351,7 @@ Child Object
    → выбирается реализация Child.print(Object)
 ```
 
-# Overload и null
+## Overload и null
 
 ```java
 void print(String value) {
@@ -387,7 +387,7 @@ print(null);
 
 вызовет `print(String)`, потому что `String` более специфичен, чем `Object`.
 
-# Правила overriding: access modifiers
+## Правила overriding: access modifiers
 
 При overriding нельзя уменьшать видимость метода.
 
@@ -421,7 +421,7 @@ class Child extends Parent {
 }
 ```
 
-# Ковариантный возвращаемый тип
+## Ковариантный возвращаемый тип
 
 ```java
 class Parent {
@@ -442,7 +442,7 @@ class Child extends Parent {
 
 Наследник может возвращать более конкретный тип.
 
-# Checked exceptions при overriding
+## Checked exceptions при overriding
 
 ```java
 class Parent {
@@ -487,7 +487,7 @@ checked exception при overriding
 → нельзя расширить
 ```
 
-# Unchecked exceptions при overriding
+## Unchecked exceptions при overriding
 
 ```java
 class Parent {
@@ -504,7 +504,7 @@ class Child extends Parent {
 
 Это корректно, потому что `IllegalStateException` — unchecked exception.
 
-# private и overriding
+## private и overriding
 
 ```java
 class Parent {
@@ -520,7 +520,7 @@ class Child extends Parent {
 
 `Child.test()` — новый метод, а не overriding. `private`-метод родителя не виден наследнику.
 
-# final
+## final
 
 Для разных сущностей:
 
@@ -544,7 +544,7 @@ final class Parent {
 
 От такого класса наследоваться нельзя.
 
-# abstract и final
+## abstract и final
 
 Так нельзя:
 
@@ -560,7 +560,7 @@ abstract → предполагает наследование
 final    → запрещает наследование
 ```
 
-# Abstract class
+## Abstract class
 
 Абстрактный класс нельзя создать напрямую:
 
@@ -596,7 +596,7 @@ abstract class Animal {
 }
 ```
 
-# Abstract class и interface
+## Abstract class и interface
 
 `abstract class` обычно выбирают, когда нужны:
 
@@ -616,7 +616,7 @@ interface Flyable {
 
 Класс может наследоваться только от одного класса, но реализовывать несколько интерфейсов.
 
-# Default methods
+## Default methods
 
 Интерфейс может иметь метод с реализацией:
 
@@ -628,7 +628,7 @@ interface A {
 }
 ```
 
-# Конфликт default methods
+## Конфликт default methods
 
 ```java
 interface A {
@@ -658,7 +658,7 @@ class Example implements A, B {
 }
 ```
 
-# Class wins over interface
+## Class wins over interface
 
 ```java
 class Parent {
@@ -689,7 +689,7 @@ Parent
 
 Метод класса имеет приоритет над default-методом интерфейса.
 
-# Более специфичный интерфейс
+## Более специфичный интерфейс
 
 ```java
 interface A {
@@ -719,7 +719,7 @@ new Example().print();
 B
 ```
 
-# Static methods интерфейса
+## Static methods интерфейса
 
 ```java
 interface A {
@@ -737,7 +737,7 @@ A.print();
 
 Static-метод интерфейса не наследуется реализующим классом.
 
-# Static methods класса и method hiding
+## Static methods класса и method hiding
 
 ```java
 class Animal {
@@ -766,7 +766,7 @@ Animal
 
 Static-методы не участвуют в runtime polymorphism. Это method hiding.
 
-# Поля и field hiding
+## Поля и field hiding
 
 ```java
 class Parent {
@@ -791,7 +791,7 @@ System.out.println(obj.value);
 
 Поля выбираются по типу ссылки.
 
-# Поля и методы вместе
+## Поля и методы вместе
 
 ```java
 class Parent {
@@ -826,7 +826,7 @@ System.out.println(obj.getValue());
 20
 ```
 
-# this и super
+## this и super
 
 ```java
 class Parent {
@@ -848,7 +848,7 @@ super.value → поле родителя
 this.value  → поле текущего объекта
 ```
 
-# super.method()
+## super.method()
 
 ```java
 class Parent {
@@ -873,7 +873,7 @@ Parent
 Child
 ```
 
-# Cast не отключает полиморфизм
+## Cast не отключает полиморфизм
 
 ```java
 Child child = new Child();
@@ -889,7 +889,7 @@ Child child = new Child();
 super.print();
 ```
 
-# Конструкторы не наследуются
+## Конструкторы не наследуются
 
 Конструкторы родителя не становятся конструкторами наследника автоматически.
 
@@ -902,7 +902,7 @@ class Parent {
 
 Это не создаёт автоматически `Child(int value)`.
 
-# Порядок вызова конструкторов
+## Порядок вызова конструкторов
 
 ```java
 class Parent {
@@ -929,7 +929,7 @@ Parent
 Child
 ```
 
-# Неявный super()
+## Неявный super()
 
 Если конструктор наследника не вызывает `this(...)` или `super(...)`, компилятор пытается вставить:
 
@@ -947,7 +947,7 @@ class Child extends Parent {
 }
 ```
 
-# super() и this() должны быть первыми
+## super() и this() должны быть первыми
 
 Так нельзя:
 
@@ -960,7 +960,7 @@ Child() {
 
 `super(...)` или `this(...)` должен быть первым вызовом конструктора.
 
-# Цепочка this() и super()
+## Цепочка this() и super()
 
 ```java
 class Parent {
@@ -994,7 +994,7 @@ Child(int)
 Child()
 ```
 
-# Вызов overridable method из конструктора
+## Вызов overridable method из конструктора
 
 ```java
 class Parent {
@@ -1031,7 +1031,7 @@ new Child();
 
 Поэтому переопределяемые методы из конструктора обычно вызывать не следует.
 
-# private method в конструкторе
+## private method в конструкторе
 
 ```java
 class Parent {
@@ -1063,7 +1063,7 @@ Parent
 
 `private`-метод не переопределяется.
 
-# Liskov Substitution Principle
+## Liskov Substitution Principle
 
 Плохая модель:
 
@@ -1099,7 +1099,7 @@ class Penguin extends Bird {
 }
 ```
 
-# Dependency on abstraction
+## Dependency on abstraction
 
 Жёсткая зависимость:
 
@@ -1128,7 +1128,7 @@ interface ReportGenerator {
 
 Так класс зависит от абстракции, а реализацию можно подменять.
 
-# Object
+## Object
 
 Все Java-классы прямо или косвенно наследуются от `java.lang.Object`.
 
@@ -1147,7 +1147,7 @@ notifyAll()
 
 `equals/hashCode` и `wait/notify` обычно разбираются отдельными темами.
 
-# Object.toString()
+## Object.toString()
 
 Если `toString()` не переопределён:
 
@@ -1176,7 +1176,7 @@ getClass().getName()
 
 Часть после `@` не является гарантированным адресом объекта в памяти.
 
-# getClass()
+## getClass()
 
 ```java
 Animal animal = new Dog();
@@ -1187,7 +1187,7 @@ animal.getClass() == Dog.class    // true
 
 `getClass()` возвращает точный runtime-класс объекта.
 
-# getClass и instanceof
+## getClass и instanceof
 
 ```java
 animal instanceof Animal // true
@@ -1204,7 +1204,7 @@ instanceof
 → возвращает boolean
 ```
 
-# String
+## String
 
 `String` — immutable-класс.
 
@@ -1224,7 +1224,7 @@ Java
 
 `concat()` возвращает новый `String`, но исходный объект не меняется.
 
-# String Pool
+## String Pool
 
 ```java
 String a = "Java";
@@ -1239,7 +1239,7 @@ a == b // true
 
 Обе ссылки указывают на один объект из String Pool.
 
-# new String()
+## new String()
 
 ```java
 String a = "Java";
@@ -1253,7 +1253,7 @@ a.equals(b)  // true
 
 `new String()` создаёт отдельный объект.
 
-# Compile-time concatenation
+## Compile-time concatenation
 
 ```java
 String a = "Ja" + "va";
@@ -1266,7 +1266,7 @@ a == b // true
 
 Компилятор сворачивает константное выражение до `"Java"`.
 
-# Runtime concatenation
+## Runtime concatenation
 
 ```java
 String part = "Ja";
@@ -1284,7 +1284,7 @@ a.equals(b)  // true
 
 Конкатенация выполняется во время выполнения.
 
-# final compile-time constant
+## final compile-time constant
 
 ```java
 final String part = "Ja";
@@ -1299,7 +1299,7 @@ String b = "Java";
 a == b // true
 ```
 
-# intern()
+## intern()
 
 ```java
 String a = new String("Java");
@@ -1314,7 +1314,7 @@ b == c // true
 
 `intern()` возвращает каноническую ссылку из String Pool.
 
-# StringBuilder
+## StringBuilder
 
 ```text
 mutable
@@ -1333,7 +1333,7 @@ String result = builder.toString();
 
 `append()` меняет существующий буфер.
 
-# StringBuffer
+## StringBuffer
 
 ```text
 mutable
@@ -1342,7 +1342,7 @@ thread-safe
 
 Похож на `StringBuilder`, но его основные методы синхронизированы.
 
-# Wrapper Classes
+## Wrapper Classes
 
 | Примитив | Wrapper |
 |---|---|
@@ -1357,7 +1357,7 @@ thread-safe
 
 Wrapper-классы являются объектами.
 
-# Boxing
+## Boxing
 
 ```text
 primitive → wrapper
@@ -1374,7 +1374,7 @@ Integer boxed = value;
 Integer boxed = Integer.valueOf(value);
 ```
 
-# Unboxing
+## Unboxing
 
 ```text
 wrapper → primitive
@@ -1391,7 +1391,7 @@ int value = boxed;
 int value = boxed.intValue();
 ```
 
-# Unboxing null
+## Unboxing null
 
 ```java
 Integer number = null;
@@ -1405,7 +1405,7 @@ int value = number;
 NullPointerException
 ```
 
-# Integer Cache
+## Integer Cache
 
 При autoboxing используется `Integer.valueOf()`.
 
@@ -1433,7 +1433,7 @@ Integer b = 128;
 a == b // обычно false
 ```
 
-# equals у Integer
+## equals у Integer
 
 ```java
 Integer a = 1000;
@@ -1444,7 +1444,7 @@ a.equals(b); // true
 
 `equals()` сравнивает числовое значение для объектов того же wrapper-типа.
 
-# Integer == int
+## Integer == int
 
 ```java
 Integer a = 100;
@@ -1461,7 +1461,7 @@ Integer → int
 
 после чего сравниваются примитивы.
 
-# null и ==
+## null и ==
 
 ```java
 Integer a = null;
@@ -1482,7 +1482,7 @@ a == 10
 
 приведёт к `NullPointerException`, потому что потребуется unboxing.
 
-# Разные wrapper-типы
+## Разные wrapper-типы
 
 ```java
 Integer a = 10;
@@ -1507,7 +1507,7 @@ true
 
 потому что сравниваются примитивы, а `int` расширяется до `long`.
 
-# compareTo()
+## compareTo()
 
 ```java
 Integer a = 128;
@@ -1522,7 +1522,7 @@ a.compareTo(b); // 0
 > 0 → больше
 ```
 
-# Unboxing + widening
+## Unboxing + widening
 
 ```java
 Integer number = 100;
@@ -1536,7 +1536,7 @@ Integer → int → long
 unboxing   widening
 ```
 
-# Long value = 100
+## Long value = 100
 
 Так нельзя:
 
@@ -1552,7 +1552,7 @@ Long value = 100;
 Long value = 100L;
 ```
 
-# Integer value = 100L
+## Integer value = 100L
 
 Так нельзя:
 
@@ -1562,7 +1562,7 @@ Integer value = 100L;
 
 Нужно было бы выполнить narrowing `long → int`, который автоматически не происходит.
 
-# Number value = 100
+## Number value = 100
 
 Так можно:
 
@@ -1577,7 +1577,7 @@ int → Integer → Number
 boxing          widening reference
 ```
 
-# Integer++
+## Integer++
 
 ```java
 Integer number = 10;
@@ -1600,7 +1600,7 @@ Integer(10)
 
 Исходный `Integer` не изменяется.
 
-# Типичные ошибки
+## Типичные ошибки
 
 - Путать overloading и overriding.
 - Считать static-методы полиморфными.
@@ -1616,7 +1616,7 @@ Integer(10)
 - Сравнивать значения wrapper-классов через `==`.
 - Забывать, что unboxing `null` приводит к `NullPointerException`.
 
-# Краткая памятка
+## Краткая памятка
 
 ```text
 ООП:
@@ -1716,7 +1716,7 @@ wrapper == primitive
 → сравнение примитивов
 ```
 
-# Вопросы для самопроверки
+## Вопросы для самопроверки
 
 1. Какие четыре принципа ООП обычно называют основными?
 2. Что такое инкапсуляция?
@@ -1776,7 +1776,7 @@ wrapper == primitive
 
 ---
 
-## См. также
+### См. также
 
 - [`03-equals-hashcode.md`](03-equals-hashcode.md) — подробный разбор контракта
 - [`08-functional-interfaces-lambda.md`](08-functional-interfaces-lambda.md) —

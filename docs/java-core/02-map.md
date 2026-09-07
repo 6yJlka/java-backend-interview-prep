@@ -31,7 +31,7 @@ users.put(2L, "Bob");
 
 ---
 
-# Map и Collection
+## Map и Collection
 
 `Map` не наследует интерфейс `Collection`.
 
@@ -70,9 +70,9 @@ containsKey(key);
 
 ---
 
-# Основные свойства Map
+## Основные свойства Map
 
-## Уникальность ключей
+### Уникальность ключей
 
 В одной карте не может быть двух записей с одинаковым ключом.
 
@@ -95,7 +95,7 @@ Dmitry → 23
 ages.size(); // 1
 ```
 
-## Значения могут повторяться
+### Значения могут повторяться
 
 ```java
 Map<Long, String> cities = new HashMap<>();
@@ -113,9 +113,9 @@ cities.put(2L, "Moscow");
 
 ---
 
-# Основные методы Map
+## Основные методы Map
 
-## put
+### put
 
 ```java
 V put(K key, V value);
@@ -155,7 +155,7 @@ previous = null
 
 ---
 
-## get
+### get
 
 ```java
 V get(Object key);
@@ -197,7 +197,7 @@ map.containsKey("existing");
 
 ---
 
-## getOrDefault
+### getOrDefault
 
 ```java
 V getOrDefault(Object key, V defaultValue);
@@ -240,7 +240,7 @@ n → 2
 
 ---
 
-## putIfAbsent
+### putIfAbsent
 
 ```java
 V putIfAbsent(K key, V value);
@@ -265,7 +265,7 @@ java → 5
 
 ---
 
-## containsKey
+### containsKey
 
 ```java
 boolean containsKey(Object key);
@@ -283,7 +283,7 @@ if (map.containsKey("java")) {
 
 ---
 
-## containsValue
+### containsValue
 
 ```java
 boolean containsValue(Object value);
@@ -304,7 +304,7 @@ containsValue → O(n)
 
 ---
 
-## remove
+### remove
 
 Удаляет запись по ключу:
 
@@ -332,7 +332,7 @@ map.remove("java", 10);
 
 ---
 
-## replace
+### replace
 
 Заменяет значение только для существующего ключа.
 
@@ -352,7 +352,7 @@ map.replace("java", 10, 20);
 
 ---
 
-## size
+### size
 
 ```java
 int size();
@@ -368,7 +368,7 @@ map.size();
 
 ---
 
-## isEmpty
+### isEmpty
 
 ```java
 boolean isEmpty();
@@ -378,7 +378,7 @@ boolean isEmpty();
 
 ---
 
-## clear
+### clear
 
 ```java
 void clear();
@@ -388,7 +388,7 @@ void clear();
 
 ---
 
-# Представления Map
+## Представления Map
 
 Карта предоставляет три основных представления своего содержимого:
 
@@ -402,7 +402,7 @@ entrySet();
 
 ---
 
-## keySet
+### keySet
 
 ```java
 Set<K> keySet();
@@ -430,7 +430,7 @@ map.keySet().remove("java");
 
 ---
 
-## values
+### values
 
 ```java
 Collection<V> values();
@@ -459,7 +459,7 @@ map.put("B", 10);
 
 ---
 
-## entrySet
+### entrySet
 
 ```java
 Set<Map.Entry<K, V>> entrySet();
@@ -480,7 +480,7 @@ for (Map.Entry<String, Integer> entry : map.entrySet()) {
 
 ---
 
-# Map.Entry
+## Map.Entry
 
 `Map.Entry<K, V>` представляет одну запись карты.
 
@@ -504,7 +504,7 @@ for (Map.Entry<String, Integer> entry : map.entrySet()) {
 
 ---
 
-# Почему лучше использовать entrySet
+## Почему лучше использовать entrySet
 
 Можно обходить карту так:
 
@@ -529,7 +529,7 @@ for (Map.Entry<String, Integer> entry : map.entrySet()) {
 
 ---
 
-# Методы вычисления значений
+## Методы вычисления значений
 
 Интерфейс `Map` содержит методы, позволяющие вычислять значения:
 
@@ -543,7 +543,7 @@ replaceAll
 
 ---
 
-## computeIfAbsent
+### computeIfAbsent
 
 ```java
 V computeIfAbsent(
@@ -602,7 +602,7 @@ groups.computeIfAbsent(
 
 ---
 
-## computeIfPresent
+### computeIfPresent
 
 Вычисляет новое значение, только если ключ уже существует.
 
@@ -619,7 +619,7 @@ map.computeIfPresent(
 
 ---
 
-## compute
+### compute
 
 Всегда выполняет вычисление для указанного ключа.
 
@@ -644,7 +644,7 @@ map.compute("java", (key, value) -> null);
 
 ---
 
-## merge
+### merge
 
 ```java
 V merge(
@@ -691,7 +691,7 @@ frequencies.merge("java", 1, Integer::sum);
 
 ---
 
-# Основные реализации Map
+## Основные реализации Map
 
 Наиболее распространённые реализации:
 
@@ -711,7 +711,7 @@ TreeMap
 
 ---
 
-# HashMap
+## HashMap
 
 `HashMap` — основная реализация `Map`.
 
@@ -740,7 +740,7 @@ Map<String, Integer> map = new HashMap<>();
 
 ---
 
-# Внутреннее устройство HashMap
+## Внутреннее устройство HashMap
 
 Упрощённо `HashMap` содержит массив бакетов:
 
@@ -773,7 +773,7 @@ next
 
 ---
 
-# Что происходит при put
+## Что происходит при put
 
 ```java
 map.put("java", 10);
@@ -800,7 +800,7 @@ hashCode
 
 ---
 
-# Вычисление индекса бакета
+## Вычисление индекса бакета
 
 Упрощённая формула:
 
@@ -834,11 +834,11 @@ capacity - 1 = 15
 
 ---
 
-# hashCode и equals
+## hashCode и equals
 
 Для поиска ключа используются оба метода.
 
-## hashCode
+### hashCode
 
 ```java
 key.hashCode();
@@ -846,7 +846,7 @@ key.hashCode();
 
 Помогает определить бакет.
 
-## equals
+### equals
 
 ```java
 existingKey.equals(searchKey);
@@ -880,7 +880,7 @@ a.hashCode() == b.hashCode()
 
 ---
 
-# Коллизии
+## Коллизии
 
 Коллизия возникает, когда разные ключи попадают в один бакет.
 
@@ -908,7 +908,7 @@ A → B → C
 
 ---
 
-# Преобразование списка в дерево
+## Преобразование списка в дерево
 
 Если в бакете становится много записей, связный список может быть преобразован в красно-чёрное дерево.
 
@@ -932,7 +932,7 @@ MIN_TREEIFY_CAPACITY = 64
 
 ---
 
-# Capacity
+## Capacity
 
 `Capacity` — количество бакетов во внутренней таблице.
 
@@ -956,7 +956,7 @@ Map<Long, User> users = new HashMap<>(100);
 
 ---
 
-# Load factor
+## Load factor
 
 `Load factor` — коэффициент, определяющий допустимое заполнение таблицы до расширения.
 
@@ -982,7 +982,7 @@ threshold = 16 × 0.75 = 12
 
 ---
 
-# Threshold
+## Threshold
 
 `Threshold` — конкретное количество элементов, после которого запускается расширение.
 
@@ -1001,7 +1001,7 @@ threshold → количество элементов
 
 ---
 
-# Resize
+## Resize
 
 `Resize` — процесс увеличения внутренней таблицы.
 
@@ -1028,7 +1028,7 @@ capacity → количество бакетов
 
 ---
 
-# Почему HashMap работает за O(1) только в среднем
+## Почему HashMap работает за O(1) только в среднем
 
 При хорошем распределении ключей каждый бакет содержит мало записей.
 
@@ -1051,7 +1051,7 @@ capacity → количество бакетов
 
 ---
 
-# null в HashMap
+## null в HashMap
 
 `HashMap` допускает:
 
@@ -1075,7 +1075,7 @@ map.put("second", null);
 
 ---
 
-# Изменяемые ключи
+## Изменяемые ключи
 
 Ключи `HashMap` желательно делать неизменяемыми.
 
@@ -1124,7 +1124,7 @@ immutable value object
 
 ---
 
-# LinkedHashMap
+## LinkedHashMap
 
 `LinkedHashMap` основан на `HashMap`, но дополнительно поддерживает порядок записей.
 
@@ -1152,7 +1152,7 @@ C
 
 ---
 
-# Порядок доступа LinkedHashMap
+## Порядок доступа LinkedHashMap
 
 Можно создать карту с порядком последнего доступа:
 
@@ -1191,7 +1191,7 @@ A
 
 ---
 
-# LRU cache
+## LRU cache
 
 LRU означает:
 
@@ -1226,7 +1226,7 @@ public class LruCache<K, V> extends LinkedHashMap<K, V> {
 
 ---
 
-# TreeMap
+## TreeMap
 
 `TreeMap` хранит ключи в отсортированном порядке.
 
@@ -1258,11 +1258,11 @@ map.put(2, "B");
 
 ---
 
-# Сравнение ключей в TreeMap
+## Сравнение ключей в TreeMap
 
 `TreeMap` может использовать естественный порядок или переданный `Comparator`.
 
-## Comparable
+### Comparable
 
 ```java
 Map<Integer, String> map = new TreeMap<>();
@@ -1276,7 +1276,7 @@ Map<Integer, String> map = new TreeMap<>();
 first.compareTo(second);
 ```
 
-## Comparator
+### Comparator
 
 ```java
 Map<String, Integer> map =
@@ -1287,7 +1287,7 @@ Map<String, Integer> map =
 
 ---
 
-# Уникальность ключей в TreeMap
+## Уникальность ключей в TreeMap
 
 `TreeMap` определяет равенство ключей через результат сравнения.
 
@@ -1307,7 +1307,7 @@ first.equals(second) == false
 
 ---
 
-# null в TreeMap
+## null в TreeMap
 
 При использовании естественного порядка `TreeMap` обычно не допускает `null`-ключ.
 
@@ -1329,7 +1329,7 @@ NullPointerException
 
 ---
 
-# NavigableMap
+## NavigableMap
 
 `TreeMap` реализует интерфейс `NavigableMap`.
 
@@ -1382,9 +1382,9 @@ map.subMap(10, 30);
 
 ---
 
-# Выбор реализации Map
+## Выбор реализации Map
 
-## HashMap
+### HashMap
 
 Используется, когда:
 
@@ -1396,7 +1396,7 @@ map.subMap(10, 30);
 Map<Long, User> usersById = new HashMap<>();
 ```
 
-## LinkedHashMap
+### LinkedHashMap
 
 Используется, когда:
 
@@ -1409,7 +1409,7 @@ Map<Long, User> usersById = new HashMap<>();
 Map<String, Object> response = new LinkedHashMap<>();
 ```
 
-## TreeMap
+### TreeMap
 
 Используется, когда:
 
@@ -1423,9 +1423,9 @@ NavigableMap<Instant, Event> events = new TreeMap<>();
 
 ---
 
-# Неизменяемые карты
+## Неизменяемые карты
 
-## Map.of
+### Map.of
 
 ```java
 Map<String, Integer> priorities = Map.of(
@@ -1464,7 +1464,7 @@ Map<String, Integer> map = Map.ofEntries(
 
 ---
 
-## Collections.unmodifiableMap
+### Collections.unmodifiableMap
 
 ```java
 Map<String, Integer> source = new HashMap<>();
@@ -1493,7 +1493,7 @@ unmodifiableMap → неизменяемое представление исхо
 
 ---
 
-## Map.copyOf
+### Map.copyOf
 
 ```java
 Map<String, Integer> copy = Map.copyOf(source);
@@ -1512,7 +1512,7 @@ Map.copyOf → неизменяемая копия
 
 ---
 
-# ConcurrentHashMap
+## ConcurrentHashMap
 
 Обычный `HashMap` не является потокобезопасным.
 
@@ -1542,9 +1542,9 @@ map.get(key) == null
 
 ---
 
-# Частые ошибки
+## Частые ошибки
 
-## Использование изменяемого ключа
+### Использование изменяемого ключа
 
 ```java
 map.put(user, value);
@@ -1556,7 +1556,7 @@ user.changeEmail(newEmail);
 
 ---
 
-## Надежда на порядок HashMap
+### Надежда на порядок HashMap
 
 `HashMap` не гарантирует порядок.
 
@@ -1566,7 +1566,7 @@ user.changeEmail(newEmail);
 
 ---
 
-## Использование containsValue для частого поиска
+### Использование containsValue для частого поиска
 
 ```java
 map.containsValue(value);
@@ -1578,7 +1578,7 @@ map.containsValue(value);
 
 ---
 
-## Повторный поиск через keySet
+### Повторный поиск через keySet
 
 Менее предпочтительно:
 
@@ -1599,13 +1599,13 @@ for (Map.Entry<K, V> entry : map.entrySet()) {
 
 ---
 
-## Нарушение equals и hashCode
+### Нарушение equals и hashCode
 
 Если равные по `equals()` ключи имеют разные `hashCode()`, `HashMap` может не найти запись.
 
 ---
 
-## Неверный Comparator для TreeMap
+### Неверный Comparator для TreeMap
 
 Если:
 
@@ -1619,7 +1619,7 @@ comparator.compare(first, second) == 0
 
 ---
 
-## Автоматическое использование TreeMap ради сортировки
+### Автоматическое использование TreeMap ради сортировки
 
 `TreeMap` выполняет каждую операцию за `O(log n)`.
 
@@ -1633,7 +1633,7 @@ comparator.compare(first, second) == 0
 
 ---
 
-# Сложность операций
+## Сложность операций
 
 | Операция | HashMap | LinkedHashMap | TreeMap |
 |---|---:|---:|---:|
@@ -1647,7 +1647,7 @@ comparator.compare(first, second) == 0
 
 ---
 
-# Сравнение реализаций
+## Сравнение реализаций
 
 | Характеристика | HashMap | LinkedHashMap | TreeMap |
 |---|---|---|---|
@@ -1661,9 +1661,9 @@ comparator.compare(first, second) == 0
 
 ---
 
-# Вопросы с собеседований
+## Вопросы с собеседований
 
-## Может ли HashMap хранить null
+### Может ли HashMap хранить null
 
 Да.
 
@@ -1672,7 +1672,7 @@ comparator.compare(first, second) == 0
 несколько null-значений
 ```
 
-## Может ли TreeMap хранить null
+### Может ли TreeMap хранить null
 
 При естественном порядке:
 
@@ -1681,46 +1681,46 @@ null-ключ запрещён
 null-значения разрешены
 ```
 
-## Почему HashMap работает за O(1)
+### Почему HashMap работает за O(1)
 
 Хеш ключа позволяет вычислить индекс бакета без полного перебора карты.
 
 Это средняя, а не гарантированная сложность.
 
-## Что такое коллизия
+### Что такое коллизия
 
 Попадание разных ключей в один бакет.
 
-## Зачем нужны equals и hashCode
+### Зачем нужны equals и hashCode
 
 ```text
 hashCode → выбор бакета
 equals → поиск точного ключа
 ```
 
-## Почему ключ должен быть неизменяемым
+### Почему ключ должен быть неизменяемым
 
 Изменение поля, участвующего в `hashCode()`, может изменить бакет, в котором карта будет искать ключ.
 
-## Чем LinkedHashMap отличается от HashMap
+### Чем LinkedHashMap отличается от HashMap
 
 `LinkedHashMap` поддерживает порядок вставки или доступа.
 
-## Чем TreeMap отличается от HashMap
+### Чем TreeMap отличается от HashMap
 
 `TreeMap` сортирует ключи и работает за `O(log n)`.
 
 `HashMap` не гарантирует порядок и работает за `O(1)` в среднем.
 
-## Что происходит при повторном put
+### Что происходит при повторном put
 
 Старое значение заменяется новым, а метод возвращает предыдущее значение.
 
-## Почему containsValue работает за O(n)
+### Почему containsValue работает за O(n)
 
 По значению нельзя вычислить конкретный бакет. Необходимо просматривать записи.
 
-## Как TreeMap определяет одинаковые ключи
+### Как TreeMap определяет одинаковые ключи
 
 Через результат `compareTo()` или `Comparator.compare()`.
 
@@ -1728,25 +1728,25 @@ equals → поиск точного ключа
 compare(first, second) == 0
 ```
 
-## Что такое load factor
+### Что такое load factor
 
 Коэффициент, используемый для вычисления порога расширения таблицы.
 
-## Что такое threshold
+### Что такое threshold
 
 Количество записей, после которого запускается расширение.
 
-## Что такое resize
+### Что такое resize
 
 Увеличение внутреннего массива бакетов и перераспределение записей.
 
-## Для чего нужен accessOrder
+### Для чего нужен accessOrder
 
 Для хранения записей в порядке последнего доступа. Применяется при реализации LRU-кеша.
 
 ---
 
-# Вопросы для самопроверки
+## Вопросы для самопроверки
 
 1. Почему `Map` не наследует `Collection`?
 2. Чем ключ отличается от значения?
@@ -1782,7 +1782,7 @@ compare(first, second) == 0
 
 ---
 
-# Краткая памятка
+## Краткая памятка
 
 ```text
 HashMap:
@@ -1827,7 +1827,7 @@ entrySet → Set пар ключ–значение
 
 ---
 
-## См. также
+### См. также
 
 - [`01-collections-framework.md`](01-collections-framework.md) — общая иерархия
   коллекций

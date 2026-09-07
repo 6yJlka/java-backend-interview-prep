@@ -1,6 +1,6 @@
 # CompletableFuture в Java
 
-## 1. Зачем нужен CompletableFuture
+### Зачем нужен CompletableFuture
 
 Обычный `Future` позволяет запустить задачу в другом потоке и позднее получить её результат:
 
@@ -73,11 +73,11 @@ CompletableFuture
 
 ---
 
-# 2. runAsync и supplyAsync
+## runAsync и supplyAsync
 
 Для запуска асинхронной операции существуют два основных метода.
 
-## runAsync()
+### runAsync()
 
 Используется, когда операция ничего не возвращает.
 
@@ -106,7 +106,7 @@ CompletableFuture<Void>
 
 ---
 
-## supplyAsync()
+### supplyAsync()
 
 Используется, когда операция должна вернуть значение.
 
@@ -145,7 +145,7 @@ supplyAsync()
 
 ---
 
-# 3. thenApply
+## thenApply
 
 `thenApply()` используется, когда нужно преобразовать результат предыдущего этапа.
 
@@ -194,7 +194,7 @@ CompletableFuture<Integer> future =
 
 ---
 
-# 4. thenAccept
+## thenAccept
 
 `thenAccept()` получает результат предыдущего этапа, но ничего не возвращает.
 
@@ -234,7 +234,7 @@ CompletableFuture
 
 ---
 
-# 5. thenRun
+## thenRun
 
 `thenRun()` выполняет действие после завершения предыдущего stage, но:
 
@@ -281,7 +281,7 @@ CompletableFuture
 
 ---
 
-# 6. thenApply и thenCompose
+## thenApply и thenCompose
 
 Это одно из самых важных различий в `CompletableFuture`.
 
@@ -390,7 +390,7 @@ CompletableFuture<List<Order>> result =
 
 ---
 
-# 7. thenCombine
+## thenCombine
 
 `thenCombine()` используется, когда есть две независимые асинхронные операции, результаты которых нужно объединить.
 
@@ -464,7 +464,7 @@ B ──┘
 
 ---
 
-# 8. Ошибки в CompletableFuture
+## Ошибки в CompletableFuture
 
 `CompletableFuture` может завершиться:
 
@@ -493,7 +493,7 @@ Future завершается exceptionally.
 
 ---
 
-# 9. exceptionally
+## exceptionally
 
 `exceptionally()` используется для обработки ошибки и возврата fallback-значения.
 
@@ -558,7 +558,7 @@ Throwable → T
 
 ---
 
-# 10. handle
+## handle
 
 `handle()` выполняется:
 
@@ -628,7 +628,7 @@ CompletableFuture<Integer> future =
 
 ---
 
-# 11. whenComplete
+## whenComplete
 
 `whenComplete()` тоже вызывается как при успехе, так и при ошибке.
 
@@ -716,7 +716,7 @@ thenApply
 
 ---
 
-# 12. exceptionally, handle и whenComplete
+## exceptionally, handle и whenComplete
 
 Краткое сравнение:
 
@@ -737,7 +737,7 @@ whenComplete()
 
 ---
 
-# 13. get и join
+## get и join
 
 Результат `CompletableFuture` можно получить через:
 
@@ -755,7 +755,7 @@ future.join();
 
 ---
 
-## get()
+### get()
 
 `get()` наследуется от `Future`.
 
@@ -802,7 +802,7 @@ e.getCause()
 
 ---
 
-## join()
+### join()
 
 `join()` не требует обработки checked exceptions:
 
@@ -857,7 +857,7 @@ List<User> users = futures.stream()
 
 ---
 
-# 14. Executor по умолчанию
+## Executor по умолчанию
 
 Если написать:
 
@@ -887,7 +887,7 @@ ForkJoinPool.commonPool()
 
 ---
 
-# 15. Свой Executor
+## Свой Executor
 
 Можно явно передать executor:
 
@@ -917,7 +917,7 @@ future.thenApplyAsync(
 
 ---
 
-# 16. thenApply и thenApplyAsync
+## thenApply и thenApplyAsync
 
 Это важное различие.
 
@@ -999,7 +999,7 @@ future.thenApplyAsync(
 
 ---
 
-# 17. Async-варианты методов
+## Async-варианты методов
 
 Подобные пары существуют для многих операций:
 
@@ -1052,7 +1052,7 @@ thenApplyAsync(fn, executor)
 
 ---
 
-# 18. Почему Async не нужно использовать везде
+## Почему Async не нужно использовать везде
 
 Не стоит автоматически писать:
 
@@ -1098,7 +1098,7 @@ CompletableFuture
 
 ---
 
-# 19. allOf
+## allOf
 
 `CompletableFuture.allOf()` используется, когда нужно дождаться завершения нескольких futures.
 
@@ -1152,7 +1152,7 @@ Balance balance = balanceFuture.join();
 
 ---
 
-# 20. allOf со списком futures
+## allOf со списком futures
 
 Например:
 
@@ -1202,7 +1202,7 @@ Future N ─┘
 
 ---
 
-# 21. anyOf
+## anyOf
 
 `anyOf()` используется, когда нужен первый завершившийся future.
 
@@ -1250,7 +1250,7 @@ server3 → 2 сек
 
 ---
 
-# 22. anyOf не отменяет остальные futures
+## anyOf не отменяет остальные futures
 
 Важно:
 
@@ -1289,7 +1289,7 @@ f3 → продолжает работать
 
 ---
 
-# 23. anyOf и ошибки
+## anyOf и ошибки
 
 `anyOf()` ждёт первый **завершившийся** future, а не обязательно первый успешно завершившийся.
 
@@ -1323,7 +1323,7 @@ CompletionException
 
 ---
 
-# 24. allOf и anyOf
+## allOf и anyOf
 
 Кратко:
 
@@ -1339,7 +1339,7 @@ anyOf()
 
 ---
 
-# 25. cancel
+## cancel
 
 `CompletableFuture` можно отменить:
 
@@ -1366,7 +1366,7 @@ future.join();
 
 ---
 
-# 26. cancel(true) и interrupt
+## cancel(true) и interrupt
 
 Здесь есть важное отличие от некоторых обычных реализаций `Future`.
 
@@ -1418,7 +1418,7 @@ FutureTask.cancel(true)
 
 ---
 
-# 27. Состояния CompletableFuture
+## Состояния CompletableFuture
 
 Полезные методы:
 
@@ -1430,7 +1430,7 @@ future.isCompletedExceptionally();
 
 ---
 
-## Успешное завершение
+### Успешное завершение
 
 ```text
 isDone()                   = true
@@ -1440,7 +1440,7 @@ isCompletedExceptionally() = false
 
 ---
 
-## Завершение с ошибкой
+### Завершение с ошибкой
 
 ```text
 isDone()                   = true
@@ -1450,7 +1450,7 @@ isCompletedExceptionally() = true
 
 ---
 
-## Отмена
+### Отмена
 
 ```text
 isDone()                   = true
@@ -1478,7 +1478,7 @@ future больше не находится в незавершённом сос
 
 ---
 
-# 28. Ручное завершение CompletableFuture
+## Ручное завершение CompletableFuture
 
 `CompletableFuture` можно создать без начального вычисления:
 
@@ -1507,7 +1507,7 @@ future.join(); // "OK"
 
 ---
 
-# 29. complete
+## complete
 
 Метод:
 
@@ -1544,7 +1544,7 @@ future.join(); // 42
 
 ---
 
-# 30. completeExceptionally
+## completeExceptionally
 
 Можно вручную завершить future ошибкой:
 
@@ -1568,7 +1568,7 @@ future.isCompletedExceptionally(); // true
 
 ---
 
-# 31. Первое завершение побеждает
+## Первое завершение побеждает
 
 Если:
 
@@ -1618,7 +1618,7 @@ cancel()
 
 ---
 
-# 32. Типичная асинхронная цепочка
+## Типичная асинхронная цепочка
 
 Например:
 
@@ -1664,7 +1664,7 @@ loadUser
 
 ---
 
-# 33. Когда использовать какой continuation
+## Когда использовать какой continuation
 
 Шпаргалка:
 
@@ -1691,7 +1691,7 @@ thenCombine()
 
 ---
 
-# 34. Обработка ошибок
+## Обработка ошибок
 
 ```text
 exceptionally()
@@ -1709,7 +1709,7 @@ whenComplete()
 
 ---
 
-# 35. Получение результата
+## Получение результата
 
 ```text
 get()
@@ -1725,7 +1725,7 @@ join()
 
 ---
 
-# 36. Управление несколькими futures
+## Управление несколькими futures
 
 ```text
 allOf()
@@ -1744,9 +1744,9 @@ anyOf()
 
 ---
 
-# 37. Типичные ошибки
+## Типичные ошибки
 
-## Ошибка 1. Использовать thenApply вместо thenCompose
+### Ошибка 1. Использовать thenApply вместо thenCompose
 
 Плохо:
 
@@ -1774,7 +1774,7 @@ future.thenCompose(user -> loadOrdersAsync(user));
 
 ---
 
-## Ошибка 2. Путать thenCompose и thenCombine
+### Ошибка 2. Путать thenCompose и thenCombine
 
 `thenCompose()`:
 
@@ -1791,7 +1791,7 @@ A и B независимы
 
 ---
 
-## Ошибка 3. Использовать Async для каждого stage без причины
+### Ошибка 3. Использовать Async для каждого stage без причины
 
 ```java
 supplyAsync(...)
@@ -1810,7 +1810,7 @@ thenApply()
 
 ---
 
-## Ошибка 4. Бездумно использовать commonPool
+### Ошибка 4. Бездумно использовать commonPool
 
 ```java
 CompletableFuture.supplyAsync(...)
@@ -1834,7 +1834,7 @@ ExecutorService executor = ...
 
 ---
 
-## Ошибка 5. Считать whenComplete обработчиком ошибки
+### Ошибка 5. Считать whenComplete обработчиком ошибки
 
 ```java
 .whenComplete((result, ex) -> log(...))
@@ -1852,7 +1852,7 @@ Exception продолжает цепочку.
 
 ---
 
-## Ошибка 6. Считать anyOf ожиданием первого успешного результата
+### Ошибка 6. Считать anyOf ожиданием первого успешного результата
 
 `anyOf()` завершается по первому завершившемуся future.
 
@@ -1865,7 +1865,7 @@ anyOf
 
 ---
 
-## Ошибка 7. Считать, что anyOf отменяет остальные задачи
+### Ошибка 7. Считать, что anyOf отменяет остальные задачи
 
 Не отменяет.
 
@@ -1873,7 +1873,7 @@ anyOf
 
 ---
 
-## Ошибка 8. Считать cancel(true) гарантированным interrupt underlying computation
+### Ошибка 8. Считать cancel(true) гарантированным interrupt underlying computation
 
 Для `CompletableFuture` это неверно.
 
@@ -1881,9 +1881,9 @@ anyOf
 
 ---
 
-# 38. Типичные вопросы на собеседовании
+## Типичные вопросы на собеседовании
 
-## Чем Future отличается от CompletableFuture?
+### Чем Future отличается от CompletableFuture?
 
 `Future` в основном представляет результат асинхронной операции и предоставляет методы вроде `get()` и `cancel()`.
 
@@ -1891,7 +1891,7 @@ anyOf
 
 ---
 
-## Чем runAsync отличается от supplyAsync?
+### Чем runAsync отличается от supplyAsync?
 
 ```text
 runAsync()
@@ -1907,7 +1907,7 @@ supplyAsync()
 
 ---
 
-## Чем thenApply отличается от thenAccept?
+### Чем thenApply отличается от thenAccept?
 
 ```text
 thenApply
@@ -1921,7 +1921,7 @@ thenAccept
 
 ---
 
-## Чем thenAccept отличается от thenRun?
+### Чем thenAccept отличается от thenRun?
 
 ```text
 thenAccept
@@ -1939,7 +1939,7 @@ CompletableFuture<Void>
 
 ---
 
-## Чем thenApply отличается от thenCompose?
+### Чем thenApply отличается от thenCompose?
 
 ```text
 thenApply:
@@ -1953,7 +1953,7 @@ T → CompletableFuture<R>
 
 ---
 
-## Чем thenCompose отличается от thenCombine?
+### Чем thenCompose отличается от thenCombine?
 
 ```text
 thenCompose
@@ -1967,7 +1967,7 @@ thenCombine
 
 ---
 
-## Чем exceptionally отличается от handle?
+### Чем exceptionally отличается от handle?
 
 ```text
 exceptionally
@@ -1979,7 +1979,7 @@ handle
 
 ---
 
-## Чем handle отличается от whenComplete?
+### Чем handle отличается от whenComplete?
 
 `handle()` может преобразовать результат и вернуть другое значение.
 
@@ -1987,7 +1987,7 @@ handle
 
 ---
 
-## Чем get отличается от join?
+### Чем get отличается от join?
 
 ```text
 get
@@ -2002,7 +2002,7 @@ join
 
 ---
 
-## Какой executor используется supplyAsync без executor?
+### Какой executor используется supplyAsync без executor?
 
 Обычно:
 
@@ -2012,7 +2012,7 @@ ForkJoinPool.commonPool()
 
 ---
 
-## Чем thenApply отличается от thenApplyAsync?
+### Чем thenApply отличается от thenApplyAsync?
 
 ```text
 thenApply
@@ -2024,7 +2024,7 @@ thenApplyAsync
 
 ---
 
-## Что возвращает allOf?
+### Что возвращает allOf?
 
 ```java
 CompletableFuture<Void>
@@ -2034,7 +2034,7 @@ CompletableFuture<Void>
 
 ---
 
-## Что возвращает anyOf?
+### Что возвращает anyOf?
 
 ```java
 CompletableFuture<Object>
@@ -2042,13 +2042,13 @@ CompletableFuture<Object>
 
 ---
 
-## Отменяет ли anyOf остальные futures?
+### Отменяет ли anyOf остальные futures?
 
 Нет.
 
 ---
 
-## Ждёт ли anyOf первый успешный future?
+### Ждёт ли anyOf первый успешный future?
 
 Нет.
 
@@ -2056,7 +2056,7 @@ CompletableFuture<Object>
 
 ---
 
-## Что означает isDone?
+### Что означает isDone?
 
 Future уже завершён:
 
@@ -2070,7 +2070,7 @@ Future уже завершён:
 
 ---
 
-## Можно ли завершить CompletableFuture вручную?
+### Можно ли завершить CompletableFuture вручную?
 
 Да:
 
@@ -2086,7 +2086,7 @@ completeExceptionally(exception)
 
 ---
 
-# 39. Итоговая шпаргалка
+## Итоговая шпаргалка
 
 ```text
 Создание:
@@ -2182,7 +2182,7 @@ completeExceptionally(exception)
 → первое успешное завершение определяет результат
 ```
 
-# 40. Главное
+## Главное
 
 `CompletableFuture` нужен не просто для запуска работы в другом потоке.
 

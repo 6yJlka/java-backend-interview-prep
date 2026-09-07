@@ -1,6 +1,6 @@
 # Virtual Threads в Java
 
-## 1. Что такое Virtual Threads
+### Что такое Virtual Threads
 
 **Virtual Threads** — лёгкие потоки, управляемые JVM.
 
@@ -31,7 +31,7 @@ JVM может поддерживать очень большое количес
 
 ---
 
-# 2. Platform Thread
+## Platform Thread
 
 Обычный Java-поток называется **platform thread**.
 
@@ -89,7 +89,7 @@ ExecutorService executor =
 
 ---
 
-# 3. Проблема обычных потоков в backend
+## Проблема обычных потоков в backend
 
 Представим обработку HTTP-запроса:
 
@@ -129,7 +129,7 @@ Platform thread остаётся связан с этим request на всём 
 
 ---
 
-# 4. Главная идея Virtual Threads
+## Главная идея Virtual Threads
 
 Virtual threads намного легче platform threads.
 
@@ -169,7 +169,7 @@ Virtual threads управляются JVM.
 
 ---
 
-# 5. Carrier Thread
+## Carrier Thread
 
 Virtual thread не исполняет Java-код непосредственно на CPU.
 
@@ -197,7 +197,7 @@ Virtual thread может в разные моменты времени выпо
 
 ---
 
-# 6. Mount и Unmount
+## Mount и Unmount
 
 Когда virtual thread начинает выполнять Java-код, JVM может **смонтировать** его на carrier thread.
 
@@ -231,7 +231,7 @@ unmount
 
 ---
 
-# 7. Что происходит при blocking I/O
+## Что происходит при blocking I/O
 
 Допустим:
 
@@ -283,7 +283,7 @@ Virtual Thread A
 
 ---
 
-# 8. Почему Virtual Threads полезны для I/O-bound задач
+## Почему Virtual Threads полезны для I/O-bound задач
 
 Рассмотрим:
 
@@ -316,7 +316,7 @@ Virtual threads позволяют:
 
 ---
 
-# 9. Virtual Threads не ускоряют CPU-bound задачи
+## Virtual Threads не ускоряют CPU-bound задачи
 
 Представим:
 
@@ -376,7 +376,7 @@ I/O-bound
 
 ---
 
-# 10. Throughput и Latency
+## Throughput и Latency
 
 Virtual Threads в первую очередь помогают увеличить:
 
@@ -404,7 +404,7 @@ HTTP-запрос занимает 500 мс
 
 ---
 
-# 11. Создание Virtual Thread
+## Создание Virtual Thread
 
 Самый простой вариант:
 
@@ -418,7 +418,7 @@ Thread thread = Thread.startVirtualThread(() -> {
 
 ---
 
-# 12. Thread.ofVirtual()
+## Thread.ofVirtual()
 
 Можно использовать builder:
 
@@ -434,7 +434,7 @@ Thread thread = Thread.ofVirtual()
 
 ---
 
-# 13. Проверка типа Thread
+## Проверка типа Thread
 
 Можно определить, является ли поток virtual:
 
@@ -460,7 +460,7 @@ true
 
 ---
 
-# 14. VirtualThreadPerTaskExecutor
+## VirtualThreadPerTaskExecutor
 
 Для большого количества задач обычно удобнее использовать:
 
@@ -498,7 +498,7 @@ try (ExecutorService executor =
 
 ---
 
-# 15. Virtual Threads обычно не нужно пулить
+## Virtual Threads обычно не нужно пулить
 
 Platform threads дорогие.
 
@@ -542,7 +542,7 @@ Virtual threads дешёвые.
 
 ---
 
-# 16. Ограничивать нужно ресурс, а не Virtual Threads
+## Ограничивать нужно ресурс, а не Virtual Threads
 
 Допустим внешний API разрешает:
 
@@ -612,7 +612,7 @@ Semaphore(30)
 
 ---
 
-# 17. Semaphore и Virtual Threads
+## Semaphore и Virtual Threads
 
 Задачи `Semaphore` и Virtual Threads разные.
 
@@ -628,7 +628,7 @@ Semaphore
 
 ---
 
-# 18. Virtual Threads и база данных
+## Virtual Threads и база данных
 
 Представим:
 
@@ -681,7 +681,7 @@ Semaphore
 
 ---
 
-# 19. Virtual Threads не заменяют Connection Pool
+## Virtual Threads не заменяют Connection Pool
 
 Важно:
 
@@ -696,7 +696,7 @@ Connection pool всё ещё нужен.
 
 ---
 
-# 20. Pinning
+## Pinning
 
 Обычно при блокировке:
 
@@ -727,7 +727,7 @@ Virtual Thread
 
 ---
 
-# 21. Почему Pinning опасен
+## Почему Pinning опасен
 
 Главное преимущество virtual threads:
 
@@ -748,7 +748,7 @@ Virtual Thread A
 
 ---
 
-# 22. Pinning и synchronized в Java 21
+## Pinning и synchronized в Java 21
 
 Для **Java 21** важный сценарий pinning связан с блокировкой внутри `synchronized`.
 
@@ -782,7 +782,7 @@ Virtual Thread
 
 ---
 
-# 23. Короткий synchronized не является катастрофой
+## Короткий synchronized не является катастрофой
 
 Например:
 
@@ -804,7 +804,7 @@ blocking operation
 
 ---
 
-# 24. ReentrantLock и Java 21
+## ReentrantLock и Java 21
 
 Для сценариев, где нужно избежать длительного удержания carrier внутри `synchronized`, в Java 21 иногда рассматривается `ReentrantLock`.
 
@@ -824,7 +824,7 @@ try {
 
 ---
 
-# 25. Важное замечание про новые JDK
+## Важное замечание про новые JDK
 
 Поведение pinning зависит от версии Java.
 
@@ -849,7 +849,7 @@ try {
 
 ---
 
-# 26. ThreadLocal
+## ThreadLocal
 
 Virtual threads поддерживают:
 
@@ -863,7 +863,7 @@ ThreadLocal
 
 ---
 
-# 27. ThreadLocal и память
+## ThreadLocal и память
 
 Представим:
 
@@ -900,7 +900,7 @@ Virtual Thread
 
 ---
 
-# 28. ThreadLocal как кэш
+## ThreadLocal как кэш
 
 Особенно опасна старая модель:
 
@@ -928,7 +928,7 @@ ThreadLocal<ExpensiveObject> cache;
 
 ---
 
-# 29. Virtual Threads и Blocking Code
+## Virtual Threads и Blocking Code
 
 Одна из сильных сторон Virtual Threads — возможность сохранить обычный последовательный blocking style.
 
@@ -946,7 +946,7 @@ Payment payment = loadPayment(user);
 
 ---
 
-# 30. Virtual Threads и CompletableFuture
+## Virtual Threads и CompletableFuture
 
 Virtual Threads и `CompletableFuture` решают разные задачи.
 
@@ -973,7 +973,7 @@ Virtual Threads:
 
 ---
 
-# 31. Virtual Threads и ExecutorService
+## Virtual Threads и ExecutorService
 
 Пример:
 
@@ -996,7 +996,7 @@ try (ExecutorService executor =
 
 ---
 
-# 32. try-with-resources
+## try-with-resources
 
 `ExecutorService` можно использовать через:
 
@@ -1009,7 +1009,7 @@ try (ExecutorService executor = ...) {
 
 ---
 
-# 33. Virtual Threads являются daemon threads
+## Virtual Threads являются daemon threads
 
 Virtual threads всегда являются:
 
@@ -1021,7 +1021,7 @@ daemon threads
 
 ---
 
-# 34. Virtual Threads и завершение JVM
+## Virtual Threads и завершение JVM
 
 Например:
 
@@ -1051,7 +1051,7 @@ JVM может завершиться
 
 ---
 
-# 35. join()
+## join()
 
 Если нужно обязательно дождаться virtual thread:
 
@@ -1067,7 +1067,7 @@ thread.join();
 
 ---
 
-# 36. Interrupt
+## Interrupt
 
 Virtual threads поддерживают механизм interruption.
 
@@ -1091,7 +1091,7 @@ thread.interrupt();
 
 ---
 
-# 37. Future.cancel(true) с VirtualThreadPerTaskExecutor
+## Future.cancel(true) с VirtualThreadPerTaskExecutor
 
 Если задача отправлена:
 
@@ -1112,7 +1112,7 @@ try (ExecutorService executor =
 
 ---
 
-# 38. Отличие от CompletableFuture.cancel(true)
+## Отличие от CompletableFuture.cancel(true)
 
 Не следует путать:
 
@@ -1132,7 +1132,7 @@ CompletableFuture.cancel(true)
 
 ---
 
-# 39. Что Virtual Threads не решают
+## Что Virtual Threads не решают
 
 Virtual Threads не решают автоматически:
 
@@ -1157,7 +1157,7 @@ CPU bottleneck
 
 ---
 
-# 40. Virtual Threads не отменяют synchronization
+## Virtual Threads не отменяют synchronization
 
 Если несколько virtual threads работают с общими mutable данными:
 
@@ -1181,7 +1181,7 @@ immutability
 
 ---
 
-# 41. Virtual Threads и Java Memory Model
+## Virtual Threads и Java Memory Model
 
 Для virtual threads действуют те же правила JMM:
 
@@ -1196,7 +1196,7 @@ Virtual Thread всё ещё является `Thread` с точки зрени�
 
 ---
 
-# 42. Когда использовать Virtual Threads
+## Когда использовать Virtual Threads
 
 Хорошие сценарии:
 
@@ -1218,7 +1218,7 @@ thread-per-request модель
 
 ---
 
-# 43. Когда Virtual Threads мало помогают
+## Когда Virtual Threads мало помогают
 
 Плохой кандидат:
 
@@ -1246,7 +1246,7 @@ carrier постоянно занят CPU
 
 ---
 
-# 44. Основной принцип архитектуры
+## Основной принцип архитектуры
 
 С platform threads часто думают:
 
@@ -1273,9 +1273,9 @@ CPU cores = 8
 
 ---
 
-# 45. Типичные ошибки
+## Типичные ошибки
 
-## Ошибка 1. Использовать Virtual Threads для ускорения CPU-bound работы
+### Ошибка 1. Использовать Virtual Threads для ускорения CPU-bound работы
 
 Virtual threads не добавляют CPU cores.
 
@@ -1284,7 +1284,7 @@ CPU-bound
 → выигрыша почти нет
 ```
 
-## Ошибка 2. Создавать fixed pool из virtual threads без причины
+### Ошибка 2. Создавать fixed pool из virtual threads без причины
 
 Virtual threads дешёвые.
 
@@ -1295,11 +1295,11 @@ one task
 → one virtual thread
 ```
 
-## Ошибка 3. Считать, что 1000 Virtual Threads означают 1000 параллельных SQL-запросов
+### Ошибка 3. Считать, что 1000 Virtual Threads означают 1000 параллельных SQL-запросов
 
 Connection pool может иметь только 20 connections и станет реальным ограничением.
 
-## Ошибка 4. Игнорировать Pinning в Java 21
+### Ошибка 4. Игнорировать Pinning в Java 21
 
 Особенно:
 
@@ -1311,15 +1311,15 @@ synchronized (lock) {
 
 может быть проблемным для virtual threads в Java 21.
 
-## Ошибка 5. Хранить огромные объекты в ThreadLocal
+### Ошибка 5. Хранить огромные объекты в ThreadLocal
 
 При десятках или сотнях тысяч virtual threads это может привести к огромному потреблению памяти.
 
-## Ошибка 6. Думать, что Virtual Threads делают код thread-safe
+### Ошибка 6. Думать, что Virtual Threads делают код thread-safe
 
 Race conditions остаются.
 
-## Ошибка 7. Забывать про daemon-поведение
+### Ошибка 7. Забывать про daemon-поведение
 
 Если выполнение обязательно нужно дождаться:
 
@@ -1327,7 +1327,7 @@ Race conditions остаются.
 thread.join();
 ```
 
-## Ошибка 8. Путать throughput и latency
+### Ошибка 8. Путать throughput и latency
 
 Virtual Threads обычно повышают способность приложения обслуживать много одновременных блокирующих задач.
 
@@ -1335,41 +1335,41 @@ Virtual Threads обычно повышают способность прило�
 
 ---
 
-# 46. Типичные вопросы на собеседовании
+## Типичные вопросы на собеседовании
 
-## Что такое Virtual Thread?
+### Что такое Virtual Thread?
 
 Лёгкий поток, управляемый JVM, который позволяет эффективно поддерживать большое количество одновременно выполняющихся и блокирующих задач.
 
-## Чем Virtual Thread отличается от Platform Thread?
+### Чем Virtual Thread отличается от Platform Thread?
 
 Platform thread тесно связан с OS thread и является сравнительно дорогим ресурсом.
 
 Virtual thread значительно легче и может временно выполняться на одном из carrier platform threads.
 
-## Что такое Carrier Thread?
+### Что такое Carrier Thread?
 
 Platform thread, на котором в данный момент выполняется virtual thread.
 
-## Что такое Mount?
+### Что такое Mount?
 
 Момент, когда virtual thread начинает выполняться на carrier thread.
 
-## Что такое Unmount?
+### Что такое Unmount?
 
 Снятие virtual thread с carrier, например во время подходящей блокирующей операции.
 
-## Почему Virtual Threads хорошо подходят для I/O-bound задач?
+### Почему Virtual Threads хорошо подходят для I/O-bound задач?
 
 Потому что во время ожидания I/O virtual thread может освободить carrier thread.
 
-## Почему Virtual Threads почти не помогают CPU-bound задачам?
+### Почему Virtual Threads почти не помогают CPU-bound задачам?
 
 CPU-bound задача постоянно выполняет вычисления и удерживает carrier.
 
 Количество CPU cores не увеличивается.
 
-## Нужно ли создавать pool Virtual Threads?
+### Нужно ли создавать pool Virtual Threads?
 
 Обычно нет.
 
@@ -1380,7 +1380,7 @@ one task
 → one virtual thread
 ```
 
-## Как ограничить количество одновременных запросов к внешнему API?
+### Как ограничить количество одновременных запросов к внешнему API?
 
 Ограничивать конкретный ресурс, например через:
 
@@ -1388,53 +1388,53 @@ one task
 Semaphore semaphore = new Semaphore(30);
 ```
 
-## Что произойдёт, если 1000 Virtual Threads обращаются к БД, а DB pool содержит 20 connections?
+### Что произойдёт, если 1000 Virtual Threads обращаются к БД, а DB pool содержит 20 connections?
 
 Около 20 задач смогут одновременно использовать connections.
 
 Остальные будут ждать свободное соединение.
 
-## Что такое Pinning?
+### Что такое Pinning?
 
 Ситуация, когда заблокированный virtual thread не может быть unmounted с carrier.
 
 Carrier остаётся занят вместе с ним.
 
-## Почему Pinning плохо?
+### Почему Pinning плохо?
 
 Carrier thread не может выполнять другие virtual threads.
 
 При большом количестве pinning scalability уменьшается.
 
-## Что важно знать о Pinning в Java 21?
+### Что важно знать о Pinning в Java 21?
 
 Длительная blocking operation внутри `synchronized` может привести к pinning.
 
-## Можно ли использовать ThreadLocal с Virtual Threads?
+### Можно ли использовать ThreadLocal с Virtual Threads?
 
 Да.
 
 Но при огромном количестве virtual threads нельзя бездумно хранить большие объекты в `ThreadLocal`.
 
-## Virtual Threads являются daemon threads?
+### Virtual Threads являются daemon threads?
 
 Да.
 
 Virtual thread сам по себе не удерживает JVM живой.
 
-## Как дождаться Virtual Thread?
+### Как дождаться Virtual Thread?
 
 ```java
 thread.join();
 ```
 
-## Делают ли Virtual Threads код автоматически thread-safe?
+### Делают ли Virtual Threads код автоматически thread-safe?
 
 Нет.
 
 Правила синхронизации и Java Memory Model остаются теми же.
 
-## Virtual Threads заменяют CompletableFuture?
+### Virtual Threads заменяют CompletableFuture?
 
 Нет.
 
@@ -1442,7 +1442,7 @@ thread.join();
 
 ---
 
-# 47. Сравнение Platform Threads и Virtual Threads
+## Сравнение Platform Threads и Virtual Threads
 
 ```text
 Platform Thread
@@ -1465,7 +1465,7 @@ Virtual Thread
 
 ---
 
-# 48. Сравнение I/O-bound и CPU-bound
+## Сравнение I/O-bound и CPU-bound
 
 ```text
 I/O-bound:
@@ -1486,7 +1486,7 @@ CPU-bound:
 
 ---
 
-# 49. Итоговая шпаргалка
+## Итоговая шпаргалка
 
 ```text
 Virtual Thread
@@ -1556,7 +1556,7 @@ Virtual Threads
   для большого числа blocking tasks
 ```
 
-# 50. Главное
+## Главное
 
 Virtual Threads меняют привычную модель работы с потоками.
 
