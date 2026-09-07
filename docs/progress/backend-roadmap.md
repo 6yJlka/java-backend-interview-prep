@@ -1098,49 +1098,22 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 ---
 
-# Порядок прохождения
+# Порядок написания конспектов
 
-## Этап 1. Java Core — завершён
+Все четыре этапа завершены, конспекты написаны по всем темам, кроме отложенных.
 
-- [x] `Optional`
-- [x] `Modern Java`: enum, record, sealed
-- [x] `Annotations`
-- [x] `Nested Classes` — в конспекте по lambda
-- [x] `Primitive streams` — в конспекте по Stream API
+- [x] Этап 1. Java Core
+- [x] Этап 2. JVM и конкурентность
+- [x] Этап 3. Ядро backend-интервью: HTTP, SQL, Spring, JPA, транзакции
+- [x] Этап 4. Production Backend: JDBC, логирование, тестирование, Kafka,
+  архитектура, System Design, Docker, Git, сборщики
 
-Отложено: `Date and Time API`, `Java I/O / NIO`.
+Отложены и конспектами не покрыты: `Date and Time API`, `Java I/O / NIO`,
+`Structured Concurrency` и `Scoped Values`.
 
-## Этап 2. JVM — завершён
-
-- [x] `Garbage Collection` и `Reference Types` — отдельный конспект
-- [x] `Class Loading` и `Bytecode / JIT` — в конспекте по памяти JVM
-
-## Этап 3. Ядро backend-интервью
-
-- [ ] 1. `HTTP и REST`
-- [ ] 2. `SQL`: выборки, джойны, группировки
-- [ ] 3. `Indexes` и планы запросов
-- [ ] 4. `Transactions`: ACID, уровни изоляции, аномалии, MVCC
-- [ ] 5. `Spring Core`: IoC, DI, bean lifecycle, scopes, configuration
-- [ ] 6. `Spring AOP` и proxy
-- [ ] 7. `Spring Boot`
-- [ ] 8. `Spring MVC`
-- [ ] 9. `JPA Basics` и Persistence Context
-- [ ] 10. `Relationships`, `Fetching`, `Cascade`
-- [ ] 11. `Hibernate Problems`
-- [ ] 12. `Spring Transactions`
-
-## Этап 4. Production Backend
-
-- [ ] 13. `JDBC`
-- [ ] 14. `Logging`
-- [ ] 15. `Testing`
-- [ ] 16. `Kafka`
-- [ ] 17. `Backend Architecture`
-- [ ] 18. `System Design`
-- [ ] 19. `Docker / CI/CD`
-- [ ] 20. `Git`
-- [ ] 21. `Build Tools`
+Порядок **прохождения** материала задан отдельно в
+[`topic-tracker.md`](topic-tracker.md): он отличается от порядка написания и
+сгруппирован по связанным блокам.
 
 ---
 
@@ -1160,6 +1133,8 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
   `09-optional.md`
 - [x] удалить неиспользуемый `docs/templates`
 
+---
+
 # Как обновлять roadmap
 
 После завершения темы:
@@ -1168,7 +1143,7 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 2. Обновить статус темы.
 3. Добавить или обновить конспект в соответствующей директории `docs`.
 4. Проставить ссылки «См. также» в связанных конспектах.
-5. Обновить `docs/progress/topic-tracker.md`.
+5. Добавить конспект в порядок прохождения в `topic-tracker.md`.
 
 Roadmap не должен превращаться в список технологий ради списка. Темы изучаются с
 приоритетом на то, что реально требуется Java Backend Developer и регулярно
