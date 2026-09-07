@@ -123,8 +123,8 @@ Stream.iterate(1, value -> value <= 5, value -> value + 1)
 ```java
 Stream<User> activeUsers = users.stream()
         .filter(user -> {
-          System.out.println(user.getId());
-          return user.isActive();
+            System.out.println(user.getId());
+            return user.isActive();
         });
 ```
 
@@ -830,25 +830,17 @@ Incident found = incident.orElseThrow(
 
 Не следует без проверки вызывать `get()`.
 
-## orElse и orElseGet
-
-Аргумент `orElse()` вычисляется заранее, даже если значение в `Optional` есть.
-
-```java
-User user = optionalUser.orElse(createGuestUser());
-```
-
-`createGuestUser()` будет вызван всегда.
-
-`orElseGet()` принимает `Supplier` и вычисляет запасное значение только при пустом
-`Optional`.
+Извлекая значение, важно помнить о различии `orElse()` и `orElseGet()`: аргумент
+первого вычисляется всегда, даже когда значение присутствует. Для константы это
+безразлично, для запроса к базе или другого дорогого вызова — нет.
 
 ```java
-User user = optionalUser.orElseGet(this::createGuestUser);
+String name = incident.map(Incident::getTitle).orElse("не найден");
 ```
 
-Для дешёвой константы подходит `orElse()`. Для вычисления или побочного эффекта
-обычно нужен `orElseGet()`.
+Подробно `Optional` разобран в [`09-optional.md`](09-optional.md): создание,
+преобразования, различие `orElse()` и `orElseGet()` и случаи, когда его применять
+не стоит.
 
 ## Checked exceptions внутри lambda
 
@@ -1282,5 +1274,7 @@ Stream не имеет собственного хранилища, не изм�
   функциональные интерфейсы, лежащие в основе операций Stream, и почему `reduce`
   требует `BinaryOperator`
 - [`01-collections-framework.md`](01-collections-framework.md) — источники stream
+- [`09-optional.md`](09-optional.md) — `Optional`, который возвращают
+  `findFirst()`, `findAny()` и `reduce()` без начального значения
 - [`../concurrency/03-locks-atomics-executors.md`](../concurrency/03-locks-atomics-executors.md) —
   `ForkJoinPool.commonPool()`, который использует parallel stream

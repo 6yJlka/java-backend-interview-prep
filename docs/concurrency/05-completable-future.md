@@ -204,7 +204,7 @@ CompletableFuture<Integer> future =
 CompletableFuture
         .supplyAsync(() -> loadUser())
         .thenAccept(user -> {
-            System.out.println(user.getName());
+        System.out.println(user.getName());
         });
 ```
 
@@ -247,7 +247,7 @@ CompletableFuture
 CompletableFuture
         .supplyAsync(() -> loadUser())
         .thenRun(() -> {
-            System.out.println("Операция завершена");
+        System.out.println("Операция завершена");
         });
 ```
 
@@ -644,12 +644,12 @@ cleanup
 
 ```java
 future.whenComplete((result, ex) -> {
-    if (ex != null) {
+        if (ex != null) {
         log.error("Ошибка", ex);
     } else {
-        log.info("Результат: {}", result);
+            log.info("Результат: {}", result);
     }
-});
+            });
 ```
 
 В отличие от `handle()`, `whenComplete()` обычно не используется для преобразования результата.
@@ -774,12 +774,12 @@ ExecutionException
 
 ```java
 try {
-    Integer result = future.get();
+Integer result = future.get();
 } catch (InterruptedException e) {
-    Thread.currentThread().interrupt();
+        Thread.currentThread().interrupt();
 } catch (ExecutionException e) {
-    System.out.println(e.getCause());
-}
+        System.out.println(e.getCause());
+        }
 ```
 
 Если async-операция бросила:
@@ -826,10 +826,10 @@ e.getCause()
 
 ```java
 try {
-    future.join();
+        future.join();
 } catch (CompletionException e) {
-    System.out.println(e.getCause());
-}
+        System.out.println(e.getCause());
+        }
 ```
 
 Сравнение:
@@ -907,7 +907,7 @@ CompletableFuture<User> future =
 ```java
 future.thenApplyAsync(
         user -> process(user),
-        executor
+executor
 );
 ```
 
@@ -956,9 +956,9 @@ CompletableFuture<Integer> future =
         CompletableFuture.completedFuture(10);
 
 future.thenApply(value -> {
-    System.out.println(Thread.currentThread().getName());
-    return value * 2;
-});
+        System.out.println(Thread.currentThread().getName());
+        return value * 2;
+        });
 ```
 
 continuation может выполнить поток, который вызывает `thenApply()`.
@@ -991,7 +991,7 @@ ForkJoinPool.commonPool()
 ```java
 future.thenApplyAsync(
         value -> value * 2,
-        executor
+executor
 );
 ```
 
@@ -1091,7 +1091,7 @@ CompletableFuture
 .thenApplyAsync(
         this::heavyCalculation,
         cpuExecutor
-)
+        )
 ```
 
 тогда Async имеет смысл.
@@ -1881,17 +1881,17 @@ anyOf
 
 ---
 
-## Типичные вопросы на собеседовании
+## Вопросы на собеседовании
 
-### Чем Future отличается от CompletableFuture?
+### 1. Чем Future отличается от CompletableFuture?
 
-`Future` в основном представляет результат асинхронной операции и предоставляет методы вроде `get()` и `cancel()`.
+**Ответ:** `Future` в основном представляет результат асинхронной операции и предоставляет методы вроде `get()` и `cancel()`.
 
 `CompletableFuture` дополнительно позволяет строить цепочки вычислений, комбинировать futures, обрабатывать ошибки и вручную завершать future.
 
----
+### 2. Чем runAsync отличается от supplyAsync?
 
-### Чем runAsync отличается от supplyAsync?
+**Ответ:**
 
 ```text
 runAsync()
@@ -1905,9 +1905,9 @@ supplyAsync()
 → CompletableFuture<T>
 ```
 
----
+### 3. Чем thenApply отличается от thenAccept?
 
-### Чем thenApply отличается от thenAccept?
+**Ответ:**
 
 ```text
 thenApply
@@ -1919,9 +1919,7 @@ thenAccept
 → ничего не возвращает
 ```
 
----
-
-### Чем thenAccept отличается от thenRun?
+### 4. Чем thenAccept отличается от thenRun?
 
 ```text
 thenAccept
@@ -1931,15 +1929,13 @@ thenRun
 → результат предыдущего этапа не получает
 ```
 
-Оба обычно возвращают:
+**Ответ:** Оба обычно возвращают:
 
 ```text
 CompletableFuture<Void>
 ```
 
----
-
-### Чем thenApply отличается от thenCompose?
+### 5. Чем thenApply отличается от thenCompose?
 
 ```text
 thenApply:
@@ -1949,11 +1945,11 @@ thenCompose:
 T → CompletableFuture<R>
 ```
 
-`thenCompose()` используется для dependent async operation и убирает вложенный `CompletableFuture`.
+**Ответ:** `thenCompose()` используется для dependent async operation и убирает вложенный `CompletableFuture`.
 
----
+### 6. Чем thenCompose отличается от thenCombine?
 
-### Чем thenCompose отличается от thenCombine?
+**Ответ:**
 
 ```text
 thenCompose
@@ -1965,9 +1961,9 @@ thenCombine
 → объединяем результаты
 ```
 
----
+### 7. Чем exceptionally отличается от handle?
 
-### Чем exceptionally отличается от handle?
+**Ответ:**
 
 ```text
 exceptionally
@@ -1977,17 +1973,15 @@ handle
 → успех и ошибка
 ```
 
----
+### 8. Чем handle отличается от whenComplete?
 
-### Чем handle отличается от whenComplete?
-
-`handle()` может преобразовать результат и вернуть другое значение.
+**Ответ:** `handle()` может преобразовать результат и вернуть другое значение.
 
 `whenComplete()` чаще используется для side effects и обычно сохраняет исходный результат или ошибку.
 
----
+### 9. Чем get отличается от join?
 
-### Чем get отличается от join?
+**Ответ:**
 
 ```text
 get
@@ -2000,19 +1994,17 @@ join
 → unchecked
 ```
 
----
+### 10. Какой executor используется supplyAsync без executor?
 
-### Какой executor используется supplyAsync без executor?
-
-Обычно:
+**Ответ:** Обычно:
 
 ```text
 ForkJoinPool.commonPool()
 ```
 
----
+### 11. Чем thenApply отличается от thenApplyAsync?
 
-### Чем thenApply отличается от thenApplyAsync?
+**Ответ:**
 
 ```text
 thenApply
@@ -2022,43 +2014,35 @@ thenApplyAsync
 → continuation планируется через async executor
 ```
 
----
-
-### Что возвращает allOf?
+### 12. Что возвращает allOf?
 
 ```java
 CompletableFuture<Void>
 ```
 
-Он не собирает результаты futures автоматически.
+**Ответ:** Он не собирает результаты futures автоматически.
 
----
+### 13. Что возвращает anyOf?
 
-### Что возвращает anyOf?
+**Ответ:**
 
 ```java
 CompletableFuture<Object>
 ```
 
----
+### 14. Отменяет ли anyOf остальные futures?
 
-### Отменяет ли anyOf остальные futures?
+**Ответ:** Нет.
 
-Нет.
+### 15. Ждёт ли anyOf первый успешный future?
 
----
-
-### Ждёт ли anyOf первый успешный future?
-
-Нет.
+**Ответ:** Нет.
 
 Он ждёт первый завершившийся future, включая exceptional completion.
 
----
+### 16. Что означает isDone?
 
-### Что означает isDone?
-
-Future уже завершён:
+**Ответ:** Future уже завершён:
 
 ```text
 успешно
@@ -2068,11 +2052,9 @@ Future уже завершён:
 отменён
 ```
 
----
+### 17. Можно ли завершить CompletableFuture вручную?
 
-### Можно ли завершить CompletableFuture вручную?
-
-Да:
+**Ответ:** Да:
 
 ```java
 complete(value)
@@ -2083,8 +2065,6 @@ complete(value)
 ```java
 completeExceptionally(exception)
 ```
-
----
 
 ## Итоговая шпаргалка
 

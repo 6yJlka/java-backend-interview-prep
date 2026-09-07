@@ -39,7 +39,7 @@ JVM может поддерживать очень большое количес
 
 ```java
 Thread thread = new Thread(() -> {
-    doWork();
+  doWork();
 });
 
 thread.start();
@@ -410,7 +410,7 @@ HTTP-запрос занимает 500 мс
 
 ```java
 Thread thread = Thread.startVirtualThread(() -> {
-    System.out.println("Hello from virtual thread");
+  System.out.println("Hello from virtual thread");
 });
 ```
 
@@ -426,7 +426,7 @@ Thread thread = Thread.startVirtualThread(() -> {
 Thread thread = Thread.ofVirtual()
         .name("request-handler")
         .start(() -> {
-            handleRequest();
+          handleRequest();
         });
 ```
 
@@ -446,10 +446,10 @@ Thread.currentThread().isVirtual();
 
 ```java
 Thread.startVirtualThread(() -> {
-    System.out.println(
-            Thread.currentThread().isVirtual()
+        System.out.println(
+        Thread.currentThread().isVirtual()
     );
-});
+            });
 ```
 
 Результат:
@@ -472,12 +472,12 @@ Executors.newVirtualThreadPerTaskExecutor()
 
 ```java
 try (ExecutorService executor =
-         Executors.newVirtualThreadPerTaskExecutor()) {
+        Executors.newVirtualThreadPerTaskExecutor()) {
 
-    executor.submit(() -> task1());
-    executor.submit(() -> task2());
-    executor.submit(() -> task3());
-}
+        executor.submit(() -> task1());
+        executor.submit(() -> task2());
+        executor.submit(() -> task3());
+        }
 ```
 
 Основная модель:
@@ -582,22 +582,22 @@ Semaphore semaphore = new Semaphore(30);
 Semaphore semaphore = new Semaphore(30);
 
 try (ExecutorService executor =
-         Executors.newVirtualThreadPerTaskExecutor()) {
+        Executors.newVirtualThreadPerTaskExecutor()) {
 
-    for (Request request : requests) {
+        for (Request request : requests) {
         executor.submit(() -> {
-            semaphore.acquire();
+        semaphore.acquire();
 
             try {
-                callExternalApi(request);
+callExternalApi(request);
             } finally {
-                semaphore.release();
+                    semaphore.release();
             }
 
-            return null;
-        });
-    }
-}
+                    return null;
+                    });
+                    }
+                    }
 ```
 
 Получается:
@@ -756,7 +756,7 @@ Virtual Thread A
 
 ```java
 synchronized (lock) {
-    response = remoteService.call();
+response = remoteService.call();
 }
 ```
 
@@ -788,8 +788,8 @@ Virtual Thread
 
 ```java
 synchronized (lock) {
-    counter++;
-}
+counter++;
+        }
 ```
 
 Критическая секция выполняется очень быстро.
@@ -814,9 +814,9 @@ blocking operation
 lock.lock();
 
 try {
-    // критическая секция
-} finally {
-    lock.unlock();
+        // критическая секция
+        } finally {
+        lock.unlock();
 }
 ```
 
@@ -979,16 +979,16 @@ Virtual Threads:
 
 ```java
 try (ExecutorService executor =
-         Executors.newVirtualThreadPerTaskExecutor()) {
+        Executors.newVirtualThreadPerTaskExecutor()) {
 
-    Future<User> userFuture =
-            executor.submit(() -> loadUser());
+Future<User> userFuture =
+        executor.submit(() -> loadUser());
 
-    Future<Orders> ordersFuture =
-            executor.submit(() -> loadOrders());
+Future<Orders> ordersFuture =
+        executor.submit(() -> loadOrders());
 
-    User user = userFuture.get();
-    Orders orders = ordersFuture.get();
+User user = userFuture.get();
+Orders orders = ordersFuture.get();
 }
 ```
 
@@ -1002,7 +1002,7 @@ try (ExecutorService executor =
 
 ```java
 try (ExecutorService executor = ...) {
-}
+        }
 ```
 
 Это удобный способ контролировать lifecycle executor.
@@ -1028,16 +1028,16 @@ daemon threads
 ```java
 public static void main(String[] args) {
 
-    Thread.startVirtualThread(() -> {
-        try {
-            Thread.sleep(5000);
-            System.out.println("done");
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    });
+  Thread.startVirtualThread(() -> {
+    try {
+      Thread.sleep(5000);
+      System.out.println("done");
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    }
+  });
 
-    System.out.println("main finished");
+  System.out.println("main finished");
 }
 ```
 
@@ -1057,7 +1057,7 @@ JVM может завершиться
 
 ```java
 Thread thread = Thread.startVirtualThread(() -> {
-    doWork();
+  doWork();
 });
 
 thread.join();
@@ -1075,11 +1075,11 @@ Virtual threads поддерживают механизм interruption.
 
 ```java
 Thread thread = Thread.startVirtualThread(() -> {
-    try {
-        Thread.sleep(10_000);
-    } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-    }
+  try {
+    Thread.sleep(10_000);
+  } catch (InterruptedException e) {
+    Thread.currentThread().interrupt();
+  }
 });
 
 thread.interrupt();
@@ -1097,10 +1097,10 @@ thread.interrupt();
 
 ```java
 try (ExecutorService executor =
-         Executors.newVirtualThreadPerTaskExecutor()) {
+        Executors.newVirtualThreadPerTaskExecutor()) {
 
-    Future<?> future =
-            executor.submit(() -> longOperation());
+Future<?> future =
+        executor.submit(() -> longOperation());
 
     future.cancel(true);
 }
@@ -1305,7 +1305,7 @@ Connection pool может иметь только 20 connections и стане�
 
 ```java
 synchronized (lock) {
-    slowBlockingOperation();
+slowBlockingOperation();
 }
 ```
 
@@ -1335,43 +1335,43 @@ Virtual Threads обычно повышают способность прило�
 
 ---
 
-## Типичные вопросы на собеседовании
+## Вопросы на собеседовании
 
-### Что такое Virtual Thread?
+### 1. Что такое Virtual Thread?
 
-Лёгкий поток, управляемый JVM, который позволяет эффективно поддерживать большое количество одновременно выполняющихся и блокирующих задач.
+**Ответ:** Лёгкий поток, управляемый JVM, который позволяет эффективно поддерживать большое количество одновременно выполняющихся и блокирующих задач.
 
-### Чем Virtual Thread отличается от Platform Thread?
+### 2. Чем Virtual Thread отличается от Platform Thread?
 
-Platform thread тесно связан с OS thread и является сравнительно дорогим ресурсом.
+**Ответ:** Platform thread тесно связан с OS thread и является сравнительно дорогим ресурсом.
 
 Virtual thread значительно легче и может временно выполняться на одном из carrier platform threads.
 
-### Что такое Carrier Thread?
+### 3. Что такое Carrier Thread?
 
-Platform thread, на котором в данный момент выполняется virtual thread.
+**Ответ:** Platform thread, на котором в данный момент выполняется virtual thread.
 
-### Что такое Mount?
+### 4. Что такое Mount?
 
-Момент, когда virtual thread начинает выполняться на carrier thread.
+**Ответ:** Момент, когда virtual thread начинает выполняться на carrier thread.
 
-### Что такое Unmount?
+### 5. Что такое Unmount?
 
-Снятие virtual thread с carrier, например во время подходящей блокирующей операции.
+**Ответ:** Снятие virtual thread с carrier, например во время подходящей блокирующей операции.
 
-### Почему Virtual Threads хорошо подходят для I/O-bound задач?
+### 6. Почему Virtual Threads хорошо подходят для I/O-bound задач?
 
-Потому что во время ожидания I/O virtual thread может освободить carrier thread.
+**Ответ:** Потому что во время ожидания I/O virtual thread может освободить carrier thread.
 
-### Почему Virtual Threads почти не помогают CPU-bound задачам?
+### 7. Почему Virtual Threads почти не помогают CPU-bound задачам?
 
-CPU-bound задача постоянно выполняет вычисления и удерживает carrier.
+**Ответ:** CPU-bound задача постоянно выполняет вычисления и удерживает carrier.
 
 Количество CPU cores не увеличивается.
 
-### Нужно ли создавать pool Virtual Threads?
+### 8. Нужно ли создавать pool Virtual Threads?
 
-Обычно нет.
+**Ответ:** Обычно нет.
 
 Рекомендуемая модель:
 
@@ -1380,67 +1380,67 @@ one task
 → one virtual thread
 ```
 
-### Как ограничить количество одновременных запросов к внешнему API?
+### 9. Как ограничить количество одновременных запросов к внешнему API?
 
-Ограничивать конкретный ресурс, например через:
+**Ответ:** Ограничивать конкретный ресурс, например через:
 
 ```java
 Semaphore semaphore = new Semaphore(30);
 ```
 
-### Что произойдёт, если 1000 Virtual Threads обращаются к БД, а DB pool содержит 20 connections?
+### 10. Что произойдёт, если 1000 Virtual Threads обращаются к БД, а DB pool содержит 20 connections?
 
-Около 20 задач смогут одновременно использовать connections.
+**Ответ:** Около 20 задач смогут одновременно использовать connections.
 
 Остальные будут ждать свободное соединение.
 
-### Что такое Pinning?
+### 11. Что такое Pinning?
 
-Ситуация, когда заблокированный virtual thread не может быть unmounted с carrier.
+**Ответ:** Ситуация, когда заблокированный virtual thread не может быть unmounted с carrier.
 
 Carrier остаётся занят вместе с ним.
 
-### Почему Pinning плохо?
+### 12. Почему Pinning плохо?
 
-Carrier thread не может выполнять другие virtual threads.
+**Ответ:** Carrier thread не может выполнять другие virtual threads.
 
 При большом количестве pinning scalability уменьшается.
 
-### Что важно знать о Pinning в Java 21?
+### 13. Что важно знать о Pinning в Java 21?
 
-Длительная blocking operation внутри `synchronized` может привести к pinning.
+**Ответ:** Длительная blocking operation внутри `synchronized` может привести к pinning.
 
-### Можно ли использовать ThreadLocal с Virtual Threads?
+### 14. Можно ли использовать ThreadLocal с Virtual Threads?
 
-Да.
+**Ответ:** Да.
 
 Но при огромном количестве virtual threads нельзя бездумно хранить большие объекты в `ThreadLocal`.
 
-### Virtual Threads являются daemon threads?
+### 15. Virtual Threads являются daemon threads?
 
-Да.
+**Ответ:** Да.
 
 Virtual thread сам по себе не удерживает JVM живой.
 
-### Как дождаться Virtual Thread?
+### 16. Как дождаться Virtual Thread?
+
+**Ответ:**
 
 ```java
 thread.join();
 ```
 
-### Делают ли Virtual Threads код автоматически thread-safe?
+### 17. Делают ли Virtual Threads код автоматически thread-safe?
 
-Нет.
+**Ответ:** Нет.
 
 Правила синхронизации и Java Memory Model остаются теми же.
 
-### Virtual Threads заменяют CompletableFuture?
+### 18. Virtual Threads заменяют CompletableFuture?
 
-Нет.
+**Ответ:** Нет.
 
 Они решают разные задачи.
-
----
 
 ## Сравнение Platform Threads и Virtual Threads
 

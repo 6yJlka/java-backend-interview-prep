@@ -73,10 +73,10 @@ Map<String, Integer> map =
         Collections.synchronizedMap(new HashMap<>());
 
 synchronized (map) {
-    for (Map.Entry<String, Integer> entry : map.entrySet()) {
+        for (Map.Entry<String, Integer> entry : map.entrySet()) {
         System.out.println(entry);
     }
-}
+            }
 ```
 
 Для активно используемой общей `Map` обычно предпочтительнее `ConcurrentHashMap`.
@@ -116,7 +116,7 @@ map.remove(key);
 
 ```java
 if (!map.containsKey("user")) {
-    map.put("user", 1);
+        map.put("user", 1);
 }
 ```
 
@@ -160,7 +160,7 @@ put("user", 1)
 
 ```java
 if (!map.containsKey("user")) {
-    map.put("user", 1);
+        map.put("user", 1);
 }
 ```
 
@@ -201,7 +201,7 @@ ConcurrentHashMap<String, List<String>> map =
 map.computeIfAbsent(
         "java",
         key -> new ArrayList<>()
-);
+        );
 ```
 
 `computeIfAbsent()` удобно использовать для ленивого создания значений.
@@ -219,7 +219,7 @@ ConcurrentHashMap<String, List<String>> map =
 map.computeIfAbsent(
         "java",
         key -> new ArrayList<>()
-).add("Spring");
+        ).add("Spring");
 ```
 
 `computeIfAbsent()` корректно создаст значение для ключа.
@@ -273,7 +273,7 @@ counts.put("java", 0);
 counts.put(
         "java",
         counts.get("java") + 1
-);
+        );
 ```
 
 Несмотря на использование `ConcurrentHashMap`, здесь есть несколько действий:
@@ -320,8 +320,8 @@ java = 1
 ```java
 counts.compute(
         "java",
-        (key, value) -> value + 1
-);
+                (key, value) -> value + 1
+        );
 ```
 
 Для счётчиков часто особенно удобно использовать `merge()`:
@@ -329,7 +329,7 @@ counts.compute(
 ```java
 counts.merge(
         "java",
-        1,
+                1,
         Integer::sum
 );
 ```
@@ -368,10 +368,10 @@ java = 6
 
 ```java
 if (!counts.containsKey(key)) {
-    counts.put(key, 1);
+        counts.put(key, 1);
 } else {
-    counts.put(key, counts.get(key) + 1);
-}
+        counts.put(key, counts.get(key) + 1);
+        }
 ```
 
 лучше использовать:
@@ -390,7 +390,7 @@ counts.merge(key, 1, Integer::sum);
 
 ```java
 for (Map.Entry<String, Integer> entry : map.entrySet()) {
-    System.out.println(entry);
+        System.out.println(entry);
 }
 ```
 
@@ -536,7 +536,7 @@ CopyOnWriteArrayList<Listener> listeners =
 
 ```java
 for (Listener listener : listeners) {
-    listener.onEvent(event);
+        listener.onEvent(event);
 }
 ```
 
@@ -591,8 +591,8 @@ iterator продолжает работать с ним
 
 ```java
 while (iterator.hasNext()) {
-    System.out.println(iterator.next());
-}
+        System.out.println(iterator.next());
+        }
 ```
 
 выведет:
@@ -903,9 +903,9 @@ InterruptedException
 
 ```java
 try {
-    queue.put(task);
+        queue.put(task);
 } catch (InterruptedException e) {
-    Thread.currentThread().interrupt();
+        Thread.currentThread().interrupt();
 }
 ```
 
@@ -1276,12 +1276,12 @@ queue.offer(task);
 
 ```java
 while (true) {
-    Task task = queue.poll();
+Task task = queue.poll();
 
     if (task != null) {
-        process(task);
+process(task);
     }
-}
+            }
 ```
 
 Если `ConcurrentLinkedQueue` долго остаётся пустой:
@@ -1316,8 +1316,8 @@ busy spin
 
 ```java
 while (!Thread.currentThread().isInterrupted()) {
-    Task task = queue.take();
-    process(task);
+Task task = queue.take();
+process(task);
 }
 ```
 
@@ -1556,7 +1556,7 @@ poll(timeout, unit)
 
 ```java
 if (!map.containsKey(key)) {
-    map.put(key, value);
+        map.put(key, value);
 }
 ```
 
@@ -1621,7 +1621,7 @@ producer → очередь → consumer
 
 ```java
 while (true) {
-    Task task = queue.poll();
+Task task = queue.poll();
 }
 ```
 
@@ -1656,8 +1656,8 @@ Concurrent queues напрямую связаны с устройством `Thr
 ```java
 new ThreadPoolExecutor(
         2,
-        4,
-        30,
+                4,
+                30,
         TimeUnit.SECONDS,
         new ArrayBlockingQueue<>(10)
 );
@@ -1703,9 +1703,9 @@ SynchronousQueue
 
 ---
 
-## Типичные вопросы на собеседовании
+## Вопросы на собеседовании
 
-### Почему ConcurrentHashMap не делает этот код атомарным?
+### 1. Почему ConcurrentHashMap не делает этот код атомарным?
 
 ```java
 if (!map.containsKey(key)) {
@@ -1713,7 +1713,7 @@ if (!map.containsKey(key)) {
 }
 ```
 
-Потому что `containsKey()` и `put()` являются двумя отдельными операциями.
+**Ответ:** Потому что `containsKey()` и `put()` являются двумя отдельными операциями.
 
 Другой поток может изменить `Map` между ними.
 
@@ -1723,15 +1723,13 @@ if (!map.containsKey(key)) {
 putIfAbsent()
 ```
 
----
-
-### Почему get() + put() небезопасны для счётчика?
+### 2. Почему get() + put() небезопасны для счётчика?
 
 ```java
 map.put(key, map.get(key) + 1);
 ```
 
-Потому что операция состоит из чтения, вычисления и записи.
+**Ответ:** Потому что операция состоит из чтения, вычисления и записи.
 
 Несколько потоков могут прочитать одинаковое старое значение и потерять одно из обновлений.
 
@@ -1747,47 +1745,35 @@ compute()
 merge()
 ```
 
----
+### 3. Чем ConcurrentHashMap отличается от synchronizedMap?
 
-### Чем ConcurrentHashMap отличается от synchronizedMap?
-
-`synchronizedMap` является синхронизирующей обёрткой над обычной `Map` и сильнее опирается на общий монитор.
+**Ответ:** `synchronizedMap` является синхронизирующей обёрткой над обычной `Map` и сильнее опирается на общий монитор.
 
 `ConcurrentHashMap` изначально разработан для конкурентного доступа и позволяет более высокую степень параллелизма.
 
----
+### 4. Как ведёт себя iterator ConcurrentHashMap?
 
-### Как ведёт себя iterator ConcurrentHashMap?
-
-Он weakly consistent.
+**Ответ:** Он weakly consistent.
 
 Он может увидеть конкурентные изменения, а может не увидеть.
 
----
+### 5. Почему CopyOnWriteArrayList подходит для большого количества чтений?
 
-### Почему CopyOnWriteArrayList подходит для большого количества чтений?
+**Ответ:** Потому что изменение создаёт новую копию внутреннего массива, а существующие читатели могут продолжать работать со старой неизменяемой версией.
 
-Потому что изменение создаёт новую копию внутреннего массива, а существующие читатели могут продолжать работать со старой неизменяемой версией.
+### 6. Почему CopyOnWriteArrayList плох при частых записях?
 
----
+**Ответ:** Потому что при каждой изменяющей операции необходимо копировать внутренний массив.
 
-### Почему CopyOnWriteArrayList плох при частых записях?
+### 7. Увидит ли существующий iterator CopyOnWriteArrayList новый элемент?
 
-Потому что при каждой изменяющей операции необходимо копировать внутренний массив.
-
----
-
-### Увидит ли существующий iterator CopyOnWriteArrayList новый элемент?
-
-Нет.
+**Ответ:** Нет.
 
 Он работает со snapshot массива, существовавшим в момент создания iterator.
 
----
+### 8. Чем offer() отличается от put()?
 
-### Чем offer() отличается от put()?
-
-Для заполненной `BlockingQueue`:
+**Ответ:** Для заполненной `BlockingQueue`:
 
 ```text
 offer()
@@ -1797,11 +1783,9 @@ put()
 → ждёт свободного места
 ```
 
----
+### 9. Чем poll() отличается от take()?
 
-### Чем poll() отличается от take()?
-
-Для пустой `BlockingQueue`:
+**Ответ:** Для пустой `BlockingQueue`:
 
 ```text
 poll()
@@ -1811,11 +1795,9 @@ take()
 → ждёт появления элемента
 ```
 
----
+### 10. Что такое backpressure?
 
-### Что такое backpressure?
-
-Это механизм, при котором более медленная часть системы ограничивает скорость источника нагрузки.
+**Ответ:** Это механизм, при котором более медленная часть системы ограничивает скорость источника нагрузки.
 
 Например:
 
@@ -1829,31 +1811,25 @@ put() блокируется
 producer замедляется
 ```
 
----
-
-### Какова capacity SynchronousQueue?
+### 11. Какова capacity SynchronousQueue?
 
 ```text
 0
 ```
 
-Она не хранит элементы, а непосредственно передаёт их между producer и consumer.
+**Ответ:** Она не хранит элементы, а непосредственно передаёт их между producer и consumer.
 
----
+### 12. Почему CachedThreadPool может создать очень много потоков?
 
-### Почему CachedThreadPool может создать очень много потоков?
-
-Потому что он использует `SynchronousQueue`, которая не хранит задачи.
+**Ответ:** Потому что он использует `SynchronousQueue`, которая не хранит задачи.
 
 Если свободного worker нет, а приходит новая задача, pool может создать нового worker.
 
 При большом количестве долгих задач число потоков может быстро вырасти.
 
----
+### 13. Чем ConcurrentLinkedQueue отличается от BlockingQueue?
 
-### Чем ConcurrentLinkedQueue отличается от BlockingQueue?
-
-`ConcurrentLinkedQueue` неблокирующая.
+**Ответ:** `ConcurrentLinkedQueue` неблокирующая.
 
 При пустой очереди:
 
@@ -1871,11 +1847,9 @@ take();
 
 которые могут заставить поток ждать появления элемента.
 
----
+### 14. Что такое busy waiting?
 
-### Что такое busy waiting?
-
-Это ситуация, когда поток постоянно проверяет условие вместо того, чтобы заблокироваться и ждать события.
+**Ответ:** Это ситуация, когда поток постоянно проверяет условие вместо того, чтобы заблокироваться и ждать события.
 
 Например:
 
@@ -1890,8 +1864,6 @@ while (true) {
 ```
 
 при постоянно пустой `ConcurrentLinkedQueue` может бессмысленно загружать CPU.
-
----
 
 ## Итоговая шпаргалка
 
