@@ -5,11 +5,11 @@
 ```java
 public class Object {
 
-    public boolean equals(Object object) {
-        return this == object;
-    }
+  public boolean equals(Object object) {
+    return this == object;
+  }
 
-    public native int hashCode();
+  public native int hashCode();
 }
 ```
 
@@ -56,11 +56,11 @@ System.out.println(first == second); // true
 ```java
 public final class UserKey {
 
-    private final Long id;
+  private final Long id;
 
-    public UserKey(Long id) {
-        this.id = id;
-    }
+  public UserKey(Long id) {
+    this.id = id;
+  }
 }
 ```
 
@@ -84,15 +84,15 @@ first.equals(second); // false
 ```java
 @Override
 public boolean equals(Object object) {
-    if (this == object) {
-        return true;
-    }
+  if (this == object) {
+    return true;
+  }
 
-    if (!(object instanceof UserKey other)) {
-        return false;
-    }
+  if (!(object instanceof UserKey other)) {
+    return false;
+  }
 
-    return id.equals(other.id);
+  return id.equals(other.id);
 }
 ```
 
@@ -130,7 +130,7 @@ x.equals(y) == y.equals(x)
 
 ```java
 x.equals(y) == true
-y.equals(z) == true
+        y.equals(z) == true
 ```
 
 то:
@@ -166,15 +166,15 @@ x.equals(null) == false
 ```java
 @Override
 public boolean equals(Object object) {
-    if (this == object) {
-        return true;
-    }
+  if (this == object) {
+    return true;
+  }
 
-    if (!(object instanceof UserKey other)) {
-        return false;
-    }
+  if (!(object instanceof UserKey other)) {
+    return false;
+  }
 
-    return id.equals(other.id);
+  return id.equals(other.id);
 }
 ```
 
@@ -182,8 +182,8 @@ public boolean equals(Object object) {
 
 ```java
 if (this == object) {
-    return true;
-}
+        return true;
+        }
 ```
 
 Если ссылки одинаковые, дополнительное сравнение не требуется.
@@ -192,8 +192,8 @@ if (this == object) {
 
 ```java
 if (!(object instanceof UserKey other)) {
-    return false;
-}
+        return false;
+        }
 ```
 
 Эта конструкция:
@@ -301,11 +301,11 @@ first.equals(second) == true
 ```java
 @Override
 public boolean equals(Object object) {
-    if (!(object instanceof UserKey other)) {
-        return false;
-    }
+  if (!(object instanceof UserKey other)) {
+    return false;
+  }
 
-    return id.equals(other.id);
+  return id.equals(other.id);
 }
 ```
 
@@ -346,29 +346,29 @@ String value = map.get(second); // может вернуть null
 ```java
 public final class UserKey {
 
-    private final Long id;
+  private final Long id;
 
-    public UserKey(Long id) {
-        this.id = Objects.requireNonNull(id);
+  public UserKey(Long id) {
+    this.id = Objects.requireNonNull(id);
+  }
+
+  @Override
+  public boolean equals(Object object) {
+    if (this == object) {
+      return true;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) {
-            return true;
-        }
-
-        if (!(object instanceof UserKey other)) {
-            return false;
-        }
-
-        return id.equals(other.id);
+    if (!(object instanceof UserKey other)) {
+      return false;
     }
 
-    @Override
-    public int hashCode() {
-        return id.hashCode();
-    }
+    return id.equals(other.id);
+  }
+
+  @Override
+  public int hashCode() {
+    return id.hashCode();
+  }
 }
 ```
 
@@ -381,35 +381,35 @@ public final class UserKey {
 ```java
 public final class IncidentKey {
 
-    private final String category;
-    private final IncidentPriority priority;
+  private final String category;
+  private final IncidentPriority priority;
 
-    public IncidentKey(
-            String category,
-            IncidentPriority priority
-    ) {
-        this.category = category;
-        this.priority = priority;
+  public IncidentKey(
+          String category,
+          IncidentPriority priority
+  ) {
+    this.category = category;
+    this.priority = priority;
+  }
+
+  @Override
+  public boolean equals(Object object) {
+    if (this == object) {
+      return true;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) {
-            return true;
-        }
-
-        if (!(object instanceof IncidentKey other)) {
-            return false;
-        }
-
-        return Objects.equals(category, other.category)
-                && priority == other.priority;
+    if (!(object instanceof IncidentKey other)) {
+      return false;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(category, priority);
-    }
+    return Objects.equals(category, other.category)
+            && priority == other.priority;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(category, priority);
+  }
 }
 ```
 
@@ -451,7 +451,7 @@ return Objects.equals(email, other.email);
 ```java
 @Override
 public int hashCode() {
-    return Objects.hash(category, priority);
+  return Objects.hash(category, priority);
 }
 ```
 
@@ -501,12 +501,12 @@ public record Money(
 ```java
 public class UserKey {
 
-    private String email;
+  private String email;
 
-    @Override
-    public int hashCode() {
-        return email.hashCode();
-    }
+  @Override
+  public int hashCode() {
+    return email.hashCode();
+  }
 }
 ```
 
@@ -583,8 +583,8 @@ PRESENT         → служебное значение
 
 ```java
 if (!(object instanceof UserKey other)) {
-    return false;
-}
+        return false;
+        }
 ```
 
 Принимает объект указанного класса и его наследников.
@@ -593,8 +593,8 @@ if (!(object instanceof UserKey other)) {
 
 ```java
 if (object == null || getClass() != object.getClass()) {
-    return false;
-}
+        return false;
+        }
 ```
 
 Требует точного совпадения классов.
@@ -610,13 +610,13 @@ if (object == null || getClass() != object.getClass()) {
 ```java
 class Point {
 
-    private int x;
-    private int y;
+  private int x;
+  private int y;
 }
 
 class ColoredPoint extends Point {
 
-    private String color;
+  private String color;
 }
 ```
 
@@ -678,7 +678,7 @@ Set<Incident> incidents = new HashSet<>();
 
 Incident incident = new Incident(...);
 
-incidents.add(incident);
+        incidents.add(incident);
 
 entityManager.persist(incident);
 ```
@@ -879,7 +879,7 @@ equals true
 
 ---
 
-### См. также
+## См. также
 
 - [`02-map.md`](02-map.md) — как контракт влияет на bucket и поиск записи
 - [`07-oop-object-string-wrappers.md`](07-oop-object-string-wrappers.md) —

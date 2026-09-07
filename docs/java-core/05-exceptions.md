@@ -9,8 +9,8 @@
 
 ```java
 public User getUser(long userId) {
-    return userRepository.findById(userId)
-            .orElseThrow(() -> new UserNotFoundException(userId));
+  return userRepository.findById(userId)
+          .orElseThrow(() -> new UserNotFoundException(userId));
 }
 ```
 
@@ -115,7 +115,7 @@ Checked exception компилятор заставляет обработать
 
 ```java
 public String readTemplate(Path path) throws IOException {
-    return Files.readString(path);
+  return Files.readString(path);
 }
 ```
 
@@ -138,8 +138,8 @@ Unchecked exception не требуется объявлять или перех
 
 ```java
 public Incident getIncident(long incidentId) {
-    return incidentRepository.findById(incidentId)
-            .orElseThrow(() -> new IncidentNotFoundException(incidentId));
+  return incidentRepository.findById(incidentId)
+          .orElseThrow(() -> new IncidentNotFoundException(incidentId));
 }
 ```
 
@@ -161,7 +161,7 @@ public Incident getIncident(long incidentId) {
 
 ```java
 if (reporterId <= 0) {
-    throw new IllegalArgumentException("reporterId must be positive");
+        throw new IllegalArgumentException("reporterId must be positive");
 }
 ```
 
@@ -169,8 +169,8 @@ if (reporterId <= 0) {
 
 ```java
 public Incident importIncident(Path path) throws IOException {
-    String content = Files.readString(path);
-    return parseIncident(content);
+  String content = Files.readString(path);
+  return parseIncident(content);
 }
 ```
 
@@ -190,8 +190,8 @@ JVM ищет подходящий `catch` сначала в текущем ме�
 
 ```java
 public IncidentResponse findIncident(long incidentId) {
-    Incident incident = incidentService.getIncident(incidentId);
-    return mapper.toResponse(incident);
+  Incident incident = incidentService.getIncident(incidentId);
+  return mapper.toResponse(incident);
 }
 ```
 
@@ -232,10 +232,10 @@ Caused by: java.sql.SQLException: connection closed
 
 ```java
 try {
-    String content = Files.readString(path);
+String content = Files.readString(path);
     importService.importIncident(content);
 } catch (IOException exception) {
-    throw new IncidentImportException("Cannot read " + path, exception);
+        throw new IncidentImportException("Cannot read " + path, exception);
 }
 ```
 
@@ -254,11 +254,11 @@ try {
 
 ```java
 try {
-    importIncident(path);
+importIncident(path);
 } catch (NoSuchFileException exception) {
-    handleMissingFile(exception);
+handleMissingFile(exception);
 } catch (IOException exception) {
-    handleReadFailure(exception);
+handleReadFailure(exception);
 }
 ```
 
@@ -271,9 +271,9 @@ try {
 
 ```java
 try {
-    loadIncident(source);
+loadIncident(source);
 } catch (IOException | ParseException exception) {
-    throw new IncidentImportException("Import failed", exception);
+        throw new IncidentImportException("Import failed", exception);
 }
 ```
 
@@ -290,9 +290,9 @@ Lock lock = new ReentrantLock();
 lock.lock();
 
 try {
-    updateIncident();
+updateIncident();
 } finally {
-    lock.unlock();
+        lock.unlock();
 }
 ```
 
@@ -305,11 +305,11 @@ try-with-resources.
 
 ```java
 public int value() {
-    try {
-        return 1;
-    } finally {
-        return 2;
-    }
+  try {
+    return 1;
+  } finally {
+    return 2;
+  }
 }
 ```
 
@@ -319,11 +319,11 @@ public int value() {
 
 ```java
 public int value() {
-    try {
-        throw new IllegalStateException("failure");
-    } finally {
-        return 2;
-    }
+  try {
+    throw new IllegalStateException("failure");
+  } finally {
+    return 2;
+  }
 }
 ```
 
@@ -346,7 +346,7 @@ Try-with-resources автоматически закрывает ресурсы.
 
 ```java
 try (BufferedReader reader = Files.newBufferedReader(path)) {
-    return reader.readLine();
+        return reader.readLine();
 }
 ```
 
@@ -360,10 +360,10 @@ try (BufferedReader reader = Files.newBufferedReader(path)) {
 ```java
 public final class IncidentExport implements AutoCloseable {
 
-    @Override
-    public void close() {
-        System.out.println("export closed");
-    }
+  @Override
+  public void close() {
+    System.out.println("export closed");
+  }
 }
 ```
 
@@ -382,10 +382,10 @@ void close() throws Exception;
 
 ```java
 try (
-        InputStream input = Files.newInputStream(source);
-        OutputStream output = Files.newOutputStream(target)
+InputStream input = Files.newInputStream(source);
+OutputStream output = Files.newOutputStream(target)
 ) {
-    input.transferTo(output);
+        input.transferTo(output);
 }
 ```
 
@@ -407,7 +407,7 @@ try (
 
 ```java
 try (IncidentExport export = openExport()) {
-    throw new IllegalStateException("write failed");
+        throw new IllegalStateException("write failed");
 }
 ```
 
@@ -415,7 +415,7 @@ try (IncidentExport export = openExport()) {
 
 ```java
 for (Throwable suppressed : exception.getSuppressed()) {
-    log.debug("Resource closing failed", suppressed);
+        log.debug("Resource closing failed", suppressed);
 }
 ```
 
@@ -429,18 +429,18 @@ for (Throwable suppressed : exception.getSuppressed()) {
 ```java
 public class UserNotFoundException extends RuntimeException {
 
-    public UserNotFoundException(long userId) {
-        super("User not found: " + userId);
-    }
+  public UserNotFoundException(long userId) {
+    super("User not found: " + userId);
+  }
 }
 ```
 
 ```java
 public class IncidentNotFoundException extends RuntimeException {
 
-    public IncidentNotFoundException(long incidentId) {
-        super("Incident not found: " + incidentId);
-    }
+  public IncidentNotFoundException(long incidentId) {
+    super("Incident not found: " + incidentId);
+  }
 }
 ```
 
@@ -454,20 +454,20 @@ Checked-собственное исключение наследуют от `Exc
 ```java
 public class IncidentImportException extends RuntimeException {
 
-    public IncidentImportException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public IncidentImportException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }
 ```
 
 ```java
 try {
-    return Files.readString(path);
+        return Files.readString(path);
 } catch (IOException exception) {
-    throw new IncidentImportException(
+        throw new IncidentImportException(
             "Cannot import incident from " + path,
             exception
-    );
+            );
 }
 ```
 
@@ -480,9 +480,9 @@ try {
 
 ```java
 try {
-    updateIncident();
+updateIncident();
 } catch (Exception exception) {
-}
+        }
 ```
 
 Вызывающий код решит, что операция успешна. Транзакция или внешний ответ могут не
@@ -524,11 +524,11 @@ try {
 
 ```java
 public void runScheduledImport() {
-    try {
-        importService.importAll();
-    } catch (Exception exception) {
-        log.error("Scheduled incident import failed", exception);
-    }
+  try {
+    importService.importAll();
+  } catch (Exception exception) {
+    log.error("Scheduled incident import failed", exception);
+  }
 }
 ```
 
@@ -546,13 +546,13 @@ public void runScheduledImport() {
 
 ```java
 public Incident createIncident(long reporterId) {
-    if (reporterId <= 0) {
-        throw new IllegalArgumentException(
-                "reporterId must be positive"
-        );
-    }
+  if (reporterId <= 0) {
+    throw new IllegalArgumentException(
+            "reporterId must be positive"
+    );
+  }
 
-    return createForReporter(reporterId);
+  return createForReporter(reporterId);
 }
 ```
 
@@ -566,13 +566,13 @@ public Incident createIncident(long reporterId) {
 
 ```java
 public void resolve() {
-    if (status != IncidentStatus.IN_PROGRESS) {
-        throw new IllegalStateException(
-                "Only an incident in progress can be resolved"
-        );
-    }
+  if (status != IncidentStatus.IN_PROGRESS) {
+    throw new IllegalStateException(
+            "Only an incident in progress can be resolved"
+    );
+  }
 
-    status = IncidentStatus.RESOLVED;
+  status = IncidentStatus.RESOLVED;
 }
 ```
 
@@ -589,10 +589,10 @@ public void resolve() {
 
 ```java
 public IncidentService(IncidentRepository incidentRepository) {
-    this.incidentRepository = Objects.requireNonNull(
-            incidentRepository,
-            "incidentRepository must not be null"
-    );
+  this.incidentRepository = Objects.requireNonNull(
+          incidentRepository,
+          "incidentRepository must not be null"
+  );
 }
 ```
 
@@ -618,16 +618,16 @@ public Incident createIncident(
         IncidentPriority priority,
         long reporterId
 ) {
-    User reporter = userRepository.findById(reporterId)
-            .orElseThrow(() -> new UserNotFoundException(reporterId));
+  User reporter = userRepository.findById(reporterId)
+          .orElseThrow(() -> new UserNotFoundException(reporterId));
 
-    return incidentRepository.save(new Incident(
-            title,
-            description,
-            category,
-            priority,
-            reporter
-    ));
+  return incidentRepository.save(new Incident(
+          title,
+          description,
+          category,
+          priority,
+          reporter
+  ));
 }
 ```
 
@@ -639,7 +639,7 @@ public Incident createIncident(
 ```java
 @Transactional(rollbackFor = IOException.class)
 public void importIncidents(Path path) throws IOException {
-    importFrom(path);
+  importFrom(path);
 }
 ```
 
@@ -690,11 +690,11 @@ paths.stream()
 ```java
 List<String> contents = paths.stream()
         .map(path -> {
-            try {
-                return Files.readString(path);
-            } catch (IOException exception) {
-                throw new UncheckedIOException(exception);
-            }
+          try {
+            return Files.readString(path);
+          } catch (IOException exception) {
+            throw new UncheckedIOException(exception);
+          }
         })
         .toList();
 ```
@@ -723,7 +723,7 @@ List<String> contents = paths.stream()
 
 ```java
 if (users.isEmpty()) {
-    return List.of();
+        return List.of();
 }
 ```
 
@@ -852,44 +852,199 @@ checked exception → rollbackFor при необходимости
 
 ---
 
-## Вопросы для самопроверки
+## Вопросы на собеседовании
 
-1. Для чего нужны исключения?
-2. Как устроена иерархия `Throwable`?
-3. Чем `Error` отличается от `Exception`?
-4. Какие исключения являются checked и unchecked?
-5. Как по иерархии определить checked exception?
-6. Чем `throw` отличается от `throws`?
-7. Что происходит с неперехваченным исключением?
-8. В каком порядке следует читать stack trace?
-9. Когда текущему уровню нужен `catch`?
-10. Почему `catch` располагают от конкретного типа к общему?
-11. Какие ограничения есть у multi-catch?
-12. Для чего нужен `finally`?
-13. Почему опасен `return` внутри `finally`?
-14. В каких случаях `finally` может не выполниться?
-15. Как работает try-with-resources?
-16. Какую роль играет `AutoCloseable`?
-17. В каком порядке закрываются несколько ресурсов?
-18. Что такое suppressed exception?
-19. Когда собственное исключение наследуют от `RuntimeException`?
-20. Почему при оборачивании нужно передавать `cause`?
-21. Почему нельзя проглатывать исключения?
-22. На каком уровне обычно логируют исключение?
-23. Почему не стоит логировать и пробрасывать одну ошибку на каждом слое?
-24. Когда допустим `catch (Exception)`?
-25. Чем `IllegalArgumentException` отличается от `IllegalStateException`?
-26. Для чего нужен `Objects.requireNonNull()`?
-27. Какие исключения по умолчанию вызывают rollback в Spring?
-28. Как включить rollback для checked exception?
-29. Почему бизнес-исключения в Spring часто являются unchecked?
-30. Почему self-invocation может помешать работе `@Transactional`?
-31. Почему `Function<T, R>` не принимает lambda с `IOException` напрямую?
-32. Почему исключения не используют для обычного управления потоком?
+### 1. Для чего нужны исключения?
+
+**Ответ:** чтобы отделить обработку ошибки от основного алгоритма и передать
+информацию о сбое туда, где есть контекст для решения. Возврат кода ошибки такой
+разделённости не даёт: проверка перемешивается с логикой, и её легко пропустить.
+
+### 2. Как устроена иерархия Throwable?
+
+**Ответ:** корень — `Throwable`, от него наследуются `Error` и `Exception`. Внутри
+`Exception` отдельно стоит `RuntimeException`. Всё, что не является `Error` и не
+наследует `RuntimeException`, относится к checked.
+
+### 3. Чем Error отличается от Exception?
+
+**Ответ:** `Error` сигнализирует о проблеме на уровне JVM или окружения —
+`OutOfMemoryError`, `StackOverflowError`. Перехватывать его в прикладном коде не
+принято, поскольку осмысленно обработать такую ситуацию обычно невозможно.
+
+### 4. Какие исключения являются checked и unchecked?
+
+**Ответ:** checked — наследники `Exception`, не входящие в ветку
+`RuntimeException`: их обязательно объявлять или обрабатывать. Unchecked —
+`RuntimeException` и его наследники, а также `Error`; компилятор их не
+контролирует.
+
+### 5. Как по иерархии определить checked exception?
+
+**Ответ:** подняться по цепочке наследования. Если по пути встретился
+`RuntimeException` или `Error` — исключение unchecked, иначе checked.
+
+### 6. Чем throw отличается от throws?
+
+**Ответ:** `throw` выбрасывает конкретный экземпляр в теле метода, `throws` —
+часть сигнатуры, объявляющая, какие checked-исключения метод может выпустить
+наружу.
+
+### 7. Что происходит с неперехваченным исключением?
+
+**Ответ:** оно распространяется вверх по стеку вызовов, пока не найдёт подходящий
+`catch`. Если такого нет, поток завершается, а обработчик по умолчанию печатает
+stack trace.
+
+### 8. В каком порядке следует читать stack trace?
+
+**Ответ:** сверху вниз. Первая строка — место возникновения исключения, ниже идут
+вызывающие методы. Причину обычно ищут в верхних строках, относящихся к своему
+коду, а секции `Caused by` читают до самой нижней — там исходная ошибка.
+
+### 9. Когда текущему уровню нужен catch?
+
+**Ответ:** когда на этом уровне есть достаточно контекста, чтобы что-то
+предпринять: подставить значение по умолчанию, повторить операцию, преобразовать в
+исключение своего слоя. Если сделать нечего, исключение пробрасывают дальше.
+
+### 10. Почему catch располагают от конкретного типа к общему?
+
+**Ответ:** блоки проверяются сверху вниз, и первый подходящий перехватывает
+исключение. Если общий тип поставить выше, до конкретного управление не дойдёт —
+компилятор сообщит о недостижимом блоке.
+
+### 11. Какие ограничения есть у multi-catch?
+
+**Ответ:** перечисленные типы не должны находиться в отношении наследования, иначе
+одна из веток заведомо избыточна. Переменная в таком блоке неявно `final`.
+
+### 12. Для чего нужен finally?
+
+**Ответ:** для кода, который обязан выполниться независимо от исхода —
+освобождения ресурсов, снятия блокировки, восстановления состояния. Он
+отрабатывает и при нормальном завершении, и при исключении, и при `return`.
+
+### 13. Почему опасен return внутри finally?
+
+**Ответ:** он перекрывает и возвращаемое значение, и выброшенное исключение.
+Исключение будет молча отброшено, и ошибка исчезнет бесследно.
+
+### 14. В каких случаях finally может не выполниться?
+
+**Ответ:** при `System.exit()`, при аварийном завершении JVM, при бесконечном
+цикле или взаимоблокировке в блоке `try`, а также если поток был остановлен на
+уровне операционной системы.
+
+### 15. Как работает try-with-resources?
+
+**Ответ:** ресурсы, объявленные в круглых скобках, закрываются автоматически после
+выхода из блока. Компилятор генерирует эквивалент `finally` с вызовом `close()` и
+корректной обработкой исключений при закрытии.
+
+### 16. Какую роль играет AutoCloseable?
+
+**Ответ:** это интерфейс с методом `close()`, который делает объект пригодным для
+try-with-resources. `Closeable` — его частный случай, объявляющий `IOException`.
+
+### 17. В каком порядке закрываются несколько ресурсов?
+
+**Ответ:** в порядке, обратном объявлению. Это важно, когда один ресурс зависит от
+другого: `ResultSet` закроется раньше `Statement`, а тот раньше `Connection`.
+
+### 18. Что такое suppressed exception?
+
+**Ответ:** исключение, возникшее при закрытии ресурса, когда в блоке `try` уже
+было выброшено другое. Основным остаётся исходное, а исключение закрытия
+прикрепляется к нему и доступно через `getSuppressed()`. Без этого механизма
+первопричина терялась бы.
+
+### 19. Когда собственное исключение наследуют от RuntimeException?
+
+**Ответ:** когда ошибка отражает нарушение бизнес-правила и вызывающий код всё
+равно не может её осмысленно обработать на месте. Такой подход преобладает в
+приложениях на Spring: unchecked-исключения не засоряют сигнатуры и по умолчанию
+вызывают откат транзакции.
+
+### 20. Почему при оборачивании нужно передавать cause?
+
+**Ответ:** иначе теряется исходный stack trace, и по логу невозможно определить,
+где именно возникла ошибка. Причина передаётся конструктором и отображается в
+секции `Caused by`.
+
+### 21. Почему нельзя проглатывать исключения?
+
+**Ответ:** пустой `catch` скрывает сбой: программа продолжает работу в
+некорректном состоянии, а диагностическая информация уничтожена. Ошибка проявится
+позже и в другом месте, где найти её причину гораздо труднее.
+
+### 22. На каком уровне обычно логируют исключение?
+
+**Ответ:** там, где его обрабатывают. В веб-приложении это обычно глобальный
+обработчик `@RestControllerAdvice`, который формирует ответ и пишет подробности в
+лог.
+
+### 23. Почему не стоит логировать и пробрасывать одну ошибку на каждом слое?
+
+**Ответ:** одно исключение попадёт в лог несколько раз, и при разборе инцидента
+возникнет впечатление нескольких независимых сбоев. Если нужно добавить контекст,
+исключение оборачивают, а не логируют повторно.
+
+### 24. Когда допустим catch (Exception)?
+
+**Ответ:** на верхней границе приложения — в глобальном обработчике, в цикле
+обработки сообщений, в задаче планировщика, — чтобы единичный сбой не остановил
+весь процесс. Обязательное условие: исключение логируется, а не проглатывается.
+
+### 25. Чем IllegalArgumentException отличается от IllegalStateException?
+
+**Ответ:** первое означает недопустимый аргумент, второе — недопустимое состояние
+объекта для вызванной операции. Проверка отрицательной суммы даёт первое, попытка
+отменить уже отменённый заказ — второе.
+
+### 26. Для чего нужен Objects.requireNonNull()?
+
+**Ответ:** чтобы проверить аргумент на `null` в начале метода и получить понятное
+исключение с указанием параметра сразу, а не `NullPointerException` где-то глубже.
+
+### 27. Какие исключения по умолчанию вызывают rollback в Spring?
+
+**Ответ:** `RuntimeException` и `Error`. Проверяемые исключения транзакцию
+фиксируют — поведение унаследовано из EJB.
+
+### 28. Как включить rollback для checked exception?
+
+**Ответ:** указать `@Transactional(rollbackFor = Exception.class)` либо перечислить
+конкретные типы.
+
+### 29. Почему бизнес-исключения в Spring часто являются unchecked?
+
+**Ответ:** они не требуют объявления в сигнатурах на всех уровнях и по умолчанию
+вызывают откат транзакции, поэтому поведение оказывается ожидаемым без
+дополнительной настройки.
+
+### 30. Почему self-invocation может помешать работе @Transactional?
+
+**Ответ:** аннотацию обрабатывает прокси, а вызов метода изнутри того же класса
+идёт через `this`, минуя его. Транзакция не открывается, и ошибки при этом не
+возникает.
+
+### 31. Почему Function<T, R> не принимает lambda с IOException напрямую?
+
+**Ответ:** метод `apply()` не объявляет проверяемых исключений, а lambda не может
+выбросить больше, чем объявлено в функциональном интерфейсе. Исключение нужно
+обработать внутри или обернуть в unchecked.
+
+### 32. Почему исключения не используют для обычного управления потоком?
+
+**Ответ:** это скрывает логику от читателя и обходится дороже обычной проверки:
+создание исключения требует сбора stack trace. Ожидаемый результат выражают
+возвращаемым значением, например `Optional`, а исключения оставляют для
+исключительных ситуаций.
 
 ---
 
-### См. также
+## См. также
 
 - [`06-stream-api.md`](06-stream-api.md) — checked exceptions внутри lambda
 - [`08-functional-interfaces-lambda.md`](08-functional-interfaces-lambda.md) —
