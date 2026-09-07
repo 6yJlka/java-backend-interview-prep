@@ -996,29 +996,29 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 ---
 
-# 13. Apache Kafka — Не начато
+# 13. Apache Kafka — Изучено
 
 Практический опыт есть, знания нужно систематизировать для интервью.
 
-- [ ] broker
-- [ ] topic
-- [ ] partition
-- [ ] producer
-- [ ] consumer
-- [ ] consumer group
-- [ ] offset
-- [ ] replication
-- [ ] key
-- [ ] ordering внутри partition
-- [ ] rebalancing
-- [ ] at-most-once
-- [ ] at-least-once
-- [ ] exactly-once
-- [ ] idempotent producer
-- [ ] retries
-- [ ] duplicate messages
-- [ ] DLQ
-- [ ] consumer error handling
+- [x] broker
+- [x] topic
+- [x] partition
+- [x] producer
+- [x] consumer
+- [x] consumer group
+- [x] offset
+- [x] replication
+- [x] key
+- [x] ordering внутри partition
+- [x] rebalancing
+- [x] at-most-once
+- [x] at-least-once
+- [x] exactly-once
+- [x] idempotent producer
+- [x] retries
+- [x] duplicate messages
+- [x] DLQ
+- [x] consumer error handling
 
 ---
 
