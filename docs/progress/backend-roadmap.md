@@ -1022,23 +1022,23 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 ---
 
-# 14. Backend Architecture — Не начато
+# 14. Backend Architecture — Изучено
 
-- [ ] layered architecture
-- [ ] controller / service / repository
-- [ ] DTO
-- [ ] mapper
-- [ ] domain model
-- [ ] modular monolith
-- [ ] microservices basics
-- [ ] synchronous communication
-- [ ] asynchronous communication
-- [ ] REST vs Kafka
-- [ ] retries
-- [ ] timeout
-- [ ] circuit breaker
-- [ ] idempotency
-- [ ] caching
+- [x] layered architecture
+- [x] controller / service / repository
+- [x] DTO
+- [x] mapper
+- [x] domain model
+- [x] modular monolith
+- [x] microservices basics
+- [x] synchronous communication
+- [x] asynchronous communication
+- [x] REST vs Kafka
+- [x] retries
+- [x] timeout
+- [x] circuit breaker
+- [x] idempotency
+- [x] caching
 
 ---
 
