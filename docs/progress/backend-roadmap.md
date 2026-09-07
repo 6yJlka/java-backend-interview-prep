@@ -929,32 +929,30 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 ---
 
-## 11.3. Build Tools — Отложено
-
-Есть практика. Конспект пишется в последнюю очередь.
+## 11.3. Build Tools — Изучено
 
 ### Gradle
 
-- [ ] зачем нужен Gradle
-- [ ] Gradle Wrapper
-- [ ] `build.gradle`
-- [ ] plugins
-- [ ] dependencies
-- [ ] configurations
-- [ ] tasks
-- [ ] build lifecycle
-- [ ] multi-module basics
+- [x] зачем нужен Gradle
+- [x] Gradle Wrapper
+- [x] `build.gradle`
+- [x] plugins
+- [x] dependencies
+- [x] configurations
+- [x] tasks
+- [x] build lifecycle
+- [x] multi-module basics
 
 ### Maven
 
-- [ ] зачем нужен Maven
-- [ ] `pom.xml`
-- [ ] dependencies
-- [ ] plugins
-- [ ] scopes
-- [ ] Maven lifecycle
-- [ ] `clean` / `compile` / `test` / `package` / `install`
-- [ ] Maven vs Gradle
+- [x] зачем нужен Maven
+- [x] `pom.xml`
+- [x] dependencies
+- [x] plugins
+- [x] scopes
+- [x] Maven lifecycle
+- [x] `clean` / `compile` / `test` / `package` / `install`
+- [x] Maven vs Gradle
 
 ---
 
