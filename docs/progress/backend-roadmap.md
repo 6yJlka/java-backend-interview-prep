@@ -1083,20 +1083,20 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 ---
 
-# 17. Git — Не начато
+# 17. Git — Изучено
 
 Есть практика, теория не систематизирована.
 
-- [ ] commit
-- [ ] branch
-- [ ] merge
-- [ ] rebase
-- [ ] cherry-pick
-- [ ] reset
-- [ ] revert
-- [ ] stash
-- [ ] conflicts
-- [ ] `fetch` vs `pull`
+- [x] commit
+- [x] branch
+- [x] merge
+- [x] rebase
+- [x] cherry-pick
+- [x] reset
+- [x] revert
+- [x] stash
+- [x] conflicts
+- [x] `fetch` vs `pull`
 
 ---
 
