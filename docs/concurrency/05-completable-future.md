@@ -1,8 +1,9 @@
 # CompletableFuture в Java
 
-### Зачем нужен CompletableFuture
+## Зачем он нужен
 
-Обычный `Future` позволяет запустить задачу в другом потоке и позднее получить её результат:
+Обычный `Future` позволяет запустить задачу в другом потоке и позднее забрать
+результат:
 
 ```java
 Future<Integer> future = executor.submit(() -> calculate());
@@ -10,9 +11,8 @@ Future<Integer> future = executor.submit(() -> calculate());
 Integer result = future.get();
 ```
 
-Проблема появляется, когда нужно построить последовательность зависимых асинхронных операций.
-
-Например:
+Проблема появляется, когда нужна последовательность зависимых асинхронных
+операций:
 
 ```text
 получить пользователя
@@ -21,48 +21,28 @@ Integer result = future.get();
 → вывести результат
 ```
 
-С обычным `Future` код может выглядеть так:
+С обычным `Future` это выглядит так:
 
 ```java
-Future<User> userFuture =
-        executor.submit(() -> loadUser());
-
+Future<User> userFuture = executor.submit(() -> loadUser());
 User user = userFuture.get();
 
-Future<List<Order>> ordersFuture =
-        executor.submit(() -> loadOrders(user));
-
+Future<List<Order>> ordersFuture = executor.submit(() -> loadOrders(user));
 List<Order> orders = ordersFuture.get();
 
-Future<Integer> totalFuture =
-        executor.submit(() -> calculateTotal(orders));
-
+Future<Integer> totalFuture = executor.submit(() -> calculateTotal(orders));
 Integer total = totalFuture.get();
 ```
 
-Проблема:
+Получается чередование:
 
 ```text
-submit
-→ get
-→ submit
-→ get
-→ submit
-→ get
+submit → get → submit → get → submit → get
 ```
 
-Несмотря на использование асинхронных задач, вызывающий поток постоянно блокируется через `get()`.
+Задачи асинхронные, но вызывающий поток блокируется на каждом `get()`.
 
-`CompletableFuture` позволяет описать обработку как цепочку:
-
-```text
-асинхронная операция
-→ преобразование результата
-→ следующая операция
-→ обработка результата
-```
-
-Например:
+`CompletableFuture` позволяет описать то же самое как цепочку, не блокируясь:
 
 ```java
 CompletableFuture
@@ -73,83 +53,42 @@ CompletableFuture
 
 ---
 
-## runAsync и supplyAsync
+## Создание
 
-Для запуска асинхронной операции существуют два основных метода.
+### runAsync
 
-### runAsync()
-
-Используется, когда операция ничего не возвращает.
+Когда операция ничего не возвращает:
 
 ```java
 CompletableFuture<Void> future =
-        CompletableFuture.runAsync(() -> {
-            sendNotification();
-        });
+        CompletableFuture.runAsync(() -> sendNotification());
 ```
 
-`runAsync()` работает с `Runnable`.
+Работает с `Runnable`.
 
-Смысл:
+### supplyAsync
 
-```text
-нет входного значения
-→ выполнить действие
-→ нет результата
-```
-
-Возвращается:
-
-```java
-CompletableFuture<Void>
-```
-
----
-
-### supplyAsync()
-
-Используется, когда операция должна вернуть значение.
+Когда операция должна вернуть значение:
 
 ```java
 CompletableFuture<User> future =
         CompletableFuture.supplyAsync(() -> loadUser());
 ```
 
-`supplyAsync()` работает с `Supplier<T>`.
-
-Смысл:
+Работает с `Supplier<T>`.
 
 ```text
-нет входного значения
-→ выполнить вычисление
-→ получить T
-```
-
-Возвращается:
-
-```java
-CompletableFuture<T>
-```
-
-Кратко:
-
-```text
-runAsync()
-→ Runnable
-→ CompletableFuture<Void>
-
-supplyAsync()
-→ Supplier<T>
-→ CompletableFuture<T>
+runAsync()    → Runnable    → CompletableFuture<Void>
+supplyAsync() → Supplier<T> → CompletableFuture<T>
 ```
 
 ---
 
-## thenApply
+## Преобразование результата
 
-`thenApply()` используется, когда нужно преобразовать результат предыдущего этапа.
+### thenApply
 
-Например:
+Преобразует результат предыдущего этапа:
 
 ```java
 CompletableFuture<User> userFuture =
@@ -159,117 +98,51 @@ CompletableFuture<String> nameFuture =
         userFuture.thenApply(user -> user.getName());
 ```
 
-Получается:
-
 ```text
 CompletableFuture<User>
-        ↓
-thenApply
-        ↓
+        ↓ thenApply
 CompletableFuture<String>
 ```
 
-По смыслу:
-
-```text
-T → R
-```
-
-Например:
+По смыслу это `T → R`, то есть аналог `map`.
 
 ```java
 CompletableFuture<Integer> future =
         CompletableFuture
                 .supplyAsync(() -> 10)
-                .thenApply(value -> value * 2);
+                .thenApply(value -> value * 2);   // 20
 ```
 
-Результат:
+### thenAccept
 
-```text
-20
-```
-
-`thenApply()` можно сравнить с обычным `map`.
-
----
-
-## thenAccept
-
-`thenAccept()` получает результат предыдущего этапа, но ничего не возвращает.
-
-Например:
+Получает результат, но ничего не возвращает:
 
 ```java
 CompletableFuture
         .supplyAsync(() -> loadUser())
-        .thenAccept(user -> {
-        System.out.println(user.getName());
-        });
+        .thenAccept(user -> System.out.println(user.getName()));
 ```
 
-По смыслу:
+Возвращает `CompletableFuture<Void>`.
 
-```text
-T
-↓
-выполнить действие с T
-↓
-Void
-```
+### thenRun
 
-Возвращается:
-
-```java
-CompletableFuture<Void>
-```
-
-Например:
-
-```java
-CompletableFuture
-        .supplyAsync(() -> 42)
-        .thenAccept(System.out::println);
-```
-
----
-
-## thenRun
-
-`thenRun()` выполняет действие после завершения предыдущего stage, но:
-
-- не получает результат предыдущего этапа
-- ничего не возвращает
-
-Пример:
+Выполняет действие после завершения предыдущего этапа, но результат не получает и
+ничего не возвращает:
 
 ```java
 CompletableFuture
         .supplyAsync(() -> loadUser())
-        .thenRun(() -> {
-        System.out.println("Операция завершена");
-        });
+        .thenRun(() -> System.out.println("Операция завершена"));
 ```
-
-Результат `loadUser()` здесь игнорируется.
-
-Сравнение:
 
 ```text
-thenApply()
-→ получает значение
-→ возвращает новое значение
-
-thenAccept()
-→ получает значение
-→ ничего не возвращает
-
-thenRun()
-→ не получает значение
-→ ничего не возвращает
+thenApply()  → получает значение → возвращает новое значение
+thenAccept() → получает значение → ничего не возвращает
+thenRun()    → не получает значение → ничего не возвращает
 ```
 
-Пример полной цепочки:
+Полная цепочка:
 
 ```java
 CompletableFuture
@@ -283,118 +156,60 @@ CompletableFuture
 
 ## thenApply и thenCompose
 
-Это одно из самых важных различий в `CompletableFuture`.
+Одно из главных различий в теме.
 
-Допустим:
-
-```java
-CompletableFuture<User> future =
-        CompletableFuture.supplyAsync(() -> loadUser());
-```
-
-Есть обычный метод:
+Если следующий шаг — обычный метод:
 
 ```java
 String getUserName(User user);
 ```
 
-Тогда подходит:
+подходит `thenApply()`:
 
 ```java
-future.thenApply(user -> getUserName(user));
+future.thenApply(user -> getUserName(user));   // CompletableFuture<String>
 ```
 
-Получается:
-
-```text
-CompletableFuture<User>
-→ CompletableFuture<String>
-```
-
----
-
-Теперь допустим, следующий метод сам уже является асинхронным:
+Но если следующий метод сам асинхронный:
 
 ```java
 CompletableFuture<List<Order>> loadOrders(User user);
 ```
 
-Если использовать:
-
-```java
-future.thenApply(user -> loadOrders(user));
-```
-
-получится:
+то `thenApply()` даст вложенность:
 
 ```text
-CompletableFuture<
-    CompletableFuture<List<Order>>
->
+CompletableFuture<CompletableFuture<List<Order>>>
 ```
 
-То есть вложенный `CompletableFuture`.
-
-Для этого существует `thenCompose()`:
+Для этого существует `thenCompose()`, который распрямляет вложенность:
 
 ```java
 CompletableFuture<List<Order>> ordersFuture =
         future.thenCompose(user -> loadOrders(user));
 ```
 
-`thenCompose()` распрямляет вложенность.
-
-По смыслу:
-
 ```text
-thenApply:
-
-T → R
-↓
-CompletableFuture<R>
+thenApply:   T → R                    → CompletableFuture<R>
+thenCompose: T → CompletableFuture<R> → CompletableFuture<R>
 ```
 
-```text
-thenCompose:
-
-T → CompletableFuture<R>
-↓
-CompletableFuture<R>
-```
-
-Удобная аналогия:
+Удобная аналогия и главное правило:
 
 ```text
 thenApply   ≈ map
 thenCompose ≈ flatMap
-```
 
-Главное правило:
-
-```text
-функция возвращает обычный R
-→ thenApply()
-
-функция возвращает CompletableFuture<R>
-→ thenCompose()
-```
-
-Пример:
-
-```java
-CompletableFuture<List<Order>> result =
-        CompletableFuture
-                .supplyAsync(() -> loadUser())
-                .thenCompose(user -> loadOrders(user));
+функция возвращает обычный R     → thenApply()
+функция возвращает Future<R>     → thenCompose()
 ```
 
 ---
 
 ## thenCombine
 
-`thenCombine()` используется, когда есть две независимые асинхронные операции, результаты которых нужно объединить.
-
-Например:
+Используется, когда есть две независимые асинхронные операции, результаты которых
+нужно объединить.
 
 ```java
 CompletableFuture<User> userFuture =
@@ -402,13 +217,7 @@ CompletableFuture<User> userFuture =
 
 CompletableFuture<Rate> rateFuture =
         CompletableFuture.supplyAsync(() -> loadRate());
-```
 
-Они могут выполняться независимо.
-
-После завершения обеих:
-
-```java
 CompletableFuture<UserDto> result =
         userFuture.thenCombine(
                 rateFuture,
@@ -416,67 +225,34 @@ CompletableFuture<UserDto> result =
         );
 ```
 
-Схема:
-
 ```text
 User Future ──────┐
                   ├→ thenCombine → UserDto
 Rate Future ──────┘
 ```
 
-Разница:
+Разница с `thenCompose()` — в зависимости операций:
 
 ```text
-thenCompose()
-→ B зависит от результата A
+thenCompose()               thenCombine()
+B зависит от результата A   A и B независимы
 
-A
-↓
-B(A)
+A                           A ──┐
+↓                               ├→ combine
+B(A)                        B ──┘
 ```
 
 ```text
-thenCombine()
-→ A и B независимы
-→ могут выполняться параллельно
-
-A ──┐
-    ├→ combine
-B ──┘
-```
-
-Пример для `thenCompose()`:
-
-```text
-получить User
-→ взять user.id
-→ загрузить Orders по user.id
-```
-
-Пример для `thenCombine()`:
-
-```text
-загрузить User
-+
-загрузить ExchangeRate
-→ объединить в DTO
+thenCompose: получить User → взять user.id → загрузить Orders
+thenCombine: загрузить User + загрузить ExchangeRate → объединить в DTO
 ```
 
 ---
 
-## Ошибки в CompletableFuture
+## Обработка ошибок
 
-`CompletableFuture` может завершиться:
-
-```text
-успешно
-или
-exceptionally
-```
-
-Если stage завершается с ошибкой, последующие обычные преобразования результата обычно не выполняются, пока ошибка не будет обработана.
-
-Например:
+`CompletableFuture` завершается либо успешно, либо исключительно. Если этап упал,
+последующие обычные преобразования не выполняются, пока ошибка не обработана.
 
 ```java
 CompletableFuture<Integer> future =
@@ -487,40 +263,11 @@ CompletableFuture<Integer> future =
                 .thenApply(value -> value * 2);
 ```
 
-`thenApply()` не получает обычного результата.
+`thenApply()` здесь не вызывается — future завершается исключительно.
 
-Future завершается exceptionally.
+### exceptionally
 
----
-
-## exceptionally
-
-`exceptionally()` используется для обработки ошибки и возврата fallback-значения.
-
-Пример:
-
-```java
-CompletableFuture<Integer> future =
-        CompletableFuture
-                .supplyAsync(() -> {
-                    throw new IllegalStateException("boom");
-                })
-                .exceptionally(ex -> 0);
-```
-
-Если возникает ошибка:
-
-```text
-exception
-↓
-exceptionally()
-↓
-fallback = 0
-```
-
-После этого цепочка считается восстановленной.
-
-Например:
+Обрабатывает ошибку и возвращает запасное значение:
 
 ```java
 CompletableFuture<Integer> future =
@@ -532,77 +279,16 @@ CompletableFuture<Integer> future =
                 .thenApply(value -> value * 2);
 ```
 
-Получается:
-
 ```text
-exception
-↓
-exceptionally → 10
-↓
-thenApply → 20
+exception → exceptionally → 10 → thenApply → 20
 ```
 
-Итог:
+По смыслу это `Throwable → T`. Вызывается только при ошибке, после чего цепочка
+считается восстановленной.
 
-```text
-20
-```
+### handle
 
-По смыслу:
-
-```text
-Throwable → T
-```
-
-`exceptionally()` вызывается только при ошибке.
-
----
-
-## handle
-
-`handle()` выполняется:
-
-- при успешном завершении
-- при ошибке
-
-Он получает два аргумента:
-
-```java
-(result, exception)
-```
-
-Например:
-
-```java
-CompletableFuture<Integer> future =
-        CompletableFuture
-                .supplyAsync(() -> calculate())
-                .handle((result, ex) -> {
-                    if (ex != null) {
-                        return 0;
-                    }
-
-                    return result * 2;
-                });
-```
-
-При успешном результате:
-
-```text
-result = значение
-ex = null
-```
-
-При ошибке:
-
-```text
-result = null
-ex = exception
-```
-
-`handle()` способен вернуть новое значение.
-
-Например:
+Вызывается и при успехе, и при ошибке, получая пару аргументов:
 
 ```java
 CompletableFuture<Integer> future =
@@ -618,69 +304,31 @@ CompletableFuture<Integer> future =
                 .thenApply(value -> value * 2);
 ```
 
-Получается:
-
 ```text
-10
-→ handle → 15
-→ thenApply → 30
+успех:  result = значение, ex = null
+ошибка: result = null,     ex = exception
 ```
 
----
-
-## whenComplete
-
-`whenComplete()` тоже вызывается как при успехе, так и при ошибке.
-
-Но обычно он используется для side effects:
-
 ```text
-логирование
-метрики
-cleanup
+10 → handle → 15 → thenApply → 30
 ```
 
-Например:
+### whenComplete
+
+Тоже вызывается в обоих случаях, но предназначен для побочных эффектов:
+логирования, метрик, очистки.
 
 ```java
 future.whenComplete((result, ex) -> {
-        if (ex != null) {
+    if (ex != null) {
         log.error("Ошибка", ex);
     } else {
-            log.info("Результат: {}", result);
+        log.info("Результат: {}", result);
     }
-            });
+});
 ```
 
-В отличие от `handle()`, `whenComplete()` обычно не используется для преобразования результата.
-
-Например:
-
-```java
-CompletableFuture<Integer> future =
-        CompletableFuture
-                .supplyAsync(() -> 10)
-                .whenComplete((result, ex) -> {
-                    System.out.println("result = " + result);
-                })
-                .thenApply(value -> value * 2);
-```
-
-Вывод:
-
-```text
-result = 10
-```
-
-Итоговый результат:
-
-```text
-20
-```
-
----
-
-Если предыдущий stage упал:
+Ключевое отличие от `handle()` — он не поглощает ошибку и не меняет результат:
 
 ```java
 CompletableFuture<Integer> future =
@@ -688,166 +336,71 @@ CompletableFuture<Integer> future =
                 .supplyAsync(() -> {
                     throw new RuntimeException("boom");
                 })
-                .whenComplete((result, ex) -> {
-                    System.out.println("finished");
-                })
+                .whenComplete((result, ex) -> System.out.println("finished"))
                 .exceptionally(ex -> 5)
                 .thenApply(value -> value * 2);
 ```
 
-Произойдёт:
-
 ```text
 exception
 ↓
-whenComplete
-→ finished
+whenComplete → печатает finished
 ↓
-ошибка продолжает идти дальше
+ошибка идёт дальше
 ↓
-exceptionally
-→ 5
+exceptionally → 5
 ↓
-thenApply
-→ 10
+thenApply → 10
 ```
-
-`whenComplete()` сам по себе ошибку не поглощает.
-
----
-
-## exceptionally, handle и whenComplete
-
-Краткое сравнение:
 
 ```text
-exceptionally()
-→ вызывается только при ошибке
-→ обычно возвращает fallback
-
-handle()
-→ вызывается при успехе и ошибке
-→ может преобразовать результат
-
-whenComplete()
-→ вызывается при успехе и ошибке
-→ обычно выполняет side effect
-→ исходный результат или ошибка продолжают цепочку
+exceptionally() → только при ошибке → обычно fallback
+handle()        → при успехе и ошибке → может преобразовать результат
+whenComplete()  → при успехе и ошибке → side effect, результат и ошибка идут дальше
 ```
 
 ---
 
-## get и join
+## Получение результата
 
-Результат `CompletableFuture` можно получить через:
+### get
 
-```java
-future.get();
-```
-
-или:
-
-```java
-future.join();
-```
-
-Оба метода могут ждать завершения future.
-
----
-
-### get()
-
-`get()` наследуется от `Future`.
-
-```java
-T result = future.get();
-```
-
-Он работает с checked exceptions:
-
-```text
-InterruptedException
-ExecutionException
-```
-
-Пример:
+Наследуется от `Future` и работает с проверяемыми исключениями:
 
 ```java
 try {
-Integer result = future.get();
+    Integer result = future.get();
 } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
+    Thread.currentThread().interrupt();
 } catch (ExecutionException e) {
-        System.out.println(e.getCause());
-        }
+    System.out.println(e.getCause());
+}
 ```
 
-Если async-операция бросила:
+Если асинхронная операция бросила исключение, `get()` бросит
+`ExecutionException`, а исходная ошибка окажется в `getCause()`.
 
-```java
-throw new IllegalStateException("boom");
-```
+### join
 
-`get()` бросит:
-
-```text
-ExecutionException
-```
-
-а исходная ошибка будет доступна через:
-
-```java
-e.getCause()
-```
-
----
-
-### join()
-
-`join()` не требует обработки checked exceptions:
-
-```java
-T result = future.join();
-```
-
-Если future завершился exceptionally, обычно выбрасывается:
-
-```text
-CompletionException
-```
-
-Исходная ошибка находится в:
-
-```java
-e.getCause()
-```
-
-Например:
+Проверяемых исключений не требует:
 
 ```java
 try {
-        future.join();
+    future.join();
 } catch (CompletionException e) {
-        System.out.println(e.getCause());
-        }
+    System.out.println(e.getCause());
+}
 ```
 
-Сравнение:
+При исключительном завершении бросает непроверяемое `CompletionException`, и
+исходная ошибка снова в `getCause()`.
 
 ```text
-get()
-→ ExecutionException
-→ InterruptedException
-→ checked exceptions
-
-join()
-→ CompletionException
-→ unchecked exception
+get()  → ExecutionException, InterruptedException — checked
+join() → CompletionException — unchecked
 ```
 
-Поэтому внутри кода с `CompletableFuture` часто используется `join()`.
-
-Например:
+Поэтому внутри цепочек и в стримах обычно используют `join()`:
 
 ```java
 List<User> users = futures.stream()
@@ -857,81 +410,32 @@ List<User> users = futures.stream()
 
 ---
 
-## Executor по умолчанию
+## Executor и суффикс Async
 
-Если написать:
+### Executor по умолчанию
 
 ```java
 CompletableFuture.supplyAsync(() -> loadUser());
 ```
 
-без передачи своего `Executor`, асинхронная задача обычно будет выполняться через:
+Без явного executor задача обычно выполняется в `ForkJoinPool.commonPool()`. То
+же касается большинства методов с суффиксом `Async`.
 
-```text
-ForkJoinPool.commonPool()
-```
-
-То же касается большинства `*Async` методов без явно указанного executor.
-
-Например:
+### Свой executor
 
 ```java
-.thenApplyAsync(value -> process(value))
-```
-
-обычно использует default async execution facility, которой обычно является:
-
-```text
-ForkJoinPool.commonPool()
-```
-
----
-
-## Свой Executor
-
-Можно явно передать executor:
-
-```java
-ExecutorService executor =
-        Executors.newFixedThreadPool(4);
+ExecutorService executor = Executors.newFixedThreadPool(4);
 
 CompletableFuture<User> future =
-        CompletableFuture.supplyAsync(
-                () -> loadUser(),
-                executor
-        );
+        CompletableFuture.supplyAsync(() -> loadUser(), executor);
+
+future.thenApplyAsync(user -> process(user), executor);
 ```
 
-Можно передать executor и continuation:
+Для долгих и блокирующих операций отдельный executor предпочтителен: общий пул
+используется многими частями приложения, включая параллельные стримы.
 
-```java
-future.thenApplyAsync(
-        user -> process(user),
-executor
-);
-```
-
-Это позволяет контролировать, где именно выполняются задачи.
-
-Для долгих или блокирующих операций часто разумнее использовать отдельный executor, а не нагружать общий `ForkJoinPool.commonPool()`.
-
----
-
-## thenApply и thenApplyAsync
-
-Это важное различие.
-
-Обычный:
-
-```java
-thenApply(...)
-```
-
-не требует обязательного отдельного scheduling через executor.
-
-Если предыдущий stage завершается и continuation уже зарегистрирован, continuation может выполнить поток, который завершил предыдущий stage.
-
-Например:
+### thenApply и thenApplyAsync
 
 ```java
 CompletableFuture
@@ -939,122 +443,26 @@ CompletableFuture
         .thenApply(value -> value * 2);
 ```
 
-Один worker может выполнить:
+Вариант без суффикса не требует отдельного планирования: продолжение может
+выполнить тот поток, который завершил предыдущий этап. Если же future уже
+завершён к моменту присоединения продолжения, его может выполнить поток,
+вызывающий `thenApply()`. Утверждать, в каком именно потоке это произойдёт,
+нельзя.
+
+Вариант с суффиксом планирует продолжение как отдельную асинхронную задачу — в
+`ForkJoinPool.commonPool()` либо в переданном executor.
+
+Такие пары существуют для большинства операций:
 
 ```text
-supplyAsync
-↓
-thenApply
+thenApply / thenApplyAsync
+thenAccept / thenAcceptAsync
+thenRun / thenRunAsync
+thenCompose / thenComposeAsync
+thenCombine / thenCombineAsync
 ```
 
-Но нельзя утверждать, что `thenApply()` всегда выполняется именно в том же потоке.
-
-Если future уже завершён к моменту присоединения continuation:
-
-```java
-CompletableFuture<Integer> future =
-        CompletableFuture.completedFuture(10);
-
-future.thenApply(value -> {
-        System.out.println(Thread.currentThread().getName());
-        return value * 2;
-        });
-```
-
-continuation может выполнить поток, который вызывает `thenApply()`.
-
-Главное правило:
-
-```text
-thenApply()
-→ отдельное async scheduling не требуется
-```
-
----
-
-`thenApplyAsync()`:
-
-```java
-future.thenApplyAsync(value -> value * 2);
-```
-
-планирует continuation как async-задачу.
-
-Без executor обычно используется:
-
-```text
-ForkJoinPool.commonPool()
-```
-
-Со своим executor:
-
-```java
-future.thenApplyAsync(
-        value -> value * 2,
-executor
-);
-```
-
-будет использован указанный executor.
-
----
-
-## Async-варианты методов
-
-Подобные пары существуют для многих операций:
-
-```text
-thenApply()
-thenApplyAsync()
-
-thenAccept()
-thenAcceptAsync()
-
-thenRun()
-thenRunAsync()
-
-thenCompose()
-thenComposeAsync()
-
-thenCombine()
-thenCombineAsync()
-```
-
-Упрощённо:
-
-```text
-без Async
-→ отдельное переключение в executor не обязательно
-
-с Async
-→ continuation отдельно планируется через executor
-```
-
-Если написать:
-
-```java
-thenApplyAsync(fn)
-```
-
-обычно используется:
-
-```text
-ForkJoinPool.commonPool()
-```
-
-Если:
-
-```java
-thenApplyAsync(fn, executor)
-```
-
-используется переданный executor.
-
----
-
-## Почему Async не нужно использовать везде
-
-Не стоит автоматически писать:
+### Почему Async не нужен везде
 
 ```java
 supplyAsync(...)
@@ -1063,18 +471,13 @@ supplyAsync(...)
         .thenAcceptAsync(...)
 ```
 
-Каждый async-stage требует дополнительного scheduling.
-
-У этого есть стоимость:
+Каждый асинхронный этап стоит отдельного планирования:
 
 ```text
-постановка задачи
-→ очередь executor
-→ выбор worker
-→ выполнение
+постановка задачи → очередь executor → выбор worker → выполнение
 ```
 
-Если после асинхронной операции нужно выполнить небольшое быстрое преобразование:
+Для небольших быстрых преобразований обычных продолжений достаточно:
 
 ```java
 CompletableFuture
@@ -1083,162 +486,73 @@ CompletableFuture
         .thenApply(String::toUpperCase);
 ```
 
-обычных continuation часто достаточно.
-
-Если работу нужно сознательно отправить в другой executor:
+Суффикс `Async` имеет смысл, когда работу сознательно отправляют в другой пул:
 
 ```java
-.thenApplyAsync(
-        this::heavyCalculation,
-        cpuExecutor
-        )
+.thenApplyAsync(this::heavyCalculation, cpuExecutor)
 ```
-
-тогда Async имеет смысл.
 
 ---
 
-## allOf
+## Несколько futures
 
-`CompletableFuture.allOf()` используется, когда нужно дождаться завершения нескольких futures.
+### allOf
 
-Например:
-
-```java
-CompletableFuture<User> userFuture =
-        CompletableFuture.supplyAsync(() -> loadUser());
-
-CompletableFuture<List<Order>> ordersFuture =
-        CompletableFuture.supplyAsync(() -> loadOrders());
-
-CompletableFuture<Balance> balanceFuture =
-        CompletableFuture.supplyAsync(() -> loadBalance());
-```
-
-Можно создать:
+Ждёт завершения всех переданных futures:
 
 ```java
 CompletableFuture<Void> all =
-        CompletableFuture.allOf(
-                userFuture,
-                ordersFuture,
-                balanceFuture
-        );
+        CompletableFuture.allOf(userFuture, ordersFuture, balanceFuture);
 ```
 
-Тип результата:
-
-```java
-CompletableFuture<Void>
-```
-
-`allOf()` сам не собирает результаты futures в список или DTO.
-
-Он сообщает, что все переданные futures завершены.
-
-Можно:
+Тип результата — `CompletableFuture<Void>`: сам метод результаты не собирает, он
+лишь сообщает, что все завершены. Забирать их нужно отдельно:
 
 ```java
 all.join();
-```
 
-а затем получить результаты:
-
-```java
 User user = userFuture.join();
 List<Order> orders = ordersFuture.join();
 Balance balance = balanceFuture.join();
 ```
 
----
-
-## allOf со списком futures
-
-Например:
+Со списком это выглядит так:
 
 ```java
-List<CompletableFuture<User>> futures =
-        ids.stream()
-                .map(id ->
-                        CompletableFuture.supplyAsync(
-                                () -> loadUser(id)
-                        )
-                )
-                .toList();
+List<CompletableFuture<User>> futures = ids.stream()
+        .map(id -> CompletableFuture.supplyAsync(() -> loadUser(id)))
+        .toList();
+
+CompletableFuture
+        .allOf(futures.toArray(new CompletableFuture[0]))
+        .join();
+
+List<User> users = futures.stream()
+        .map(CompletableFuture::join)
+        .toList();
 ```
-
-Дождаться всех:
-
-```java
-CompletableFuture.allOf(
-        futures.toArray(new CompletableFuture[0])
-).join();
-```
-
-Затем собрать:
-
-```java
-List<User> users =
-        futures.stream()
-                .map(CompletableFuture::join)
-                .toList();
-```
-
-Схема:
 
 ```text
 Future 1 ─┐
 Future 2 ─┤
-Future 3 ─┤
-...       ├→ allOf
+Future 3 ─┼→ allOf → все завершены → собрать результаты
 Future N ─┘
-            ↓
-       все завершены
-            ↓
-     собрать результаты
 ```
 
-Если один или несколько futures завершаются exceptionally, результат `allOf()` также будет exceptional после завершения требуемой группы futures.
+Если один из futures завершился исключительно, результат `allOf()` тоже будет
+исключительным.
 
----
+### anyOf
 
-## anyOf
-
-`anyOf()` используется, когда нужен первый завершившийся future.
-
-Например:
-
-```java
-CompletableFuture<String> server1 =
-        CompletableFuture.supplyAsync(() -> requestServer1());
-
-CompletableFuture<String> server2 =
-        CompletableFuture.supplyAsync(() -> requestServer2());
-
-CompletableFuture<String> server3 =
-        CompletableFuture.supplyAsync(() -> requestServer3());
-```
-
-Можно:
+Ждёт первый завершившийся future:
 
 ```java
 CompletableFuture<Object> first =
-        CompletableFuture.anyOf(
-                server1,
-                server2,
-                server3
-        );
+        CompletableFuture.anyOf(server1, server2, server3);
 ```
 
-Тип:
-
-```java
-CompletableFuture<Object>
-```
-
-Потому что переданные futures могут иметь разные типы.
-
-Например:
+Тип результата — `CompletableFuture<Object>`, потому что переданные futures могут
+иметь разные типы.
 
 ```text
 server1 → 3 сек
@@ -1246,54 +560,14 @@ server2 → 1 сек
 server3 → 2 сек
 ```
 
-`anyOf()` завершится примерно через одну секунду результатом `server2`.
+Здесь `anyOf()` завершится примерно через секунду результатом второго сервера.
 
----
+С этим методом связаны два устойчивых заблуждения.
 
-## anyOf не отменяет остальные futures
+**Он не отменяет остальные.** После завершения первого future оставшиеся
+продолжают работу — их нужно отменять вручную, если это нужно.
 
-Важно:
-
-```java
-CompletableFuture.anyOf(f1, f2, f3)
-```
-
-не означает:
-
-```text
-получить первый результат
-→ автоматически отменить остальные
-```
-
-Например:
-
-```text
-f1 → 3 секунды
-f2 → 1 секунда
-f3 → 2 секунды
-```
-
-Через одну секунду:
-
-```text
-f2 → completed
-anyOf → completed
-```
-
-Но:
-
-```text
-f1 → продолжает работать
-f3 → продолжает работать
-```
-
----
-
-## anyOf и ошибки
-
-`anyOf()` ждёт первый **завершившийся** future, а не обязательно первый успешно завершившийся.
-
-Например:
+**Он ждёт первый завершившийся, а не первый успешный.**
 
 ```text
 f1 → 3 сек → success
@@ -1301,86 +575,38 @@ f2 → 1 сек → exception
 f3 → 2 сек → success
 ```
 
-Тогда первым завершится `f2`.
-
-`anyOf()` завершится exceptionally.
-
-Вызов:
-
-```java
-CompletableFuture.anyOf(f1, f2, f3).join();
-```
-
-может бросить:
+Первым завершится `f2`, и `anyOf()` завершится исключительно. Успешного `f3` он
+не дождётся, а `join()` бросит `CompletionException`.
 
 ```text
-CompletionException
-```
-
-Он не будет ждать успешный результат `f3`.
-
-При этом `f1` и `f3` сами автоматически не отменяются.
-
----
-
-## allOf и anyOf
-
-Кратко:
-
-```text
-allOf()
-→ дождаться всех futures
-→ CompletableFuture<Void>
-
-anyOf()
-→ дождаться первого завершившегося future
-→ CompletableFuture<Object>
+allOf() → дождаться всех    → CompletableFuture<Void>
+anyOf() → дождаться первого → CompletableFuture<Object>
 ```
 
 ---
 
-## cancel
+## Отмена и состояния
 
-`CompletableFuture` можно отменить:
+### cancel
 
 ```java
 future.cancel(true);
 ```
 
-Если future ещё не завершён, он переходит в cancelled state.
-
-После успешной отмены:
+Если future ещё не завершён, он переходит в отменённое состояние:
 
 ```java
 future.isDone();       // true
 future.isCancelled();  // true
 ```
 
-Попытка получить результат приводит к отмене:
+Попытка получить результат даст `CancellationException`.
 
-```java
-future.join();
-```
+### cancel(true) не прерывает вычисление
 
-может завершиться `CancellationException`.
-
----
-
-## cancel(true) и interrupt
-
-Здесь есть важное отличие от некоторых обычных реализаций `Future`.
-
-У `CompletableFuture`:
-
-```java
-future.cancel(true);
-```
-
-не гарантирует отправку `interrupt()` потоку, выполняющему underlying computation.
-
-Параметр `mayInterruptIfRunning` не используется как механизм управления выполняющим вычисление потоком.
-
-Поэтому:
+Важное отличие от привычной семантики `FutureTask`. У `CompletableFuture`
+параметр `mayInterruptIfRunning` не используется как механизм управления потоком,
+выполняющим вычисление.
 
 ```java
 CompletableFuture<Integer> future =
@@ -1392,35 +618,11 @@ CompletableFuture<Integer> future =
 future.cancel(true);
 ```
 
-означает прежде всего:
+Это означает прежде всего, что сам future считается отменённым. Метод
+`expensiveOperation()` при этом может продолжать выполняться. Остановка
+вычисления требует отдельной кооперативной логики.
 
-```text
-CompletableFuture
-→ считается отменённым
-```
-
-но:
-
-```text
-expensiveOperation()
-```
-
-может продолжать выполняться.
-
-Не следует автоматически переносить сюда модель:
-
-```text
-FutureTask.cancel(true)
-→ обязательно остановить worker
-```
-
-Остановка underlying computation требует отдельной корректно спроектированной кооперативной логики.
-
----
-
-## Состояния CompletableFuture
-
-Полезные методы:
+### Состояния
 
 ```java
 future.isDone();
@@ -1428,225 +630,70 @@ future.isCancelled();
 future.isCompletedExceptionally();
 ```
 
----
+| Исход | `isDone()` | `isCancelled()` | `isCompletedExceptionally()` |
+|---|---|---|---|
+| Успех | `true` | `false` | `false` |
+| Ошибка | `true` | `false` | `true` |
+| Отмена | `true` | `true` | `true` |
 
-### Успешное завершение
-
-```text
-isDone()                   = true
-isCancelled()              = false
-isCompletedExceptionally() = false
-```
-
----
-
-### Завершение с ошибкой
-
-```text
-isDone()                   = true
-isCancelled()              = false
-isCompletedExceptionally() = true
-```
+То есть `isDone()` означает не «задача успешно выполнена», а «future больше не
+находится в незавершённом состоянии».
 
 ---
 
-### Отмена
+## Ручное завершение
 
-```text
-isDone()                   = true
-isCancelled()              = true
-isCompletedExceptionally() = true
-```
-
-Таким образом:
+Future можно создать без вычисления и завершить руками:
 
 ```java
-future.isDone();
-```
+CompletableFuture<String> future = new CompletableFuture<>();
 
-означает не:
+future.isDone();        // false
 
-```text
-задача успешно выполнена
-```
-
-а:
-
-```text
-future больше не находится в незавершённом состоянии
-```
-
----
-
-## Ручное завершение CompletableFuture
-
-`CompletableFuture` можно создать без начального вычисления:
-
-```java
-CompletableFuture<String> future =
-        new CompletableFuture<>();
-```
-
-Сначала:
-
-```java
-future.isDone(); // false
-```
-
-Можно вручную завершить его:
-
-```java
 future.complete("OK");
+
+future.join();          // "OK"
 ```
 
-После этого:
+Метод `complete()` возвращает `boolean` и сообщает, удалось ли установить
+результат:
 
 ```java
-future.join(); // "OK"
+CompletableFuture<Integer> future = new CompletableFuture<>();
+
+boolean first = future.complete(42);    // true
+boolean second = future.complete(100);  // false
+
+future.join();                          // 42
 ```
+
+Завершить ошибкой можно так:
+
+```java
+future.completeExceptionally(new IllegalStateException("DB unavailable"));
+```
+
+Правило общее: первое успешное завершение определяет результат. Последующие
+`complete()`, `completeExceptionally()` и `cancel()` уже установленный результат
+не заменяют.
+
+Этот механизм полезен, когда результат приходит извне — из колбэка библиотеки, из
+обработчика сообщения очереди, из ответа сетевого клиента.
 
 ---
 
-## complete
-
-Метод:
-
-```java
-future.complete(value);
-```
-
-пытается успешно завершить future указанным значением.
-
-Он возвращает `boolean`.
-
-Например:
-
-```java
-CompletableFuture<Integer> future =
-        new CompletableFuture<>();
-
-boolean first = future.complete(42);
-boolean second = future.complete(100);
-```
-
-Получится:
-
-```text
-first  = true
-second = false
-```
-
-Потому что первое завершение уже определило результат:
-
-```java
-future.join(); // 42
-```
-
----
-
-## completeExceptionally
-
-Можно вручную завершить future ошибкой:
-
-```java
-CompletableFuture<Integer> future =
-        new CompletableFuture<>();
-
-future.completeExceptionally(
-        new IllegalStateException("DB unavailable")
-);
-```
-
-После этого:
-
-```java
-future.isDone();                   // true
-future.isCompletedExceptionally(); // true
-```
-
-А получение результата приведёт к exceptional completion.
-
----
-
-## Первое завершение побеждает
-
-Если:
-
-```java
-CompletableFuture<Integer> future =
-        new CompletableFuture<>();
-
-boolean first =
-        future.complete(10);
-
-boolean second =
-        future.completeExceptionally(
-                new RuntimeException("boom")
-        );
-```
-
-то:
-
-```text
-first = true
-second = false
-```
-
-А:
-
-```java
-future.join();
-```
-
-вернёт:
-
-```text
-10
-```
-
-Потому что первый успешный вызов завершения определяет состояние future.
-
-Последующие обычные:
-
-```text
-complete()
-completeExceptionally()
-cancel()
-```
-
-не могут просто заменить уже установленный результат.
-
----
-
-## Типичная асинхронная цепочка
-
-Например:
+## Типичная цепочка целиком
 
 ```java
 CompletableFuture<UserDto> result =
         CompletableFuture
-                .supplyAsync(
-                        () -> loadUser(),
-                        ioExecutor
-                )
-                .thenCompose(
-                        user -> loadOrdersAsync(user)
-                )
-                .thenApply(
-                        orders -> calculateStatistics(orders)
-                )
-                .thenApply(
-                        stats -> new UserDto(stats)
-                )
-                .whenComplete(
-                        (dto, ex) -> logResult(dto, ex)
-                )
-                .exceptionally(
-                        ex -> fallbackDto()
-                );
+                .supplyAsync(() -> loadUser(), ioExecutor)
+                .thenCompose(user -> loadOrdersAsync(user))
+                .thenApply(orders -> calculateStatistics(orders))
+                .thenApply(stats -> new UserDto(stats))
+                .whenComplete((dto, ex) -> logResult(dto, ex))
+                .exceptionally(ex -> fallbackDto());
 ```
-
-Смысл:
 
 ```text
 loadUser
@@ -1664,220 +711,166 @@ loadUser
 
 ---
 
-## Когда использовать какой continuation
-
-Шпаргалка:
-
-```text
-thenApply()
-→ T → R
-→ преобразовать значение
-
-thenAccept()
-→ T → void
-→ использовать значение без результата
-
-thenRun()
-→ () → void
-→ выполнить действие после завершения
-
-thenCompose()
-→ T → CompletableFuture<R>
-→ зависимая асинхронная операция
-
-thenCombine()
-→ объединить результаты двух независимых futures
-```
-
----
-
-## Обработка ошибок
-
-```text
-exceptionally()
-→ только exception
-→ fallback
-
-handle()
-→ success или exception
-→ преобразование результата
-
-whenComplete()
-→ success или exception
-→ side effect
-```
-
----
-
-## Получение результата
-
-```text
-get()
-→ блокирующее ожидание
-→ checked exceptions
-→ ExecutionException
-→ InterruptedException
-
-join()
-→ блокирующее ожидание
-→ unchecked CompletionException
-```
-
----
-
-## Управление несколькими futures
-
-```text
-allOf()
-→ дождаться всех
-
-anyOf()
-→ дождаться первого завершившегося
-```
-
-При этом:
-
-```text
-anyOf()
-≠ автоматически отменить остальные
-```
-
----
-
 ## Типичные ошибки
 
-### Ошибка 1. Использовать thenApply вместо thenCompose
+### Использовать thenApply вместо thenCompose
 
-Плохо:
+Если функция возвращает `CompletableFuture<List<Order>>`, то `thenApply()` даст
+`CompletableFuture<CompletableFuture<List<Order>>>`. Нужен `thenCompose()`.
 
-```java
-future.thenApply(user -> loadOrdersAsync(user));
-```
+### Путать thenCompose и thenCombine
 
-если `loadOrdersAsync()` возвращает:
+Первый нужен, когда вторая операция зависит от результата первой. Второй — когда
+операции независимы и результаты объединяются.
 
-```java
-CompletableFuture<List<Order>>
-```
+### Ставить Async на каждый этап без причины
 
-Тогда получается:
+Каждое асинхронное продолжение требует отдельного планирования. Для небольших
+синхронных преобразований достаточно обычного `thenApply()`.
+
+### Бездумно нагружать commonPool
+
+Без явного executor используется общий пул, который делят все части приложения.
+Долгие и блокирующие операции в нём мешают остальным задачам.
+
+### Считать whenComplete обработчиком ошибки
+
+Он выполняет побочный эффект, но ошибку не поглощает — она продолжает идти по
+цепочке. Для запасного значения нужен `exceptionally()` или `handle()`.
+
+### Считать anyOf ожиданием первого успешного результата
+
+Он завершается по первому завершившемуся future, включая исключительное
+завершение.
+
+### Считать, что anyOf отменяет остальные задачи
+
+Не отменяет. Оставшиеся futures продолжают работу.
+
+### Считать cancel(true) гарантированным прерыванием вычисления
+
+Для `CompletableFuture` это неверно: отмена future и остановка выполняющейся
+функции — разные вещи.
+
+### Считать isDone признаком успеха
+
+Он становится `true` при любом завершении, включая ошибку и отмену.
+
+### Вызывать get или join в середине цепочки
+
+Это возвращает ровно ту блокировку вызывающего потока, ради ухода от которой
+`CompletableFuture` и нужен.
+
+---
+
+## Краткая памятка
 
 ```text
-CompletableFuture<CompletableFuture<List<Order>>>
+Создание
+
+runAsync()    → Runnable    → CompletableFuture<Void>
+supplyAsync() → Supplier<T> → CompletableFuture<T>
 ```
-
-Лучше:
-
-```java
-future.thenCompose(user -> loadOrdersAsync(user));
-```
-
----
-
-### Ошибка 2. Путать thenCompose и thenCombine
-
-`thenCompose()`:
 
 ```text
-B зависит от A
-```
+Продолжения
 
-`thenCombine()`:
+thenApply()   → T → R
+thenAccept()  → T → void
+thenRun()     → () → void
+thenCompose() → T → CompletableFuture<R>, распрямляет вложенность
+thenCombine() → Future<A> + Future<B> → Future<R>
+
+thenApply ≈ map, thenCompose ≈ flatMap
+```
 
 ```text
-A и B независимы
-→ объединить результаты
+Ошибки
+
+exceptionally() → только ошибка → fallback
+handle()        → успех и ошибка → новый результат
+whenComplete()  → успех и ошибка → side effect, ошибка идёт дальше
 ```
-
----
-
-### Ошибка 3. Использовать Async для каждого stage без причины
-
-```java
-supplyAsync(...)
-        .thenApplyAsync(...)
-        .thenApplyAsync(...)
-        .thenAcceptAsync(...)
-```
-
-может создавать ненужное дополнительное scheduling.
-
-Для небольших синхронных преобразований часто достаточно:
-
-```java
-thenApply()
-```
-
----
-
-### Ошибка 4. Бездумно использовать commonPool
-
-```java
-CompletableFuture.supplyAsync(...)
-```
-
-и:
-
-```java
-thenApplyAsync(...)
-```
-
-без executor обычно используют общий async executor.
-
-Долгие или блокирующие операции могут негативно влиять на другие задачи, использующие тот же pool.
-
-В таких сценариях имеет смысл передавать свой:
-
-```java
-ExecutorService executor = ...
-```
-
----
-
-### Ошибка 5. Считать whenComplete обработчиком ошибки
-
-```java
-.whenComplete((result, ex) -> log(...))
-```
-
-не означает, что ошибка восстановлена.
-
-Exception продолжает цепочку.
-
-Для fallback нужен, например:
-
-```java
-.exceptionally(ex -> fallback)
-```
-
----
-
-### Ошибка 6. Считать anyOf ожиданием первого успешного результата
-
-`anyOf()` завершается по первому завершившемуся future.
-
-Если он завершился exceptionally:
 
 ```text
-anyOf
-→ тоже exceptional
+Получение
+
+get()  → ExecutionException, InterruptedException — checked
+join() → CompletionException — unchecked
+```
+
+```text
+Несколько futures
+
+allOf() → ждать всех    → CompletableFuture<Void>, результаты не собирает
+anyOf() → первый завершившийся → CompletableFuture<Object>
+
+anyOf ≠ первый успешный
+anyOf ≠ отмена остальных
+```
+
+```text
+Executor
+
+*Async без executor → обычно ForkJoinPool.commonPool()
+*Async с executor   → указанный
+без суффикса        → отдельное планирование не обязательно
+```
+
+```text
+Состояния
+
+isDone()                   → завершён любым способом
+isCancelled()              → отменён
+isCompletedExceptionally() → ошибка или отмена
+
+complete(value) / completeExceptionally(ex)
+→ первое успешное завершение определяет результат
+
+cancel(true)
+→ future отменён
+→ вычисление может продолжаться
 ```
 
 ---
 
-### Ошибка 7. Считать, что anyOf отменяет остальные задачи
+## Краткий ответ для собеседования
 
-Не отменяет.
+`CompletableFuture` появился потому, что обычный `Future` умеет только отдать
+результат через блокирующий `get()`. Как только операций становится несколько и
+они зависят друг от друга, код превращается в чередование запусков и ожиданий, и
+асинхронность теряет смысл.
 
-После завершения одного future остальные могут продолжить работу.
+Он позволяет описать обработку декларативно. Запуск — `supplyAsync()` для
+операции с результатом и `runAsync()` для операции без. Дальше идут продолжения:
+`thenApply()` преобразует значение, `thenAccept()` использует его без результата,
+`thenRun()` просто выполняет действие после завершения.
 
----
+Важнейшее различие — между `thenApply()` и `thenCompose()`. Если функция
+возвращает обычное значение, нужен первый; если она сама возвращает future, то
+первый даст вложенный future, и нужен `thenCompose()`, который эту вложенность
+распрямляет. Это ровно та же пара, что `map` и `flatMap`. Отдельно стоит
+`thenCombine()` — он объединяет результаты двух независимых операций, которые
+могут выполняться параллельно.
 
-### Ошибка 8. Считать cancel(true) гарантированным interrupt underlying computation
+Ошибки обрабатываются тремя способами. `exceptionally()` срабатывает только при
+ошибке и подставляет запасное значение. `handle()` вызывается всегда и может
+преобразовать результат. `whenComplete()` тоже вызывается всегда, но предназначен
+для побочных эффектов и ошибку не поглощает — она продолжает идти по цепочке.
 
-Для `CompletableFuture` это неверно.
+Результат забирают через `get()` с проверяемыми исключениями или через `join()`,
+который бросает непроверяемое `CompletionException`; внутри цепочек удобнее
+второй.
 
-Отмена future и остановка выполняющейся функции — не одно и то же.
+Без явного executor всё выполняется в общем `ForkJoinPool`, что для блокирующих
+операций плохо: пул делят все части приложения. Суффикс `Async` не нужно ставить
+на каждый этап — он означает отдельное планирование задачи и имеет смысл, только
+когда работу сознательно переносят в другой пул.
+
+Два момента, на которых чаще всего ловят. `anyOf()` ждёт первый завершившийся
+future, а не первый успешный, и остальные при этом не отменяет. И `cancel(true)`
+помечает отменённым сам future, но не гарантирует прерывания выполняющегося
+вычисления — это принципиальное отличие от `FutureTask`.
 
 ---
 
@@ -1885,307 +878,116 @@ anyOf
 
 ### 1. Чем Future отличается от CompletableFuture?
 
-**Ответ:** `Future` в основном представляет результат асинхронной операции и предоставляет методы вроде `get()` и `cancel()`.
-
-`CompletableFuture` дополнительно позволяет строить цепочки вычислений, комбинировать futures, обрабатывать ошибки и вручную завершать future.
+**Ответ:** `Future` только представляет результат асинхронной операции и даёт
+`get()` и `cancel()`. `CompletableFuture` дополнительно позволяет строить
+цепочки, объединять futures, обрабатывать ошибки и завершать future вручную.
 
 ### 2. Чем runAsync отличается от supplyAsync?
 
-**Ответ:**
-
-```text
-runAsync()
-→ Runnable
-→ результата нет
-→ CompletableFuture<Void>
-
-supplyAsync()
-→ Supplier<T>
-→ есть результат
-→ CompletableFuture<T>
-```
+**Ответ:** первый принимает `Runnable` и возвращает `CompletableFuture<Void>`,
+второй принимает `Supplier<T>` и возвращает `CompletableFuture<T>`.
 
 ### 3. Чем thenApply отличается от thenAccept?
 
-**Ответ:**
-
-```text
-thenApply
-→ получает T
-→ возвращает R
-
-thenAccept
-→ получает T
-→ ничего не возвращает
-```
+**Ответ:** оба получают результат предыдущего этапа, но первый возвращает новое
+значение, а второй ничего не возвращает.
 
 ### 4. Чем thenAccept отличается от thenRun?
 
-```text
-thenAccept
-→ получает результат предыдущего этапа
-
-thenRun
-→ результат предыдущего этапа не получает
-```
-
-**Ответ:** Оба обычно возвращают:
-
-```text
-CompletableFuture<Void>
-```
+**Ответ:** `thenAccept()` получает результат предыдущего этапа, `thenRun()` — нет.
+Оба возвращают `CompletableFuture<Void>`.
 
 ### 5. Чем thenApply отличается от thenCompose?
 
-```text
-thenApply:
-T → R
+**Ответ:** `thenApply()` применяется, когда функция возвращает обычное значение, а
+`thenCompose()` — когда она возвращает другой `CompletableFuture`. Второй
+распрямляет вложенность, как `flatMap`.
 
-thenCompose:
-T → CompletableFuture<R>
-```
+### 6. Что получится, если применить thenApply к асинхронной функции?
 
-**Ответ:** `thenCompose()` используется для dependent async operation и убирает вложенный `CompletableFuture`.
+**Ответ:** вложенный `CompletableFuture<CompletableFuture<R>>`, с которым дальше
+работать неудобно.
 
-### 6. Чем thenCompose отличается от thenCombine?
+### 7. Чем thenCompose отличается от thenCombine?
 
-**Ответ:**
+**Ответ:** первый нужен, когда вторая операция зависит от результата первой.
+Второй объединяет результаты двух независимых операций после завершения обеих.
 
-```text
-thenCompose
-→ B зависит от результата A
+### 8. Чем exceptionally отличается от handle?
 
-thenCombine
-→ A и B независимы
-→ ждём оба
-→ объединяем результаты
-```
+**Ответ:** `exceptionally()` вызывается только при ошибке, `handle()` — и при
+успехе, и при ошибке, получая пару значения и исключения.
 
-### 7. Чем exceptionally отличается от handle?
-
-**Ответ:**
-
-```text
-exceptionally
-→ только ошибка
-
-handle
-→ успех и ошибка
-```
-
-### 8. Чем handle отличается от whenComplete?
+### 9. Чем handle отличается от whenComplete?
 
 **Ответ:** `handle()` может преобразовать результат и вернуть другое значение.
+`whenComplete()` предназначен для побочных эффектов и оставляет исходный результат
+или ошибку без изменений.
 
-`whenComplete()` чаще используется для side effects и обычно сохраняет исходный результат или ошибку.
+### 10. Поглощает ли whenComplete исключение?
 
-### 9. Чем get отличается от join?
+**Ответ:** нет. Ошибка продолжает идти по цепочке, и для восстановления нужен
+`exceptionally()` или `handle()`.
 
-**Ответ:**
+### 11. Чем get отличается от join?
 
-```text
-get
-→ ExecutionException
-→ InterruptedException
-→ checked
+**Ответ:** `get()` объявляет проверяемые `ExecutionException` и
+`InterruptedException`, `join()` бросает непроверяемое `CompletionException`.
+Исходная ошибка в обоих случаях лежит в `getCause()`.
 
-join
-→ CompletionException
-→ unchecked
-```
+### 12. Какой executor используется supplyAsync без явного executor?
 
-### 10. Какой executor используется supplyAsync без executor?
+**Ответ:** обычно `ForkJoinPool.commonPool()`.
 
-**Ответ:** Обычно:
+### 13. Чем плохо выполнять блокирующие операции в commonPool?
 
-```text
-ForkJoinPool.commonPool()
-```
+**Ответ:** этот пул общий для всего приложения, включая параллельные стримы, и
+его размер привязан к числу ядер. Блокирующие задачи занимают его надолго и мешают
+остальным.
 
-### 11. Чем thenApply отличается от thenApplyAsync?
+### 14. Чем thenApply отличается от thenApplyAsync?
 
-**Ответ:**
+**Ответ:** первый не требует отдельного планирования и может выполниться в потоке,
+завершившем предыдущий этап. Второй планирует продолжение как отдельную задачу в
+executor.
 
-```text
-thenApply
-→ отдельное async scheduling не обязательно
+### 15. Стоит ли ставить Async на каждый этап?
 
-thenApplyAsync
-→ continuation планируется через async executor
-```
+**Ответ:** нет. Каждое асинхронное продолжение стоит постановки в очередь и
+выбора worker. Для быстрых преобразований это лишние накладные расходы.
 
-### 12. Что возвращает allOf?
+### 16. Что возвращает allOf?
 
-```java
-CompletableFuture<Void>
-```
+**Ответ:** `CompletableFuture<Void>`. Результаты он не собирает, их нужно забирать
+у исходных futures отдельно.
 
-**Ответ:** Он не собирает результаты futures автоматически.
+### 17. Что возвращает anyOf?
 
-### 13. Что возвращает anyOf?
+**Ответ:** `CompletableFuture<Object>`, поскольку переданные futures могут иметь
+разные типы.
 
-**Ответ:**
+### 18. Ждёт ли anyOf первый успешный future?
 
-```java
-CompletableFuture<Object>
-```
+**Ответ:** нет, он ждёт первый завершившийся, включая завершившийся ошибкой.
 
-### 14. Отменяет ли anyOf остальные futures?
+### 19. Отменяет ли anyOf остальные futures?
 
-**Ответ:** Нет.
+**Ответ:** нет, они продолжают выполняться.
 
-### 15. Ждёт ли anyOf первый успешный future?
+### 20. Что означает isDone?
 
-**Ответ:** Нет.
+**Ответ:** что future завершён любым способом — успешно, с ошибкой или отменой.
 
-Он ждёт первый завершившийся future, включая exceptional completion.
+### 21. Прерывает ли cancel(true) выполняющееся вычисление?
 
-### 16. Что означает isDone?
+**Ответ:** для `CompletableFuture` — нет. Параметр `mayInterruptIfRunning` здесь
+не управляет потоком, и функция может продолжать работу.
 
-**Ответ:** Future уже завершён:
+### 22. Можно ли завершить CompletableFuture вручную?
 
-```text
-успешно
-или
-с ошибкой
-или
-отменён
-```
-
-### 17. Можно ли завершить CompletableFuture вручную?
-
-**Ответ:** Да:
-
-```java
-complete(value)
-```
-
-или:
-
-```java
-completeExceptionally(exception)
-```
-
-## Итоговая шпаргалка
-
-```text
-Создание:
-
-runAsync()
-→ async Runnable
-→ CompletableFuture<Void>
-
-supplyAsync()
-→ async Supplier<T>
-→ CompletableFuture<T>
-
-
-Continuation:
-
-thenApply()
-→ T → R
-
-thenAccept()
-→ T → void
-
-thenRun()
-→ () → void
-
-thenCompose()
-→ T → CompletableFuture<R>
-
-thenCombine()
-→ Future<A> + Future<B> → Future<R>
-
-
-Ошибки:
-
-exceptionally()
-→ exception → fallback
-
-handle()
-→ result + exception → новый результат
-
-whenComplete()
-→ result + exception → side effect
-
-
-Получение:
-
-get()
-→ ExecutionException
-→ InterruptedException
-→ checked
-
-join()
-→ CompletionException
-→ unchecked
-
-
-Несколько futures:
-
-allOf()
-→ ждать всех
-→ CompletableFuture<Void>
-
-anyOf()
-→ ждать первого завершившегося
-→ CompletableFuture<Object>
-
-
-Executor:
-
-*Async без Executor
-→ обычно ForkJoinPool.commonPool()
-
-*Async с Executor
-→ указанный executor
-
-
-Состояния:
-
-isDone()
-→ завершён любым способом
-
-isCancelled()
-→ отменён
-
-isCompletedExceptionally()
-→ завершён exceptionally
-
-
-Ручное завершение:
-
-complete(value)
-completeExceptionally(exception)
-
-→ первое успешное завершение определяет результат
-```
-
-## Главное
-
-`CompletableFuture` нужен не просто для запуска работы в другом потоке.
-
-Его основное преимущество — возможность декларативно описывать асинхронный pipeline:
-
-```text
-запустить операцию
-→ преобразовать результат
-→ запустить зависимую операцию
-→ объединить независимые результаты
-→ обработать ошибку
-→ выполнить финальное действие
-```
-
-При этом важно понимать три вещи:
-
-```text
-1. thenApply и thenCompose решают разные задачи
-
-2. async-цепочка не означает, что нужно везде использовать методы с суффиксом Async
-
-3. CompletableFuture управляет состоянием асинхронного вычисления, но не гарантирует автоматическую остановку underlying computation при cancel()
-```
+**Ответ:** да, через `complete(value)` или `completeExceptionally(exception)`.
+Первое успешное завершение определяет результат, последующие вызовы его не
+заменяют.
 
 ---
 

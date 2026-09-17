@@ -1,60 +1,38 @@
 # Concurrent Collections в Java
 
-### Зачем нужны concurrent-коллекции
+Обычные коллекции вроде `HashMap` и `ArrayList` не гарантируют корректную работу
+при одновременном изменении из нескольких потоков: возможны потеря изменений,
+некорректные результаты и повреждение внутренней структуры. Для многопоточных
+сценариев существует набор специализированных структур из `java.util.concurrent`.
 
-Обычные коллекции Java, например `HashMap` и `ArrayList`, не гарантируют корректную работу при одновременном изменении из нескольких потоков.
-
-Например:
-
-```java
-Map<String, Integer> map = new HashMap<>();
+```text
+ConcurrentHashMap
+CopyOnWriteArrayList
+BlockingQueue
+    ArrayBlockingQueue
+    LinkedBlockingQueue
+    SynchronousQueue
+ConcurrentLinkedQueue
 ```
 
-Если несколько потоков одновременно изменяют такую коллекцию:
-
-```java
-map.put("A", 1);
-map.put("B", 2);
-```
-
-возникает конкурентный доступ к общей структуре данных. Это может привести к потере изменений, некорректным результатам и другим проблемам.
-
-Для многопоточных сценариев в Java существуют специализированные структуры из `java.util.concurrent`:
-
-- `ConcurrentHashMap`
-- `CopyOnWriteArrayList`
-- `BlockingQueue`
-- `ArrayBlockingQueue`
-- `LinkedBlockingQueue`
-- `SynchronousQueue`
-- `ConcurrentLinkedQueue`
-
-Они рассчитаны на конкурентную работу потоков и предоставляют разные гарантии в зависимости от сценария использования.
+Они рассчитаны на конкурентную работу и дают разные гарантии в зависимости от
+сценария. Главная мысль темы, к которой всё сводится: потокобезопасность
+контейнера не делает атомарной произвольную операцию над ним и не делает
+потокобезопасным его содержимое.
 
 ---
 
 ## Collections.synchronizedMap
 
-Один из простых способов сделать обычную `Map` потокобезопасной:
+Простейший способ сделать обычную `Map` потокобезопасной:
 
 ```java
 Map<String, Integer> map =
         Collections.synchronizedMap(new HashMap<>());
 ```
 
-Внутри всё ещё используется обычный `HashMap`, но доступ к нему оборачивается в синхронизацию.
-
-Отдельные операции:
-
-```java
-map.get(key);
-map.put(key, value);
-map.remove(key);
-```
-
-становятся потокобезопасными.
-
-Упрощённо это можно представить как использование общего монитора:
+Внутри остаётся обычный `HashMap`, но каждый доступ оборачивается синхронизацией
+по общему монитору:
 
 ```text
 Thread A ─┐
@@ -62,79 +40,54 @@ Thread B ─┼──> общий lock ──> HashMap
 Thread C ─┘
 ```
 
-Из-за этого потоки сильнее мешают друг другу, чем при использовании специализированных concurrent-структур.
+Отдельные операции `get()`, `put()` и `remove()` становятся потокобезопасными, но
+потоки сильнее мешают друг другу, чем при использовании специализированных
+структур.
 
-Особенно важно помнить про итерацию.
-
-Для `synchronizedMap` при ручном обходе требуется внешняя синхронизация:
+Отдельно нужно помнить про обход: он требует внешней синхронизации.
 
 ```java
 Map<String, Integer> map =
         Collections.synchronizedMap(new HashMap<>());
 
 synchronized (map) {
-        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+    for (Map.Entry<String, Integer> entry : map.entrySet()) {
         System.out.println(entry);
     }
-            }
+}
 ```
 
-Для активно используемой общей `Map` обычно предпочтительнее `ConcurrentHashMap`.
+Для активно используемой общей карты обычно предпочтительнее
+`ConcurrentHashMap`.
 
 ---
 
 ## ConcurrentHashMap
 
-`ConcurrentHashMap` — потокобезопасная реализация `Map`, специально разработанная для конкурентного доступа.
+Потокобезопасная реализация `Map`, специально разработанная для конкурентного
+доступа.
 
 ```java
-ConcurrentHashMap<String, Integer> map =
-        new ConcurrentHashMap<>();
+ConcurrentHashMap<String, Integer> map = new ConcurrentHashMap<>();
 ```
 
-Она позволяет множеству потоков одновременно читать данные и обеспечивает значительно большую параллельность при изменениях, чем одна глобальная блокировка всей коллекции.
+Она позволяет множеству потоков одновременно читать и даёт значительно большую
+параллельность при изменениях, чем одна глобальная блокировка. Операции `get()`,
+`put()` и `remove()` потокобезопасны сами по себе.
 
-Операции:
+> Потокобезопасность отдельных операций не означает атомарность произвольной
+> последовательности из нескольких операций.
 
-```java
-map.get(key);
-map.put(key, value);
-map.remove(key);
-```
-
-потокобезопасны сами по себе.
-
-Но важное правило:
-
-> Потокобезопасность отдельных операций не означает атомарность произвольной последовательности из нескольких операций.
-
----
-
-## Compound operations
-
-Рассмотрим:
+### Compound operations
 
 ```java
 if (!map.containsKey("user")) {
-        map.put("user", 1);
+    map.put("user", 1);
 }
 ```
 
-`containsKey()` потокобезопасен.
-
-`put()` тоже потокобезопасен.
-
-Но вся последовательность:
-
-```text
-проверить
-→ принять решение
-→ изменить
-```
-
-не является одной атомарной операцией.
-
-Возможна ситуация:
+`containsKey()` потокобезопасен, `put()` тоже. Но последовательность «проверить →
+принять решение → изменить» одной атомарной операцией не является:
 
 ```text
 Thread A                        Thread B
@@ -146,101 +99,38 @@ put("user", 1)
                                 put("user", 1)
 ```
 
-Оба потока успели увидеть отсутствие ключа до того, как один из них выполнил `put()`.
+Оба потока увидели отсутствие ключа до того, как один из них выполнил `put()`.
 
-Это классический пример compound operation.
-
-Для подобных случаев `ConcurrentHashMap` предоставляет специальные атомарные методы.
-
----
-
-## putIfAbsent
-
-Вместо:
-
-```java
-if (!map.containsKey("user")) {
-        map.put("user", 1);
-}
-```
-
-можно использовать:
+### putIfAbsent
 
 ```java
 map.putIfAbsent("user", 1);
 ```
 
-Эта операция атомарно выполняет смысл:
+Атомарно выполняет смысл «если ключа нет — добавить». Другой поток не вклинится
+между проверкой и вставкой.
 
-```text
-если ключ отсутствует
-→ добавить значение
-```
+### computeIfAbsent
 
-Другой поток не сможет вклиниться между проверкой наличия ключа и добавлением значения.
-
----
-
-## computeIfAbsent
-
-Если значение необходимо создать только при отсутствии ключа:
+Когда значение нужно создать только при отсутствии ключа:
 
 ```java
-map.computeIfAbsent(
-        "user",
-        key -> loadUserData(key)
-);
+map.computeIfAbsent("user", key -> loadUserData(key));
 ```
 
-Например:
+Здесь важный нюанс. Карта потокобезопасно управляет связями «ключ — значение», но
+не делает потокобезопасными сами значения.
 
 ```java
-ConcurrentHashMap<String, List<String>> map =
-        new ConcurrentHashMap<>();
+ConcurrentHashMap<String, List<String>> map = new ConcurrentHashMap<>();
 
-map.computeIfAbsent(
-        "java",
-        key -> new ArrayList<>()
-        );
+map.computeIfAbsent("java", key -> new ArrayList<>())
+   .add("Spring");
 ```
 
-`computeIfAbsent()` удобно использовать для ленивого создания значений.
-
-Но здесь появляется важный нюанс.
-
-`ConcurrentHashMap` делает потокобезопасной саму `Map`, но не делает автоматически потокобезопасными объекты, которые в ней хранятся.
-
-Например:
-
-```java
-ConcurrentHashMap<String, List<String>> map =
-        new ConcurrentHashMap<>();
-
-map.computeIfAbsent(
-        "java",
-        key -> new ArrayList<>()
-        ).add("Spring");
-```
-
-`computeIfAbsent()` корректно создаст значение для ключа.
-
-Но созданный:
-
-```java
-new ArrayList<>()
-```
-
-по-прежнему не является thread-safe.
-
-Несколько потоков могут получить ссылку на один и тот же `ArrayList` и одновременно выполнять:
-
-```java
-list.add(...);
-```
-
-`ConcurrentHashMap` не защищает внутреннее состояние этого списка.
-
-Важно различать два уровня:
+Значение создастся корректно, но созданный `ArrayList` остаётся обычным списком.
+Несколько потоков могут получить ссылку на один и тот же список и одновременно
+вызывать `add()` — карта их внутреннее состояние не защищает.
 
 ```text
 ConcurrentHashMap
@@ -252,39 +142,21 @@ ConcurrentHashMap
 имеет собственные правила потокобезопасности
 ```
 
-Thread-safe контейнер не делает автоматически thread-safe всё своё содержимое.
-
----
-
-## compute и merge
-
-Рассмотрим счётчик:
+### compute и merge
 
 ```java
-ConcurrentHashMap<String, Integer> counts =
-        new ConcurrentHashMap<>();
+ConcurrentHashMap<String, Integer> counts = new ConcurrentHashMap<>();
 
 counts.put("java", 0);
 ```
 
-Такой код небезопасен:
+Такой код небезопасен, несмотря на `ConcurrentHashMap`:
 
 ```java
-counts.put(
-        "java",
-        counts.get("java") + 1
-        );
+counts.put("java", counts.get("java") + 1);
 ```
 
-Несмотря на использование `ConcurrentHashMap`, здесь есть несколько действий:
-
-```text
-get
-→ вычисление нового значения
-→ put
-```
-
-Два потока могут выполнить:
+Здесь три действия: чтение, вычисление, запись.
 
 ```text
 начальное значение java = 0
@@ -299,182 +171,73 @@ Thread A: put("java", 1)
 Thread B: put("java", 1)
 ```
 
-Ожидалось:
+Ожидалось `2`, получилось `1` — одно обновление потерялось. Это `lost update`.
 
-```text
-java = 2
-```
-
-Получилось:
-
-```text
-java = 1
-```
-
-Одно обновление потерялось.
-
-Это называется `lost update`.
-
-Для атомарного изменения можно использовать `compute()`:
+Атомарные варианты:
 
 ```java
-counts.compute(
-        "java",
-                (key, value) -> value + 1
-        );
+counts.compute("java", (key, value) -> value + 1);
 ```
-
-Для счётчиков часто особенно удобно использовать `merge()`:
-
-```java
-counts.merge(
-        "java",
-                1,
-        Integer::sum
-);
-```
-
-Если ключа нет:
 
 ```java
 counts.merge("java", 1, Integer::sum);
 ```
 
-появится:
+`merge()` особенно удобен для счётчиков: если ключа нет, записывается переданное
+значение, если есть — применяется функция объединения.
 
 ```text
-java = 1
+ключа нет      → java = 1
+было java = 5  → java = 6
 ```
 
-Если уже было:
-
-```text
-java = 5
-```
-
-операция:
-
-```java
-counts.merge("java", 1, Integer::sum);
-```
-
-даст:
-
-```text
-java = 6
-```
-
-Таким образом, вместо ручного:
-
-```java
-if (!counts.containsKey(key)) {
-        counts.put(key, 1);
-} else {
-        counts.put(key, counts.get(key) + 1);
-        }
-```
-
-лучше использовать:
+Вместо ручной ветвистой конструкции с `containsKey()` и двумя `put()` достаточно
+одной строки:
 
 ```java
 counts.merge(key, 1, Integer::sum);
 ```
 
----
+### Итераторы
 
-## Итераторы ConcurrentHashMap
+Итераторы `ConcurrentHashMap` являются weakly consistent. Пока один поток
+обходит карту, другой может выполнить `put()`. Такой итератор:
 
-Итераторы `ConcurrentHashMap` являются `weakly consistent`.
+- не обязан бросать `ConcurrentModificationException`;
+- не блокирует конкурентный `put()`;
+- может увидеть новую запись, а может не увидеть.
 
-Например, один поток выполняет:
+То есть обход не является строгим снимком состояния на определённый момент.
 
-```java
-for (Map.Entry<String, Integer> entry : map.entrySet()) {
-        System.out.println(entry);
-}
-```
-
-а другой поток одновременно:
-
-```java
-map.put("new", 100);
-```
-
-Итератор:
-
-- не обязан бросать `ConcurrentModificationException`
-- не блокирует конкурентный `put()`
-- может увидеть новую запись
-- может не увидеть новую запись
-
-То есть текущий обход не является строгим snapshot состояния коллекции на определённый момент времени.
-
-Можно запомнить:
-
-```text
-ConcurrentHashMap iterator
-→ weakly consistent
-→ изменения во время обхода может увидеть, а может не увидеть
-```
-
----
-
-## ConcurrentHashMap и synchronizedMap
-
-Упрощённое сравнение:
+### ConcurrentHashMap и synchronizedMap
 
 ```text
 Collections.synchronizedMap
-→ обычная Map + synchronized wrapper
-→ общий монитор
-→ меньше параллелизма
+→ обычная Map под синхронизирующей обёрткой
+→ общий монитор, меньше параллелизма
 → при ручной итерации нужна внешняя синхронизация
 
 ConcurrentHashMap
-→ специализированная concurrent-структура
-→ рассчитана на многопоточную работу
-→ конкурентные чтения
-→ большая параллельность обновлений
+→ специализированная структура
+→ конкурентные чтения, большая параллельность обновлений
 → weakly consistent iterator
 ```
 
-Для простой ситуации `synchronizedMap` может быть достаточной.
-
-Для общей `Map`, с которой активно работают разные потоки, обычно выбирают `ConcurrentHashMap`.
+Для простой ситуации `synchronizedMap` может быть достаточно. Для карты, с
+которой активно работают разные потоки, выбирают `ConcurrentHashMap`.
 
 ---
 
 ## CopyOnWriteArrayList
 
-`CopyOnWriteArrayList` — потокобезопасный список, оптимизированный для сценариев, где чтений намного больше, чем изменений.
+Потокобезопасный список, оптимизированный для сценариев, где чтений намного
+больше, чем изменений.
 
 ```java
-CopyOnWriteArrayList<String> list =
-        new CopyOnWriteArrayList<>();
+CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<>();
 ```
 
-Название означает:
-
-```text
-Copy On Write
-→ копирование при записи
-```
-
-При изменении списка создаётся новая копия внутреннего массива.
-
-Например, изначально:
-
-```text
-["A", "B", "C"]
-```
-
-Выполняется:
-
-```java
-list.add("Java");
-```
-
-Упрощённо происходит следующее:
+При каждом изменении создаётся новая копия внутреннего массива:
 
 ```text
 старый массив:
@@ -482,7 +245,7 @@ list.add("Java");
 
         ↓ add("Java")
 
-создаётся новый массив:
+новый массив:
 ["A", "B", "C", "Java"]
 
         ↓
@@ -491,33 +254,10 @@ list.add("Java");
 переключается на новый массив
 ```
 
-Изменяющие операции:
+Копирования требуют `add()`, `remove()` и `set()`, поэтому запись относительно
+дорогая. Особенно плохо подходит сочетание большого списка и частых изменений.
 
-```java
-add()
-remove()
-set()
-```
-
-требуют копирования массива.
-
-Поэтому запись в `CopyOnWriteArrayList` относительно дорогая.
-
-Особенно плохо такой список подходит для сценария:
-
-```text
-очень большой список
-+
-частые add/remove
-```
-
-При каждом изменении приходится копировать значительную часть данных.
-
----
-
-## Когда использовать CopyOnWriteArrayList
-
-Основной сценарий:
+### Когда использовать
 
 ```text
 очень много чтений
@@ -525,86 +265,41 @@ set()
 очень мало изменений
 ```
 
-Например, список обработчиков событий:
+Классический пример — список обработчиков событий:
 
 ```java
-CopyOnWriteArrayList<Listener> listeners =
-        new CopyOnWriteArrayList<>();
-```
+CopyOnWriteArrayList<Listener> listeners = new CopyOnWriteArrayList<>();
 
-Новые listener'ы добавляются редко, но список может очень часто обходиться:
-
-```java
 for (Listener listener : listeners) {
-        listener.onEvent(event);
+    listener.onEvent(event);
 }
 ```
 
-В таком случае дорогая операция добавления не является большой проблемой, зато чтения очень удобны для конкурентной работы.
+Новые слушатели добавляются редко, а обход происходит постоянно, поэтому дорогая
+запись проблемой не становится.
 
----
+### Итератор
 
-## Итератор CopyOnWriteArrayList
-
-Итератор `CopyOnWriteArrayList` работает со snapshot массива.
-
-Например:
+Итератор работает со снимком массива на момент своего создания.
 
 ```java
 CopyOnWriteArrayList<String> list =
-        new CopyOnWriteArrayList<>(
-                List.of("A", "B")
-        );
+        new CopyOnWriteArrayList<>(List.of("A", "B"));
 
 Iterator<String> iterator = list.iterator();
 
 list.add("C");
 ```
 
-На момент создания `iterator` внутренний массив был:
-
 ```text
-["A", "B"]
+старый массив ["A", "B"]
+↑ с ним продолжает работать iterator
+
+новый массив ["A", "B", "C"]
+↑ текущее состояние списка
 ```
 
-После:
-
-```java
-list.add("C");
-```
-
-создаётся новый массив:
-
-```text
-старый:
-["A", "B"]
-↑
-iterator продолжает работать с ним
-
-новый:
-["A", "B", "C"]
-↑
-текущий список
-```
-
-Поэтому:
-
-```java
-while (iterator.hasNext()) {
-        System.out.println(iterator.next());
-        }
-```
-
-выведет:
-
-```text
-A
-B
-```
-
-Элемент `"C"` уже созданный итератор не увидит.
-
-Это отличается от `ConcurrentHashMap`.
+Обход выведет только `A` и `B`: элемент `C` уже созданный итератор не увидит.
 
 ```text
 ConcurrentHashMap iterator
@@ -620,11 +315,8 @@ CopyOnWriteArrayList iterator
 
 ## BlockingQueue
 
-`BlockingQueue` — интерфейс потокобезопасной очереди, поддерживающей блокирующие операции.
-
-Она особенно удобна в producer-consumer моделях.
-
-Например:
+Интерфейс потокобезопасной очереди с блокирующими операциями. Основной сценарий —
+producer-consumer.
 
 ```text
 Producer
@@ -638,284 +330,93 @@ Consumer
 обрабатывает задачи
 ```
 
-Пример:
+```java
+BlockingQueue<Task> queue = new ArrayBlockingQueue<>(100);
+
+queue.put(task);          // producer
+Task task = queue.take(); // consumer
+```
+
+Если очередь заполнена, `put()` ждёт. Если пуста — ждёт `take()`.
+
+### Добавление элементов
+
+Пусть очередь заполнена:
 
 ```java
-BlockingQueue<Task> queue =
-        new ArrayBlockingQueue<>(100);
+BlockingQueue<String> queue = new ArrayBlockingQueue<>(2);
 ```
-
-Producer может добавлять задачи:
 
 ```java
-queue.put(task);
+queue.add("C");                  // IllegalStateException, поток не ждёт
+boolean result = queue.offer("C"); // false, поток не ждёт
+queue.put("C");                  // ждёт, пока появится место
 ```
 
-Consumer может получать:
-
-```java
-Task task = queue.take();
-```
-
-Если очередь заполнена, `put()` может ждать.
-
-Если очередь пуста, `take()` может ждать.
-
----
-
-## Добавление элементов в BlockingQueue
-
-Допустим:
-
-```java
-BlockingQueue<String> queue =
-        new ArrayBlockingQueue<>(2);
-```
-
-В очереди уже:
-
-```text
-["A", "B"]
-```
-
-То есть она заполнена.
-
-Существуют разные варианты добавления.
-
-### add()
-
-```java
-queue.add("C");
-```
-
-Если места нет, будет выброшен:
-
-```text
-IllegalStateException
-```
-
-Поток не ждёт.
-
----
-
-### offer()
-
-```java
-boolean result = queue.offer("C");
-```
-
-Если места нет:
-
-```text
-result = false
-```
-
-Исключение не выбрасывается.
-
-Поток тоже не ждёт.
-
----
-
-### put()
-
-```java
-queue.put("C");
-```
-
-Если очередь заполнена, текущий поток будет ждать, пока не появится место.
-
-Например:
+Как работает ожидание:
 
 ```text
 queue = [A, B]
 
-Producer:
-put(C)
-↓
-WAITING
+Producer: put(C) → WAITING
 
-Consumer:
-take()
-↓
-забирает A
+Consumer: take() → забирает A
 
 queue = [B]
 
-Producer:
-разблокируется
-↓
-добавляет C
+Producer: разблокируется → добавляет C
 
 queue = [B, C]
 ```
 
-Можно запомнить:
+### Извлечение элементов
 
-```text
-add()   → нет места → exception
-offer() → нет места → false
-put()   → нет места → ожидание
-```
-
----
-
-## offer с таймаутом
-
-Есть промежуточный вариант:
+Пусть очередь пуста:
 
 ```java
-boolean result =
-        queue.offer(
-                task,
-                2,
-                TimeUnit.SECONDS
-        );
+queue.remove();              // NoSuchElementException
+String value = queue.poll(); // null
+String value = queue.take(); // ждёт появления элемента
 ```
 
-Поток подождёт максимум две секунды.
-
-Если место появится:
+Симметрия, которую стоит запомнить целиком:
 
 ```text
-true
+Добавление:            Извлечение:
+
+add()   → exception    remove() → exception
+offer() → false        poll()   → null
+put()   → ожидание     take()   → ожидание
 ```
 
-Если за это время очередь не освободится:
+### Ограниченное ожидание
 
-```text
-false
-```
-
----
-
-## Получение элементов из BlockingQueue
-
-Теперь очередь пуста:
+У обеих операций есть варианты с таймаутом:
 
 ```java
-BlockingQueue<String> queue =
-        new ArrayBlockingQueue<>(2);
+boolean result = queue.offer(task, 2, TimeUnit.SECONDS);
+
+Task task = queue.poll(2, TimeUnit.SECONDS);
 ```
 
-Есть три основных варианта.
+`offer()` вернёт `true`, если место появилось, и `false` по истечении времени.
+`poll()` вернёт элемент либо `null`.
 
-### remove()
+### Реакция на interrupt
 
-```java
-queue.remove();
-```
-
-Если элементов нет:
-
-```text
-NoSuchElementException
-```
-
----
-
-### poll()
-
-```java
-String value = queue.poll();
-```
-
-Если очередь пуста:
-
-```text
-value = null
-```
-
----
-
-### take()
-
-```java
-String value = queue.take();
-```
-
-Если очередь пуста, поток будет ждать появления элемента.
-
-Можно запомнить симметрию:
-
-```text
-Добавление:
-
-add()   → exception
-offer() → false
-put()   → ожидание
-
-Извлечение:
-
-remove() → exception
-poll()   → null
-take()   → ожидание
-```
-
----
-
-## poll с таймаутом
-
-Можно ждать элемент ограниченное время:
-
-```java
-Task task =
-        queue.poll(
-                2,
-                TimeUnit.SECONDS
-        );
-```
-
-Если элемент появится за это время, метод его вернёт.
-
-Если нет:
-
-```text
-null
-```
-
----
-
-## BlockingQueue и interrupt
-
-Блокирующие операции `BlockingQueue` реагируют на interrupt.
-
-Например, очередь заполнена:
-
-```java
-queue.put(task);
-```
-
-Поток блокируется в ожидании свободного места.
-
-Другой поток выполняет:
-
-```java
-thread.interrupt();
-```
-
-Тогда `put()` прекращает ожидание и бросает:
-
-```text
-InterruptedException
-```
-
-Пример:
+Блокирующие операции очереди прерываемы. Если поток ждёт в `put()`, а другой
+вызывает `thread.interrupt()`, ожидание прекращается выбросом
+`InterruptedException`.
 
 ```java
 try {
-        queue.put(task);
+    queue.put(task);
 } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
+    Thread.currentThread().interrupt();
 }
 ```
 
-То же относится к:
-
-```java
-queue.take();
-```
-
-Это соответствует общей модели interruptible blocking operations:
+То же относится к `take()`. Это общая модель прерываемых блокирующих операций:
 
 ```text
 sleep()
@@ -925,126 +426,62 @@ BlockingQueue.put()
 BlockingQueue.take()
 ```
 
-После выбрасывания `InterruptedException` interrupt status очищается, поэтому часто его восстанавливают:
+После выброса `InterruptedException` флаг прерывания сбрасывается, поэтому его
+восстанавливают явно.
 
-```java
-Thread.currentThread().interrupt();
-```
+### Backpressure
 
----
-
-## Backpressure
-
-Одна из главных причин использовать ограниченную `BlockingQueue` — backpressure.
-
-Представим:
+Главная причина использовать ограниченную очередь.
 
 ```text
 producer создаёт 100 задач/сек
 consumer обрабатывает 20 задач/сек
 ```
 
-Если очередь практически неограниченная, каждую секунду появляется backlog примерно:
+При практически неограниченной очереди backlog растёт на 80 задач в секунду:
 
 ```text
-100 - 20 = 80 задач
+80 → 160 → 240 → 320 → ...
 ```
 
-Через некоторое время:
+Это увеличивает потребление памяти, нагружает сборщик мусора и в пределе даёт
+`OutOfMemoryError`.
 
-```text
-80
-160
-240
-320
-...
-```
-
-Количество накопленных задач будет расти.
-
-Это приводит к увеличению потребления памяти, дополнительной нагрузке на GC и потенциально к `OutOfMemoryError`.
-
-Если использовать:
-
-```java
-BlockingQueue<Task> queue =
-        new ArrayBlockingQueue<>(100);
-```
-
-и producer добавляет через:
-
-```java
-queue.put(task);
-```
-
-получается:
+С ограниченной очередью и `put()` получается саморегуляция:
 
 ```text
 producer быстрее consumer
         ↓
-очередь растёт
-        ↓
-достигает capacity = 100
+очередь растёт до capacity = 100
         ↓
 put() блокирует producer
         ↓
 consumer забирает элемент
         ↓
-освобождается место
-        ↓
 producer продолжает работу
 ```
 
-Это и есть один из вариантов backpressure.
-
-Система не позволяет producer бесконечно генерировать работу быстрее, чем downstream способен её обрабатывать.
+Система не позволяет источнику бесконечно генерировать работу быстрее, чем её
+успевают обрабатывать.
 
 ---
 
-## ArrayBlockingQueue
+## Реализации BlockingQueue
 
-`ArrayBlockingQueue` — ограниченная блокирующая очередь на основе массива.
+### ArrayBlockingQueue
 
-Capacity задаётся при создании:
-
-```java
-BlockingQueue<Task> queue =
-        new ArrayBlockingQueue<>(100);
-```
-
-После создания размер изменить нельзя.
-
-Главный сценарий:
-
-```text
-producer-consumer
-+
-нужно ограничить количество накопленных задач
-+
-нужен backpressure
-```
-
-Например:
+Ограниченная очередь на основе массива. Ёмкость задаётся при создании и потом не
+меняется.
 
 ```java
-queue.put(task);
+BlockingQueue<Task> queue = new ArrayBlockingQueue<>(100);
 ```
 
-при заполненной очереди заставит producer ждать.
+Главный сценарий — producer-consumer, где нужно ограничить объём накопленных
+задач и получить backpressure.
 
-Важно:
-
-> Наличие ограниченной очереди само по себе не означает автоматическую блокировку producer.
-
-Поведение зависит от метода.
-
-Для заполненного:
-
-```java
-new ArrayBlockingQueue<>(100)
-```
-
-получаем:
+> Наличие ограниченной очереди само по себе не означает автоматическую блокировку
+> producer: поведение зависит от выбранного метода.
 
 ```text
 add()   → exception
@@ -1052,98 +489,40 @@ offer() → false
 put()   → ждёт
 ```
 
----
+### LinkedBlockingQueue
 
-## LinkedBlockingQueue
-
-`LinkedBlockingQueue` — ещё одна реализация `BlockingQueue`.
-
-Можно задать capacity:
+С заданной ёмкостью ведёт себя как ограниченная:
 
 ```java
-BlockingQueue<Task> queue =
-        new LinkedBlockingQueue<>(100);
+BlockingQueue<Task> queue = new LinkedBlockingQueue<>(100);
 ```
 
-Тогда очередь является ограниченной.
-
-Можно создать без capacity:
+Без ёмкости предел составляет `Integer.MAX_VALUE`, поэтому такую очередь считают
+практически неограниченной:
 
 ```java
-BlockingQueue<Task> queue =
-        new LinkedBlockingQueue<>();
+BlockingQueue<Task> queue = new LinkedBlockingQueue<>();
 ```
 
-В таком случае фактический предел очень большой, порядка `Integer.MAX_VALUE`.
-
-Поэтому такую очередь обычно считают практически неограниченной.
-
-В обычной ситуации `put()` на:
-
-```java
-new LinkedBlockingQueue<>()
-```
-
-почти никогда не блокируется из-за достижения capacity.
-
-Скорее приложение столкнётся с нехваткой памяти раньше, чем очередь реально достигнет максимального размера.
-
-Поэтому:
+Здесь `put()` почти никогда не заблокируется из-за заполнения — приложение
+столкнётся с нехваткой памяти раньше.
 
 ```text
-LinkedBlockingQueue<>(100)
-→ bounded
-
-LinkedBlockingQueue<>()
-→ практически unbounded
+LinkedBlockingQueue<>(100) → bounded
+LinkedBlockingQueue<>()    → практически unbounded
 ```
 
----
+### SynchronousQueue
 
-## SynchronousQueue
-
-`SynchronousQueue` сильно отличается от обычных очередей.
+Ёмкость равна нулю: очередь вообще не хранит элементы, а является точкой
+непосредственной передачи между потоками.
 
 ```java
-BlockingQueue<String> queue =
-        new SynchronousQueue<>();
+BlockingQueue<String> queue = new SynchronousQueue<>();
 ```
 
-Её capacity:
-
-```text
-0
-```
-
-Она вообще не хранит элементы.
-
-`SynchronousQueue` является точкой непосредственной передачи данных между потоками.
-
-Упрощённо:
-
-```text
-Producer
-   ↓
-передача элемента
-   ↓
-Consumer
-```
-
-Если producer вызывает:
-
-```java
-queue.put("task");
-```
-
-а consumer ещё не готов принять элемент, producer будет ждать.
-
-Когда другой поток вызовет:
-
-```java
-queue.take();
-```
-
-произойдёт непосредственная передача:
+Если producer вызывает `put()`, а consumer ещё не готов, producer ждёт. Когда
+другой поток вызовет `take()`, произойдёт прямая передача:
 
 ```text
 Producer              Consumer
@@ -1151,15 +530,11 @@ Producer              Consumer
 put("task")  ───────→ take()
 ```
 
-Элемент не лежит какое-то время внутри очереди.
+Элемент не лежит внутри очереди ни мгновения.
 
----
+### SynchronousQueue и CachedThreadPool
 
-## SynchronousQueue и CachedThreadPool
-
-`SynchronousQueue` используется внутри `Executors.newCachedThreadPool()`.
-
-Упрощённо его параметры выглядят примерно так:
+`Executors.newCachedThreadPool()` устроен примерно так:
 
 ```text
 corePoolSize = 0
@@ -1168,43 +543,9 @@ queue = SynchronousQueue
 keepAliveTime = 60 секунд
 ```
 
-Когда приходит задача:
-
-```text
-задача
-↓
-SynchronousQueue
-↓
-есть свободный worker, готовый принять её?
-```
-
-Если да:
-
-```text
-задача передаётся существующему worker
-```
-
-Если нет:
-
-```text
-создаётся новый worker
-```
-
-Поскольку `SynchronousQueue` не умеет хранить задачи, pool не может просто сложить новую работу в очередь.
-
-Если одновременно приходит много долгих задач:
-
-```text
-task 1   → thread 1 занят
-task 2   → thread 2 занят
-task 3   → thread 3 занят
-...
-task 100 → thread 100 занят
-```
-
-существующие workers не успевают освобождаться, поэтому создаются новые.
-
-Отсюда риск `CachedThreadPool`:
+Когда приходит задача, пул пытается передать её свободному worker. Если готового
+worker нет, задачу некуда положить — очередь не хранит элементы, — поэтому
+создаётся новый поток.
 
 ```text
 много входящих задач
@@ -1218,452 +559,98 @@ SynchronousQueue
 очень много worker-потоков
 ```
 
-Это может привести к большому количеству потоков и дополнительным расходам на:
+Отсюда расходы на память под стеки, переключение контекста, работу планировщика и
+вымывание процессорного кеша.
 
-- память под stacks
-- переключение контекста
-- работу scheduler
-- CPU cache
-
-Важно не путать `keepAliveTime` с таймаутом выполнения задачи.
-
-`keepAliveTime` определяет, сколько может прожить **простаивающий** worker.
-
-Он не ограничивает время выполнения самой задачи.
+Важно не путать `keepAliveTime` с таймаутом выполнения: он определяет, сколько
+живёт простаивающий worker, и никак не ограничивает длительность задачи.
 
 ---
 
 ## ConcurrentLinkedQueue
 
-`ConcurrentLinkedQueue` — потокобезопасная неблокирующая очередь.
+Потокобезопасная неблокирующая очередь.
 
 ```java
-Queue<Task> queue =
-        new ConcurrentLinkedQueue<>();
+Queue<Task> queue = new ConcurrentLinkedQueue<>();
 ```
 
-Она отличается от `BlockingQueue`.
+При пустой очереди `poll()` сразу возвращает `null`, поток не ждёт. При `offer()`
+нет ожидания свободного места, поскольку очередь практически неограниченная и
+backpressure не предоставляет.
 
-Если очередь пуста:
-
-```java
-Task task = queue.poll();
-```
-
-будет возвращено:
-
-```text
-null
-```
-
-Поток не будет ждать появления элемента.
-
-При:
-
-```java
-queue.offer(task);
-```
-
-также нет ожидания свободного места.
-
-`ConcurrentLinkedQueue` практически неограниченная и не предоставляет backpressure.
-
----
-
-## Busy waiting
-
-Рассмотрим consumer:
+### Busy waiting
 
 ```java
 while (true) {
-Task task = queue.poll();
+    Task task = queue.poll();
 
     if (task != null) {
-process(task);
+        process(task);
     }
-            }
-```
-
-Если `ConcurrentLinkedQueue` долго остаётся пустой:
-
-```text
-poll() → null
-poll() → null
-poll() → null
-poll() → null
-...
-```
-
-Поток не блокируется и не засыпает.
-
-Он продолжает выполнять цикл на высокой скорости.
-
-Это называется:
-
-```text
-busy waiting
-```
-
-или:
-
-```text
-busy spin
-```
-
-В результате поток может бессмысленно загружать CPU, хотя полезной работы нет.
-
-Для классического producer-consumer сценария часто удобнее:
-
-```java
-while (!Thread.currentThread().isInterrupted()) {
-Task task = queue.take();
-process(task);
 }
 ```
 
-с `BlockingQueue`.
+Если очередь долго пуста, поток не блокируется и не засыпает, а крутит цикл на
+полной скорости, бессмысленно нагружая процессор. Это busy waiting, он же busy
+spin.
 
-Если задач нет, consumer будет ждать, а не постоянно проверять пустую очередь.
+Для классического producer-consumer удобнее блокирующая очередь:
 
----
+```java
+while (!Thread.currentThread().isInterrupted()) {
+    Task task = queue.take();
+    process(task);
+}
+```
 
-## BlockingQueue и ConcurrentLinkedQueue
+Если задач нет, consumer ждёт, а не опрашивает пустую очередь.
 
-Основное различие:
+### Сравнение с BlockingQueue
 
 ```text
 BlockingQueue
-→ поддерживает ожидание
-→ put()
-→ take()
-→ timed operations
+→ поддерживает ожидание: put(), take(), варианты с таймаутом
 → подходит для producer-consumer
 → может обеспечивать backpressure
 
 ConcurrentLinkedQueue
-→ non-blocking
+→ неблокирующая
 → poll() сразу возвращает null при пустой очереди
 → поток сам решает, что делать дальше
 → backpressure отсутствует
 ```
 
-`ConcurrentLinkedQueue` полезна, когда поток не должен блокироваться на очереди и приложение самостоятельно управляет дальнейшим поведением.
-
 ---
 
-## Как выбрать concurrent-коллекцию
-
-### ConcurrentHashMap
-
-Использовать, когда:
-
-```text
-нужна общая Map
-+
-много потоков одновременно читают и обновляют данные
-```
-
-Пример:
-
-```java
-ConcurrentHashMap<String, User> cache;
-```
-
-Для составных операций использовать:
-
-```text
-putIfAbsent()
-computeIfAbsent()
-compute()
-merge()
-```
-
-а не ручные последовательности `get()` + `put()`.
-
----
-
-### CopyOnWriteArrayList
-
-Использовать, когда:
-
-```text
-чтений очень много
-+
-изменений мало
-```
-
-Пример:
-
-```java
-CopyOnWriteArrayList<Listener> listeners;
-```
-
-Не подходит для частых `add/remove`, особенно при большом количестве элементов.
-
----
-
-### ArrayBlockingQueue
-
-Использовать, когда:
-
-```text
-producer-consumer
-+
-нужен фиксированный максимальный размер
-+
-нужен backpressure
-```
-
-Например:
-
-```java
-new ArrayBlockingQueue<>(500);
-```
-
----
-
-### LinkedBlockingQueue
-
-Использовать как blocking queue.
-
-При заданной capacity:
-
-```java
-new LinkedBlockingQueue<>(500);
-```
-
-может использоваться как bounded queue.
-
-Без capacity:
-
-```java
-new LinkedBlockingQueue<>();
-```
-
-она практически неограниченная.
-
----
-
-### SynchronousQueue
-
-Использовать, когда нужна непосредственная передача элемента между потоками без промежуточного хранения.
-
-```text
-capacity = 0
-```
-
-Известный пример применения:
-
-```text
-CachedThreadPool
-```
-
----
-
-### ConcurrentLinkedQueue
-
-Использовать, когда нужна:
-
-```text
-thread-safe
-+
-non-blocking
-+
-неограниченная очередь
-```
-
-Но она сама не предоставляет механизм ожидания и backpressure.
-
----
-
-## Сравнение итераторов
-
-Важно различать поведение разных concurrent-коллекций.
-
-### ConcurrentHashMap
-
-```text
-weakly consistent iterator
-```
-
-Изменения во время обхода:
-
-```text
-может увидеть
-или
-может не увидеть
-```
-
-При обычных конкурентных изменениях не требуется поведение fail-fast обычного `HashMap`.
-
-### CopyOnWriteArrayList
-
-```text
-snapshot iterator
-```
-
-Итератор работает с массивом, существовавшим на момент его создания.
-
-Все изменения после создания iterator текущий обход не увидит.
-
----
-
-## Основные методы BlockingQueue
-
-Краткая шпаргалка.
-
-### Добавление
-
-```text
-add(element)
-→ при заполнении exception
-
-offer(element)
-→ при заполнении false
-
-put(element)
-→ при заполнении ждёт
-
-offer(element, timeout, unit)
-→ ждёт ограниченное время
-→ true или false
-```
-
-### Извлечение
-
-```text
-remove()
-→ при пустой очереди exception
-
-poll()
-→ при пустой очереди null
-
-take()
-→ при пустой очереди ждёт
-
-poll(timeout, unit)
-→ ждёт ограниченное время
-→ element или null
-```
-
----
-
-## Типичные ошибки
-
-### Ошибка 1. Считать несколько thread-safe операций одной атомарной операцией
-
-Плохо:
-
-```java
-if (!map.containsKey(key)) {
-        map.put(key, value);
-}
-```
-
-Лучше:
-
-```java
-map.putIfAbsent(key, value);
-```
-
----
-
-### Ошибка 2. Делать read-modify-write вручную
-
-Плохо:
-
-```java
-map.put(key, map.get(key) + 1);
-```
-
-Лучше:
-
-```java
-map.merge(key, 1, Integer::sum);
-```
-
----
-
-### Ошибка 3. Считать value внутри ConcurrentHashMap автоматически thread-safe
-
-```java
-ConcurrentHashMap<String, List<String>> map =
-        new ConcurrentHashMap<>();
-```
-
-Если `List` является `ArrayList`, она всё ещё не является thread-safe.
-
----
-
-### Ошибка 4. Использовать CopyOnWriteArrayList при частых изменениях
-
-Каждая запись требует копирования внутреннего массива.
-
-При большом списке и частых `add/remove` это дорого.
-
----
-
-### Ошибка 5. Использовать неограниченную очередь при постоянной перегрузке
-
-Если producer быстрее consumer:
-
-```text
-producer → очередь → consumer
-```
-
-и очередь практически неограниченная, backlog может расти до проблем с памятью.
-
-Для контроля нагрузки можно использовать bounded queue.
-
----
-
-### Ошибка 6. Делать бесконечный poll() пустой ConcurrentLinkedQueue
-
-```java
-while (true) {
-Task task = queue.poll();
-}
-```
-
-может превратиться в busy waiting и бессмысленно загружать CPU.
-
----
-
-### Ошибка 7. Считать, что bounded queue всегда блокирует producer
-
-Например:
-
-```java
-new ArrayBlockingQueue<>(100);
-```
-
-Поведение зависит от метода:
-
-```text
-add()   → exception
-offer() → false
-put()   → ожидание
-```
+## Как выбрать
+
+| Структура | Когда брать | На что смотреть |
+|---|---|---|
+| `ConcurrentHashMap` | общая карта, много потоков читают и обновляют | составные операции только через `putIfAbsent`, `computeIfAbsent`, `compute`, `merge` |
+| `CopyOnWriteArrayList` | много чтений, мало изменений | не подходит для частых `add` и `remove`, особенно на больших списках |
+| `ArrayBlockingQueue` | producer-consumer с фиксированным пределом | даёт backpressure при использовании `put()` |
+| `LinkedBlockingQueue` | то же, с ёмкостью или без | без ёмкости практически неограниченная, backpressure нет |
+| `SynchronousQueue` | прямая передача между потоками без хранения | ёмкость `0`, используется в `CachedThreadPool` |
+| `ConcurrentLinkedQueue` | нужна неблокирующая неограниченная очередь | нет ожидания и backpressure, легко получить busy waiting |
 
 ---
 
 ## Связь с ThreadPoolExecutor
 
-Concurrent queues напрямую связаны с устройством `ThreadPoolExecutor`.
-
-Например:
+Выбор очереди напрямую определяет поведение пула потоков.
 
 ```java
 new ThreadPoolExecutor(
         2,
-                4,
-                30,
+        4,
+        30,
         TimeUnit.SECONDS,
         new ArrayBlockingQueue<>(10)
 );
 ```
 
-Алгоритм примерно такой:
+Алгоритм приёма задачи:
 
 ```text
 пришла задача
@@ -1683,29 +670,26 @@ workers < maximumPoolSize?
 └─ нет → rejection policy
 ```
 
-Поэтому выбор очереди сильно влияет на поведение thread pool.
-
-Например:
+Отсюда прямые следствия:
 
 ```text
 ArrayBlockingQueue
-→ задачи могут буферизоваться
-→ количество backlog ограничено
+→ задачи буферизуются, объём backlog ограничен
 
 LinkedBlockingQueue без capacity
 → огромный backlog
-→ pool может долго не доходить до создания дополнительных workers
+→ pool может никогда не дойти до создания дополнительных workers
 
 SynchronousQueue
-→ задачи вообще не буферизуются
+→ задачи не буферизуются
 → нужен свободный worker или создаётся новый
 ```
 
 ---
 
-## Вопросы на собеседовании
+## Типичные ошибки
 
-### 1. Почему ConcurrentHashMap не делает этот код атомарным?
+### Считать несколько потокобезопасных операций одной атомарной
 
 ```java
 if (!map.containsKey(key)) {
@@ -1713,221 +697,264 @@ if (!map.containsKey(key)) {
 }
 ```
 
-**Ответ:** Потому что `containsKey()` и `put()` являются двумя отдельными операциями.
+Между проверкой и вставкой вклинивается другой поток. Нужен
+`map.putIfAbsent(key, value)`.
 
-Другой поток может изменить `Map` между ними.
-
-Нужно использовать атомарную операцию вроде:
-
-```java
-putIfAbsent()
-```
-
-### 2. Почему get() + put() небезопасны для счётчика?
+### Делать read-modify-write вручную
 
 ```java
 map.put(key, map.get(key) + 1);
 ```
 
-**Ответ:** Потому что операция состоит из чтения, вычисления и записи.
+Классический lost update. Нужен `map.merge(key, 1, Integer::sum)`.
 
-Несколько потоков могут прочитать одинаковое старое значение и потерять одно из обновлений.
+### Считать значение внутри ConcurrentHashMap потокобезопасным
 
-Для этого можно использовать:
+Карта защищает связи «ключ — значение», а не внутреннее состояние объектов.
+Обычный `ArrayList` в качестве значения остаётся небезопасным.
 
-```java
-compute()
-```
+### Использовать CopyOnWriteArrayList при частых изменениях
 
-или:
+Каждая запись копирует внутренний массив целиком.
 
-```java
-merge()
-```
+### Использовать неограниченную очередь при постоянной перегрузке
 
-### 3. Чем ConcurrentHashMap отличается от synchronizedMap?
+Если producer стабильно быстрее consumer, backlog растёт до проблем с памятью.
+Контроль даёт ограниченная очередь.
 
-**Ответ:** `synchronizedMap` является синхронизирующей обёрткой над обычной `Map` и сильнее опирается на общий монитор.
+### Опрашивать пустую ConcurrentLinkedQueue в цикле
 
-`ConcurrentHashMap` изначально разработан для конкурентного доступа и позволяет более высокую степень параллелизма.
+Превращается в busy waiting и бессмысленно нагружает процессор. Нужна
+блокирующая очередь с `take()`.
 
-### 4. Как ведёт себя iterator ConcurrentHashMap?
+### Считать, что ограниченная очередь всегда блокирует producer
 
-**Ответ:** Он weakly consistent.
+Блокирует только `put()`. `add()` бросит исключение, `offer()` вернёт `false`.
 
-Он может увидеть конкурентные изменения, а может не увидеть.
+### Путать keepAliveTime с таймаутом задачи
 
-### 5. Почему CopyOnWriteArrayList подходит для большого количества чтений?
+Он ограничивает жизнь простаивающего worker, а не длительность выполнения.
 
-**Ответ:** Потому что изменение создаёт новую копию внутреннего массива, а существующие читатели могут продолжать работать со старой неизменяемой версией.
+### Обходить synchronizedMap без внешней синхронизации
 
-### 6. Почему CopyOnWriteArrayList плох при частых записях?
+Отдельные операции защищены, итерация — нет.
 
-**Ответ:** Потому что при каждой изменяющей операции необходимо копировать внутренний массив.
+---
 
-### 7. Увидит ли существующий iterator CopyOnWriteArrayList новый элемент?
-
-**Ответ:** Нет.
-
-Он работает со snapshot массива, существовавшим в момент создания iterator.
-
-### 8. Чем offer() отличается от put()?
-
-**Ответ:** Для заполненной `BlockingQueue`:
-
-```text
-offer()
-→ сразу false
-
-put()
-→ ждёт свободного места
-```
-
-### 9. Чем poll() отличается от take()?
-
-**Ответ:** Для пустой `BlockingQueue`:
-
-```text
-poll()
-→ сразу null
-
-take()
-→ ждёт появления элемента
-```
-
-### 10. Что такое backpressure?
-
-**Ответ:** Это механизм, при котором более медленная часть системы ограничивает скорость источника нагрузки.
-
-Например:
-
-```text
-быстрый producer
-↓
-bounded BlockingQueue заполнена
-↓
-put() блокируется
-↓
-producer замедляется
-```
-
-### 11. Какова capacity SynchronousQueue?
-
-```text
-0
-```
-
-**Ответ:** Она не хранит элементы, а непосредственно передаёт их между producer и consumer.
-
-### 12. Почему CachedThreadPool может создать очень много потоков?
-
-**Ответ:** Потому что он использует `SynchronousQueue`, которая не хранит задачи.
-
-Если свободного worker нет, а приходит новая задача, pool может создать нового worker.
-
-При большом количестве долгих задач число потоков может быстро вырасти.
-
-### 13. Чем ConcurrentLinkedQueue отличается от BlockingQueue?
-
-**Ответ:** `ConcurrentLinkedQueue` неблокирующая.
-
-При пустой очереди:
-
-```java
-poll();
-```
-
-возвращает `null`.
-
-`BlockingQueue` предоставляет операции вроде:
-
-```java
-take();
-```
-
-которые могут заставить поток ждать появления элемента.
-
-### 14. Что такое busy waiting?
-
-**Ответ:** Это ситуация, когда поток постоянно проверяет условие вместо того, чтобы заблокироваться и ждать события.
-
-Например:
-
-```java
-while (true) {
-    Task task = queue.poll();
-
-    if (task != null) {
-        process(task);
-    }
-}
-```
-
-при постоянно пустой `ConcurrentLinkedQueue` может бессмысленно загружать CPU.
-
-## Итоговая шпаргалка
+## Краткая памятка
 
 ```text
 ConcurrentHashMap
-→ concurrent Map
 → отдельные операции thread-safe
-→ compound operations требуют специальных методов
-→ putIfAbsent / compute / computeIfAbsent / merge
+→ compound operations — только специальные методы:
+  putIfAbsent / computeIfAbsent / compute / merge
 → iterator weakly consistent
 
 CopyOnWriteArrayList
 → много чтений, мало изменений
-→ изменение копирует массив
-→ дорогие add/remove
+→ изменение копирует массив целиком
 → iterator работает со snapshot
-
-BlockingQueue
-→ producer-consumer
-→ может блокировать producer и consumer
-→ поддерживает backpressure
-
-ArrayBlockingQueue
-→ bounded
-→ capacity фиксируется при создании
-
-LinkedBlockingQueue
-→ может быть bounded
-→ без capacity практически unbounded
-
-SynchronousQueue
-→ capacity = 0
-→ элементы не хранятся
-→ непосредственная передача producer → consumer
-→ используется CachedThreadPool
-
-ConcurrentLinkedQueue
-→ thread-safe
-→ non-blocking
-→ практически unbounded
-→ poll() возвращает null
-→ нет встроенного backpressure
 ```
-
-### Методы BlockingQueue
 
 ```text
-Добавление:
+BlockingQueue
 
-add()   → exception
-offer() → false
-put()   → wait
+Добавление:            Извлечение:
+add()   → exception    remove() → exception
+offer() → false        poll()   → null
+put()   → wait         take()   → wait
 
+offer(e, timeout, unit) → true или false
+poll(timeout, unit)     → element или null
 
-Получение:
-
-remove() → exception
-poll()   → null
-take()   → wait
+put() и take() прерываемы: InterruptedException
 ```
 
-### Главное правило
+```text
+ArrayBlockingQueue    → bounded, capacity фиксируется при создании
+LinkedBlockingQueue   → bounded с capacity, иначе практически unbounded
+SynchronousQueue      → capacity = 0, прямая передача, CachedThreadPool
+ConcurrentLinkedQueue → non-blocking, unbounded, poll() → null, backpressure нет
+```
 
-Потокобезопасная коллекция решает проблему конкурентного доступа к самой структуре данных, но не делает автоматически атомарной любую бизнес-операцию и не делает автоматически потокобезопасными объекты, которые хранятся внутри неё.
+```text
+backpressure
+bounded queue + put()
+→ producer блокируется, пока consumer не освободит место
+```
+
+```text
+ThreadPoolExecutor
+core занят → очередь → очередь полна → до maximumPoolSize → rejection
+
+ArrayBlockingQueue          → ограниченный backlog
+LinkedBlockingQueue без cap → pool не растёт выше core
+SynchronousQueue            → сразу новый worker
+```
+
+```text
+главное правило
+thread-safe контейнер
+≠ атомарность бизнес-операции
+≠ потокобезопасность содержимого
+```
+
+---
+
+## Краткий ответ для собеседования
+
+Обычные коллекции при конкурентном изменении не дают никаких гарантий, поэтому
+для многопоточной работы используют структуры из `java.util.concurrent`.
+
+Самый простой вариант — обёртка `Collections.synchronizedMap`, но она сводит весь
+доступ к одному монитору и требует внешней синхронизации при обходе.
+`ConcurrentHashMap` спроектирован под конкурентный доступ: чтения идут
+параллельно, обновления блокируют лишь небольшую часть структуры.
+
+Ключевая мысль в том, что потокобезопасность отдельных операций не даёт
+атомарности их последовательности. Проверка через `containsKey()` с последующим
+`put()` или чтение, инкремент и запись значения — это составные операции, в
+которые вклинивается другой поток, и результат теряется. Для таких случаев есть
+`putIfAbsent`, `computeIfAbsent`, `compute` и `merge`. Точно так же карта не
+делает потокобезопасным объект, лежащий в ней значением.
+
+Итераторы различаются: у `ConcurrentHashMap` они weakly consistent и могут
+увидеть конкурентное изменение, а могут не увидеть; у `CopyOnWriteArrayList` —
+снимок массива на момент создания, поэтому позднейшие изменения в текущем обходе
+не появятся никогда. Сам `CopyOnWriteArrayList` копирует массив при каждой
+записи, поэтому годится только там, где чтений несравнимо больше изменений.
+
+Для передачи работы между потоками служит `BlockingQueue`. Её методы образуют три
+пары: `add` и `remove` бросают исключение, `offer` и `poll` возвращают
+специальное значение, `put` и `take` ждут. Ожидание прерываемо. Ограниченная
+очередь вместе с `put()` даёт backpressure — производитель замедляется, когда
+потребитель не успевает, и backlog перестаёт расти.
+
+Реализации отличаются ёмкостью: `ArrayBlockingQueue` ограничена всегда,
+`LinkedBlockingQueue` без параметра практически неограниченна, `SynchronousQueue`
+не хранит элементы вовсе и потому заставляет `CachedThreadPool` создавать новый
+поток на каждую задачу, для которой нет свободного worker.
+`ConcurrentLinkedQueue` неблокирующая: она возвращает `null` вместо ожидания, и
+наивный цикл опроса легко превращается в busy waiting.
+
+---
+
+## Вопросы на собеседовании
+
+### 1. Почему ConcurrentHashMap не делает атомарной пару containsKey и put?
+
+**Ответ:** это две отдельные операции, и между ними другой поток может изменить
+карту. Нужна атомарная операция — `putIfAbsent()`.
+
+### 2. Почему get() и put() небезопасны для счётчика?
+
+**Ответ:** операция состоит из чтения, вычисления и записи. Несколько потоков
+прочитают одинаковое старое значение, и одно из обновлений потеряется. Нужны
+`compute()` или `merge()`.
+
+### 3. Чем merge отличается от compute?
+
+**Ответ:** `compute()` получает текущее значение, которое может быть `null`, и
+вычисляет новое. `merge()` принимает значение по умолчанию для отсутствующего
+ключа и функцию объединения, поэтому для счётчиков он короче и безопаснее.
+
+### 4. Чем ConcurrentHashMap отличается от synchronizedMap?
+
+**Ответ:** второй — синхронизирующая обёртка над обычной картой с общим
+монитором. `ConcurrentHashMap` разработан для конкурентного доступа и допускает
+значительно большую степень параллелизма.
+
+### 5. Нужна ли внешняя синхронизация при обходе synchronizedMap?
+
+**Ответ:** да. Потокобезопасны только отдельные операции, а итерация состоит из
+множества вызовов и должна выполняться под блокировкой самой карты.
+
+### 6. Как ведёт себя итератор ConcurrentHashMap?
+
+**Ответ:** он weakly consistent: не бросает `ConcurrentModificationException`, не
+блокирует изменения и может увидеть конкурентное изменение, а может не увидеть.
+
+### 7. Делает ли ConcurrentHashMap потокобезопасными свои значения?
+
+**Ответ:** нет. Она защищает связи ключей со значениями. Обычный `ArrayList`,
+положенный значением, остаётся небезопасным при конкурентных `add()`.
+
+### 8. Почему CopyOnWriteArrayList подходит для большого числа чтений?
+
+**Ответ:** изменение создаёт новую копию массива, а читатели продолжают работать
+со старой неизменяемой версией без всякой синхронизации.
+
+### 9. Почему он плох при частых записях?
+
+**Ответ:** каждая изменяющая операция копирует внутренний массив целиком.
+
+### 10. Увидит ли существующий итератор CopyOnWriteArrayList новый элемент?
+
+**Ответ:** нет. Он работает со снимком массива на момент своего создания.
+
+### 11. Чем offer отличается от put?
+
+**Ответ:** для заполненной очереди `offer()` сразу возвращает `false`, а `put()`
+ждёт освобождения места.
+
+### 12. Чем poll отличается от take?
+
+**Ответ:** для пустой очереди `poll()` сразу возвращает `null`, а `take()` ждёт
+появления элемента.
+
+### 13. Что произойдёт с потоком, ждущим в take, при вызове interrupt?
+
+**Ответ:** ожидание прервётся выбросом `InterruptedException`, а флаг прерывания
+будет сброшен, поэтому его обычно восстанавливают вручную.
+
+### 14. Что такое backpressure?
+
+**Ответ:** механизм, при котором более медленная часть системы ограничивает
+скорость источника нагрузки. Заполненная ограниченная очередь блокирует `put()`,
+и производитель замедляется.
+
+### 15. Всегда ли ограниченная очередь блокирует producer?
+
+**Ответ:** нет, только при использовании `put()`. `add()` бросит исключение,
+`offer()` вернёт `false`.
+
+### 16. Чем ArrayBlockingQueue отличается от LinkedBlockingQueue?
+
+**Ответ:** первая всегда ограничена и основана на массиве. Вторая может быть
+ограниченной, а без указания ёмкости имеет предел `Integer.MAX_VALUE` и считается
+практически неограниченной.
+
+### 17. Какова ёмкость SynchronousQueue?
+
+**Ответ:** ноль. Она не хранит элементы, а передаёт их напрямую от производителя
+потребителю.
+
+### 18. Почему CachedThreadPool может создать очень много потоков?
+
+**Ответ:** он использует `SynchronousQueue`, которая не хранит задачи. Если
+свободного worker нет, пул создаёт новый, а верхний предел очень велик.
+
+### 19. Что означает keepAliveTime в пуле?
+
+**Ответ:** время жизни простаивающего worker. Длительность выполнения задачи он
+не ограничивает.
+
+### 20. Чем ConcurrentLinkedQueue отличается от BlockingQueue?
+
+**Ответ:** она неблокирующая: `poll()` при пустой очереди сразу возвращает
+`null`, ожидания и backpressure нет.
+
+### 21. Что такое busy waiting?
+
+**Ответ:** поток в цикле проверяет условие вместо того, чтобы заблокироваться и
+ждать события. Постоянный `poll()` пустой очереди бессмысленно нагружает
+процессор.
+
+### 22. Как выбор очереди влияет на ThreadPoolExecutor?
+
+**Ответ:** пул создаёт дополнительные потоки только после заполнения очереди.
+Неограниченная очередь означает, что число потоков никогда не превысит
+`corePoolSize`, а `SynchronousQueue` — что новый worker создаётся почти сразу.
 
 ---
 

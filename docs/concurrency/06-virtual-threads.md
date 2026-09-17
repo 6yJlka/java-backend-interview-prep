@@ -1,53 +1,38 @@
 # Virtual Threads в Java
 
-### Что такое Virtual Threads
+## Что это такое
 
-**Virtual Threads** — лёгкие потоки, управляемые JVM.
+Virtual Threads — лёгкие потоки, управляемые JVM. Появились в рамках Project Loom
+и стали production-ready в Java 21.
 
-Они были добавлены в Java как часть Project Loom и стали production-ready в Java 21.
-
-Главная идея:
+Главная идея умещается в две строки:
 
 ```text
 одна задача
 → один virtual thread
 ```
 
-Virtual Threads особенно полезны для приложений, где существует большое количество одновременно выполняющихся задач, которые значительную часть времени проводят в ожидании:
+Они особенно полезны там, где одновременно выполняется большое количество задач,
+которые значительную часть времени проводят в ожидании: JDBC, HTTP, файловый и
+сетевой ввод-вывод, обращения к внешним API и очередям.
 
-```text
-JDBC
-HTTP
-файловый I/O
-сетевые операции
-внешние API
-очереди
-другие blocking I/O операции
-```
-
-Virtual Threads не являются отдельными потоками операционной системы в обычном смысле.
-
-JVM может поддерживать очень большое количество virtual threads и распределять их выполнение по меньшему количеству обычных platform threads.
+Virtual threads не являются отдельными потоками операционной системы. JVM может
+поддерживать очень большое их количество, распределяя выполнение по существенно
+меньшему числу обычных потоков.
 
 ---
 
 ## Platform Thread
 
-Обычный Java-поток называется **platform thread**.
-
-Пример:
+Обычный Java-поток называется platform thread.
 
 ```java
-Thread thread = new Thread(() -> {
-  doWork();
-});
+Thread thread = new Thread(() -> doWork());
 
 thread.start();
 ```
 
-Platform thread тесно связан с потоком операционной системы.
-
-Упрощённо:
+Он тесно связан с потоком операционной системы:
 
 ```text
 Java Platform Thread
@@ -57,41 +42,21 @@ OS Thread
 CPU
 ```
 
-OS thread — сравнительно дорогой ресурс.
-
-Для него нужны:
-
-```text
-память под stack
-ресурсы операционной системы
-работа scheduler
-context switching
-```
-
-Поэтому обычно нельзя бездумно создавать десятки или сотни тысяч platform threads.
-
-Вместо этого традиционно используются thread pools:
+Поток ОС — сравнительно дорогой ресурс: память под стек, ресурсы операционной
+системы, работа планировщика, переключение контекста. Поэтому создавать десятки и
+сотни тысяч platform threads нельзя, и традиционно используются пулы:
 
 ```java
-ExecutorService executor =
-        Executors.newFixedThreadPool(100);
+ExecutorService executor = Executors.newFixedThreadPool(100);
 ```
-
-Получается:
 
 ```text
-много задач
-        ↓
-очередь
-        ↓
-100 platform threads
+много задач → очередь → 100 platform threads
 ```
 
----
+### Проблема в backend-приложении
 
-## Проблема обычных потоков в backend
-
-Представим обработку HTTP-запроса:
+Типичная обработка HTTP-запроса:
 
 ```java
 User user = userRepository.findById(id);
@@ -101,19 +66,7 @@ Orders orders = ordersClient.load(user);
 PaymentInfo payment = paymentClient.load(user);
 ```
 
-Большую часть времени поток может не выполнять вычисления на CPU.
-
-Он ждёт:
-
-```text
-PostgreSQL
-HTTP
-внешний сервис
-файл
-сеть
-```
-
-Например:
+Большую часть времени поток не считает, а ждёт базу, внешний сервис, сеть:
 
 ```text
 5 мс CPU
@@ -123,460 +76,174 @@ HTTP
 100 мс ожидание HTTP
 ```
 
-Platform thread остаётся связан с этим request на всём протяжении его выполнения.
-
-Если одновременно существуют тысячи таких запросов, возникает проблема масштабирования по количеству platform threads.
-
----
-
-## Главная идея Virtual Threads
-
-Virtual threads намного легче platform threads.
-
-Поэтому вместо модели:
-
-```text
-ограниченный thread pool
-+
-огромная очередь задач
-```
-
-можно использовать:
-
-```text
-задача 1 → virtual thread 1
-задача 2 → virtual thread 2
-задача 3 → virtual thread 3
-...
-```
-
-Например:
-
-```text
-10 000 задач
-→ около 10 000 virtual threads
-```
-
-Но это не означает:
-
-```text
-10 000 virtual threads
-=
-10 000 OS threads
-```
-
-Virtual threads управляются JVM.
+Platform thread остаётся привязан к запросу всё это время. При тысячах
+одновременных запросов упор возникает не в процессор, а в количество потоков,
+которое можно себе позволить.
 
 ---
 
-## Carrier Thread
+## Как это работает
 
-Virtual thread не исполняет Java-код непосредственно на CPU.
+### Carrier Thread
 
-Для выполнения он временно использует обычный platform thread.
-
-Такой platform thread называется:
-
-```text
-carrier thread
-```
-
-Упрощённо:
+Virtual thread не исполняет код на процессоре напрямую — для выполнения он
+временно занимает обычный platform thread, который называется carrier.
 
 ```text
 Virtual Thread A ─┐
 Virtual Thread B ─┤
-Virtual Thread C ─┤
-Virtual Thread D ─┼──→ Carrier Threads ──→ OS Threads ──→ CPU
-Virtual Thread E ─┤
-...               │
+Virtual Thread C ─┼──→ Carrier Threads ──→ OS Threads ──→ CPU
+Virtual Thread D ─┤
 Virtual Thread N ─┘
 ```
 
-Virtual thread может в разные моменты времени выполняться на разных carrier threads.
+В разные моменты времени один virtual thread может выполняться на разных carrier
+threads.
 
----
+### Mount и unmount
 
-## Mount и Unmount
-
-Когда virtual thread начинает выполнять Java-код, JVM может **смонтировать** его на carrier thread.
-
-Это называется:
+Когда virtual thread начинает выполнять код, JVM монтирует его на carrier:
 
 ```text
-mount
+Virtual Thread A → mount → Carrier Thread 1 → выполнение кода
 ```
 
-Например:
+Если поток блокируется на поддерживаемой блокирующей операции, JVM может снять
+его с carrier — это unmount, — и carrier освобождается.
 
-```text
-Virtual Thread A
-        ↓
-mount
-        ↓
-Carrier Thread 1
-        ↓
-выполнение кода
-```
+### Что происходит при блокирующем вводе-выводе
 
-Если virtual thread блокируется на поддерживаемой блокирующей операции, JVM может снять его с carrier thread.
-
-Это называется:
-
-```text
-unmount
-```
-
-Тогда carrier освобождается.
-
----
-
-## Что происходит при blocking I/O
-
-Допустим:
+Пусть SQL-запрос выполняется 300 мс:
 
 ```java
 User user = repository.findById(id);
 ```
 
-SQL-запрос выполняется 300 мс.
-
-Virtual thread начинает операцию:
-
 ```text
-Virtual Thread A
+Virtual Thread A → Carrier 1 → JDBC → ожидание
         ↓
-Carrier 1
+     unmount
         ↓
-JDBC
-        ↓
-ожидание
+Carrier 1 свободен → выполняет Virtual Thread B
 ```
 
-В хорошем случае JVM может сделать:
-
-```text
-Virtual Thread A
-        ↓
-unmount
-```
-
-После этого:
-
-```text
-Carrier 1
-→ свободен
-→ выполняет Virtual Thread B
-```
-
-Когда ответ от БД готов:
-
-```text
-Virtual Thread A
-→ становится runnable
-→ scheduler
-→ mount на свободный carrier
-→ продолжает выполнение
-```
-
-Причём это не обязательно тот же carrier thread, который выполнял его раньше.
+Когда ответ готов, virtual thread снова становится готовым к выполнению,
+планировщик монтирует его на свободный carrier — не обязательно тот же самый — и
+выполнение продолжается.
 
 ---
 
-## Почему Virtual Threads полезны для I/O-bound задач
+## I/O-bound и CPU-bound
 
-Рассмотрим:
+### Почему помогает при ожидании
 
 ```text
 5000 задач
-каждая:
-10 мс CPU
-500 мс ожидание HTTP
+каждая: 10 мс CPU + 500 мс ожидание HTTP
 ```
 
-Большую часть времени задачи ждут.
-
-Virtual threads позволяют:
+Задачи почти всё время ждут, поэтому небольшое число carrier threads обслуживает
+очень много ожидающих virtual threads:
 
 ```text
-задача ждёт I/O
-→ virtual thread unmount
-→ carrier выполняет другую задачу
+задача ждёт I/O → virtual thread unmount → carrier берёт другую задачу
 ```
 
-Таким образом небольшое количество carrier threads может обслуживать очень большое число ожидающих virtual threads.
+Выигрыш — в пропускной способности: приложение одновременно обслуживает больше
+блокирующих задач.
 
-Главный выигрыш:
-
-```text
-более высокий throughput
-```
-
-То есть приложение может одновременно обслуживать больше блокирующих задач.
-
----
-
-## Virtual Threads не ускоряют CPU-bound задачи
-
-Представим:
+### Почему не помогает при вычислениях
 
 ```java
 calculatePrimeNumbersFor10Minutes();
 ```
 
-Задача постоянно выполняет вычисления и практически не блокируется.
-
-Тогда:
-
-```text
-Virtual Thread
-→ постоянно выполняется
-→ carrier постоянно занят
-```
-
-Virtual thread не может освободить CPU.
-
-Если процессор имеет:
+Такая задача не блокируется, поэтому carrier занят непрерывно и unmount не
+происходит. Сто тысяч virtual threads не создадут сто тысяч вычислительных ядер:
+если ядер восемь, их и останется восемь.
 
 ```text
-8 ядер
+CPU-bound → преимущества почти нет
+I/O-bound → подходят хорошо
 ```
 
-создание:
+Примеры плохих кандидатов: рендеринг, кодирование видео, криптография, сжатие,
+тяжёлая математика, обработка больших массивов.
 
-```text
-100 000 virtual threads
-```
+### Throughput, а не latency
 
-не создаст:
-
-```text
-100 000 вычислительных ядер
-```
-
-Поэтому:
-
-```text
-CPU-bound
-→ Virtual Threads почти не дают преимущества
-
-I/O-bound
-→ Virtual Threads подходят хорошо
-```
-
-Примеры CPU-bound задач:
-
-```text
-сложные математические вычисления
-кодирование видео
-криптография
-сжатие данных
-обработка больших массивов
-```
+Virtual Threads увеличивают количество задач, которое система обслуживает
+одновременно. Они не сокращают время выполнения отдельной операции: HTTP-запрос,
+занимавший 500 мс, не станет стомиллисекундным. Сервер просто сможет обслуживать
+много таких запросов эффективнее.
 
 ---
 
-## Throughput и Latency
+## Создание
 
-Virtual Threads в первую очередь помогают увеличить:
-
-```text
-throughput
-```
-
-То есть количество задач, которое система может эффективно обслуживать одновременно.
-
-Они не предназначены для автоматического уменьшения времени выполнения одной операции.
-
-Например:
-
-```text
-HTTP-запрос занимает 500 мс
-```
-
-После перехода на virtual threads он не обязательно станет:
-
-```text
-100 мс
-```
-
-Но сервер сможет эффективнее обслуживать много таких запросов одновременно.
-
----
-
-## Создание Virtual Thread
-
-Самый простой вариант:
+Простейший вариант создаёт и сразу запускает поток:
 
 ```java
-Thread thread = Thread.startVirtualThread(() -> {
-  System.out.println("Hello from virtual thread");
-});
+Thread thread = Thread.startVirtualThread(() ->
+        System.out.println("Hello from virtual thread"));
 ```
 
-Метод сразу создаёт и запускает virtual thread.
-
----
-
-## Thread.ofVirtual()
-
-Можно использовать builder:
+Через builder можно настроить параметры, например имя:
 
 ```java
 Thread thread = Thread.ofVirtual()
         .name("request-handler")
-        .start(() -> {
-          handleRequest();
-        });
+        .start(() -> handleRequest());
 ```
 
-Это удобно, если нужно настроить параметры потока, например имя.
-
----
-
-## Проверка типа Thread
-
-Можно определить, является ли поток virtual:
+Тип потока проверяется так:
 
 ```java
 Thread.currentThread().isVirtual();
 ```
 
-Например:
-
-```java
-Thread.startVirtualThread(() -> {
-        System.out.println(
-        Thread.currentThread().isVirtual()
-    );
-            });
-```
-
-Результат:
-
-```text
-true
-```
-
----
-
-## VirtualThreadPerTaskExecutor
-
-Для большого количества задач обычно удобнее использовать:
-
-```java
-Executors.newVirtualThreadPerTaskExecutor()
-```
-
-Пример:
+Для большого количества задач удобнее executor:
 
 ```java
 try (ExecutorService executor =
         Executors.newVirtualThreadPerTaskExecutor()) {
 
-        executor.submit(() -> task1());
-        executor.submit(() -> task2());
-        executor.submit(() -> task3());
-        }
+    executor.submit(() -> task1());
+    executor.submit(() -> task2());
+    executor.submit(() -> task3());
+}
 ```
 
-Основная модель:
+Модель здесь — одна отправленная задача на один новый virtual thread, а не
+фиксированный пул. Десять тысяч задач дадут примерно десять тысяч потоков.
 
-```text
-одна submitted task
-→ один новый virtual thread
-```
-
-Например:
-
-```text
-10 000 tasks
-→ примерно 10 000 virtual threads
-```
-
-Это не fixed thread pool.
+`ExecutorService` реализует `AutoCloseable`, поэтому его удобно использовать в
+try-with-resources: выход из блока дожидается завершения задач.
 
 ---
 
-## Virtual Threads обычно не нужно пулить
+## Virtual threads не пулят
 
-Platform threads дорогие.
-
-Поэтому традиционно используется:
-
-```java
-Executors.newFixedThreadPool(100);
-```
-
-То есть:
+Platform threads дороги, поэтому традиционно используется небольшой пул:
 
 ```text
-10 000 задач
-→ 100 workers
-→ остальные ждут в очереди
+10 000 задач → 100 workers → остальные ждут в очереди
 ```
 
-Virtual threads дешёвые.
-
-Поэтому модель другая:
+Virtual threads дёшевы, поэтому модель другая:
 
 ```text
-10 000 задач
-→ 10 000 virtual threads
+10 000 задач → 10 000 virtual threads
 ```
 
-Следовательно, создавать искусственный:
+Искусственный «пул из ста virtual threads» обычно не нужен: ограничивать дешёвый
+ресурс только ради ограничения его количества бессмысленно.
 
-```text
-"pool из 100 virtual threads"
-```
+### Ограничивать нужно дефицитный ресурс
 
-обычно не нужно.
-
-Основная идея:
-
-```text
-не ограничивать количество дешёвых virtual threads
-только ради ограничения количества потоков
-```
-
----
-
-## Ограничивать нужно ресурс, а не Virtual Threads
-
-Допустим внешний API разрешает:
-
-```text
-30 одновременных запросов
-```
-
-Приложение создаёт:
-
-```text
-10 000 virtual threads
-```
-
-Неправильная идея:
-
-```text
-сделаем pool только из 30 virtual threads
-```
-
-Проблема находится не в virtual threads.
-
-Ограниченный ресурс:
-
-```text
-внешний API
-```
-
-Поэтому логичнее использовать:
-
-```java
-Semaphore semaphore = new Semaphore(30);
-```
-
-Пример:
+Пусть внешний API разрешает тридцать одновременных запросов, а приложение создаёт
+десять тысяч virtual threads. Проблема не в потоках — дефицитен именно API.
+Поэтому ограничивают его:
 
 ```java
 Semaphore semaphore = new Semaphore(30);
@@ -584,23 +251,21 @@ Semaphore semaphore = new Semaphore(30);
 try (ExecutorService executor =
         Executors.newVirtualThreadPerTaskExecutor()) {
 
-        for (Request request : requests) {
+    for (Request request : requests) {
         executor.submit(() -> {
-        semaphore.acquire();
+            semaphore.acquire();
 
             try {
-callExternalApi(request);
+                callExternalApi(request);
             } finally {
-                    semaphore.release();
+                semaphore.release();
             }
 
-                    return null;
-                    });
-                    }
-                    }
+            return null;
+        });
+    }
+}
 ```
-
-Получается:
 
 ```text
 10 000 virtual threads
@@ -610,329 +275,139 @@ Semaphore(30)
 максимум 30 запросов к API
 ```
 
----
-
-## Semaphore и Virtual Threads
-
-Задачи `Semaphore` и Virtual Threads разные.
+Задачи разные и потому хорошо дополняют друг друга:
 
 ```text
-Virtual Threads
-→ модель конкурентного выполнения
-
-Semaphore
-→ ограничение количества одновременных пользователей ресурса
+Virtual Threads → модель конкурентного выполнения
+Semaphore       → ограничение числа одновременных пользователей ресурса
 ```
 
-Поэтому они хорошо работают вместе.
-
----
-
-## Virtual Threads и база данных
-
-Представим:
-
-```text
-1000 virtual threads
-```
-
-и:
-
-```text
-HikariCP maximumPoolSize = 20
-```
-
-Все 1000 virtual threads пытаются выполнить SQL.
-
-Это не означает:
-
-```text
-1000 запросов одновременно выполняются в PostgreSQL
-```
-
-Connection pool ограничивает количество одновременно используемых соединений.
-
-Упрощённо:
+### Пул соединений никуда не девается
 
 ```text
 1000 virtual threads
         ↓
-HikariCP
+HikariCP maximumPoolSize = 20
         ↓
 20 JDBC connections
         ↓
 PostgreSQL
 ```
 
-Остальные virtual threads ждут свободное соединение.
+Тысяча virtual threads не означает тысячу одновременных запросов к базе:
+свободных соединений всё равно двадцать, остальные потоки ждут. Virtual thread не
+заменяет соединение, и создавать тысячи соединений вместо пула по-прежнему плохая
+идея.
 
-Virtual Threads не отменяют ограничения:
-
-```text
-connection pool
-PostgreSQL
-external API
-rate limit
-network
-Semaphore
-```
-
-Они позволяют эффективнее ждать эти ресурсы.
-
----
-
-## Virtual Threads не заменяют Connection Pool
-
-Важно:
-
-```text
-Virtual Thread
-≠ DB connection
-```
-
-Даже если создание virtual thread дешёвое, создание тысяч DB connections не становится хорошей идеей.
-
-Connection pool всё ещё нужен.
+Virtual Threads не отменяют ограничений — пула соединений, возможностей СУБД,
+лимитов внешних API, пропускной способности сети. Они позволяют дешевле ждать
+эти ресурсы.
 
 ---
 
 ## Pinning
 
-Обычно при блокировке:
-
-```text
-Virtual Thread
-→ unmount
-→ carrier освобождается
-```
-
-Но бывают ситуации, когда virtual thread не может быть снят с carrier.
-
-Это называется:
-
-```text
-pinning
-```
-
-Схема:
+Обычно при блокировке virtual thread снимается с carrier. Но бывают ситуации,
+когда сделать это нельзя:
 
 ```text
 Virtual Thread
 → блокируется
-→ остаётся mounted
+→ остаётся смонтированным
 → Carrier Thread тоже остаётся занят
 ```
 
-В результате carrier нельзя использовать для другого virtual thread.
+Это и называется pinning. Он опасен тем, что убивает главное преимущество модели:
+занятый carrier не может обслуживать другие virtual threads, и при большом числе
+закреплённых потоков масштабируемость падает.
 
----
+### Pinning и synchronized в Java 21
 
-## Почему Pinning опасен
-
-Главное преимущество virtual threads:
-
-```text
-один carrier
-→ может обслуживать множество ожидающих virtual threads
-```
-
-При pinning:
-
-```text
-Virtual Thread A
-→ ждёт
-→ Carrier 1 тоже ждёт
-```
-
-Если pinned virtual threads много, scalability и throughput уменьшаются.
-
----
-
-## Pinning и synchronized в Java 21
-
-Для **Java 21** важный сценарий pinning связан с блокировкой внутри `synchronized`.
-
-Например:
+В Java 21 основной сценарий связан с блокировкой внутри `synchronized`:
 
 ```java
 synchronized (lock) {
-response = remoteService.call();
+    response = remoteService.call();
 }
 ```
 
-Если:
+Если вызов ждёт сеть несколько секунд, virtual thread остаётся закреплённым за
+carrier:
 
 ```text
-remoteService.call()
+Virtual Thread → synchronized → blocking I/O → pinning → carrier тоже ждёт
 ```
 
-ждёт сеть несколько секунд, virtual thread может оставаться pinned к carrier thread.
-
-Получается:
-
-```text
-Virtual Thread
-→ synchronized
-→ blocking I/O
-→ pinning
-→ carrier тоже ждёт
-```
-
-Это потенциально плохо для масштабируемости.
-
----
-
-## Короткий synchronized не является катастрофой
-
-Например:
+Само по себе наличие `synchronized` проблемой не является. Короткая критическая
+секция безобидна:
 
 ```java
 synchronized (lock) {
-counter++;
-        }
+    counter++;
+}
 ```
 
-Критическая секция выполняется очень быстро.
+Проблема именно в сочетании длительного удержания монитора с блокирующей
+операцией внутри него.
 
-Поэтому проблема не в самом наличии `synchronized`, а особенно в сочетании:
-
-```text
-долгий synchronized
-+
-blocking operation
-```
-
----
-
-## ReentrantLock и Java 21
-
-Для сценариев, где нужно избежать длительного удержания carrier внутри `synchronized`, в Java 21 иногда рассматривается `ReentrantLock`.
-
-Пример:
+Где это критично, вместо монитора берут `ReentrantLock`:
 
 ```java
 lock.lock();
 
 try {
-        // критическая секция
-        } finally {
-        lock.unlock();
+    // критическая секция
+} finally {
+    lock.unlock();
 }
 ```
 
-Но правильная архитектура всё равно должна стремиться не выполнять длительный blocking I/O внутри критической секции без необходимости.
+Но правильная архитектура в любом случае стремится не выполнять длительный
+блокирующий ввод-вывод внутри критической секции.
 
----
+### Зависимость от версии JDK
 
-## Важное замечание про новые JDK
+Поведение pinning зависит от версии Java. В Java 21 мониторы и `synchronized`
+были важным источником закрепления. В более новых JDK реализация virtual threads
+была улучшена, и многие такие случаи устранены.
 
-Поведение pinning зависит от версии Java.
-
-В Java 21 блокировки через Java monitors и `synchronized` были важным источником pinning.
-
-В более новых JDK реализация virtual threads была улучшена, и многие случаи pinning, связанные с `synchronized`, были устранены.
-
-Поэтому при обсуждении pinning важно уточнять:
-
-```text
-какая версия Java используется
-```
-
-Для Java 21 правило:
-
-```text
-долгий blocking I/O внутри synchronized
-→ потенциально проблемный сценарий
-```
-
-остаётся важным.
+Поэтому в разговоре о pinning всегда стоит уточнять версию. Для Java 21 правило
+«длительный блокирующий ввод-вывод внутри `synchronized` — потенциально
+проблемный сценарий» остаётся в силе.
 
 ---
 
 ## ThreadLocal
 
-Virtual threads поддерживают:
-
-```java
-ThreadLocal
-```
-
-Каждый virtual thread может иметь собственное значение.
-
-Но появляется проблема масштаба.
-
----
-
-## ThreadLocal и память
-
-Представим:
+Virtual threads поддерживают `ThreadLocal`, и каждый может иметь собственное
+значение. Проблема возникает с масштабом.
 
 ```text
 100 000 virtual threads
+каждый хранит 1 MB
+= около 100 GB
 ```
 
-Каждый хранит:
+Сами потоки дёшевы, но объекты внутри `ThreadLocal` дешевле от этого не
+становятся.
 
-```text
-1 MB
-```
-
-Получается около:
-
-```text
-100 GB
-```
-
-Сами virtual threads дешёвые.
-
-Но объекты, находящиеся в `ThreadLocal`, дешевле от этого не становятся.
-
-Поэтому:
-
-```text
-Virtual Thread
-→ дешёвый
-
-Virtual Thread
-+ большой ThreadLocal
-→ потенциально огромный расход памяти
-```
-
----
-
-## ThreadLocal как кэш
-
-Особенно опасна старая модель:
+Особенно опасна привычная модель кеша:
 
 ```java
 ThreadLocal<ExpensiveObject> cache;
 ```
 
-В fixed thread pool:
-
-```text
-100 workers
-→ максимум около 100 кэшированных объектов
-```
-
-С virtual-thread-per-task:
-
-```text
-100 000 задач
-→ 100 000 virtual threads
-```
-
-и потенциально может появиться огромное количество таких объектов.
-
-Поэтому не стоит использовать `ThreadLocal` как тяжёлый per-thread cache без необходимости.
+В пуле из ста workers таких объектов будет около ста. При модели «поток на
+задачу» их окажется столько же, сколько задач. Использовать `ThreadLocal` как
+тяжёлый кеш на поток здесь нельзя.
 
 ---
 
-## Virtual Threads и Blocking Code
+## Что остаётся прежним
 
-Одна из сильных сторон Virtual Threads — возможность сохранить обычный последовательный blocking style.
+### Блокирующий стиль кода
 
-Например:
+Одна из сильных сторон модели — возможность писать обычный последовательный код:
 
 ```java
 User user = loadUser();
@@ -940,398 +415,281 @@ Orders orders = loadOrders(user);
 Payment payment = loadPayment(user);
 ```
 
-Код остаётся последовательным и читаемым.
+Он остаётся читаемым, а virtual thread при этом эффективно паркуется на
+блокирующих операциях.
 
-При этом virtual thread может эффективно парковаться на блокирующих операциях.
+### Синхронизация
 
----
-
-## Virtual Threads и CompletableFuture
-
-Virtual Threads и `CompletableFuture` решают разные задачи.
-
-`CompletableFuture`:
-
-```text
-→ асинхронные pipeline
-→ composition
-→ thenApply
-→ thenCompose
-→ thenCombine
-→ обработка ошибок
-```
-
-Virtual Threads:
-
-```text
-→ дешёвые потоки
-→ позволяют писать обычный blocking code
-→ хорошо масштабируются для I/O-bound задач
-```
-
-Они не являются прямой заменой друг другу.
-
----
-
-## Virtual Threads и ExecutorService
-
-Пример:
+Если несколько virtual threads работают с общими изменяемыми данными, гонка
+остаётся гонкой:
 
 ```java
-try (ExecutorService executor =
-        Executors.newVirtualThreadPerTaskExecutor()) {
-
-Future<User> userFuture =
-        executor.submit(() -> loadUser());
-
-Future<Orders> ordersFuture =
-        executor.submit(() -> loadOrders());
-
-User user = userFuture.get();
-Orders orders = ordersFuture.get();
-}
+counter++;
 ```
 
-Каждая submitted task получает отдельный virtual thread.
+По-прежнему нужны `synchronized`, `Lock`, атомарные переменные, потокобезопасные
+коллекции или неизменяемость. Правила модели памяти Java действуют полностью:
+видимость, атомарность, упорядочивание, happens-before. Virtual thread — это
+по-прежнему `Thread`.
 
----
+### Daemon-поведение
 
-## try-with-resources
-
-`ExecutorService` можно использовать через:
-
-```java
-try (ExecutorService executor = ...) {
-        }
-```
-
-Это удобный способ контролировать lifecycle executor.
-
----
-
-## Virtual Threads являются daemon threads
-
-Virtual threads всегда являются:
-
-```text
-daemon threads
-```
-
-Они не удерживают JVM живой сами по себе.
-
----
-
-## Virtual Threads и завершение JVM
-
-Например:
+Virtual threads всегда являются daemon-потоками и сами по себе не удерживают JVM
+живой.
 
 ```java
 public static void main(String[] args) {
 
-  Thread.startVirtualThread(() -> {
-    try {
-      Thread.sleep(5000);
-      System.out.println("done");
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-    }
-  });
+    Thread.startVirtualThread(() -> {
+        try {
+            Thread.sleep(5000);
+            System.out.println("done");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    });
 
-  System.out.println("main finished");
+    System.out.println("main finished");
 }
 ```
 
-Если `main` завершился и других non-daemon threads нет:
-
-```text
-JVM может завершиться
-```
-
-Поэтому `"done"` не обязано успеть напечататься.
-
----
-
-## join()
-
-Если нужно обязательно дождаться virtual thread:
+Если `main` завершился и других не-daemon потоков нет, JVM может завершиться, и
+`done` напечататься не успеет. Чтобы дождаться, нужен явный `join()`:
 
 ```java
-Thread thread = Thread.startVirtualThread(() -> {
-  doWork();
-});
+Thread thread = Thread.startVirtualThread(() -> doWork());
 
 thread.join();
 ```
 
-`join()` заставляет вызывающий поток ждать завершения указанного virtual thread.
+### Прерывание
 
----
-
-## Interrupt
-
-Virtual threads поддерживают механизм interruption.
-
-Пример:
+Механизм interruption работает как обычно и остаётся кооперативным — это не
+принудительное завершение:
 
 ```java
 Thread thread = Thread.startVirtualThread(() -> {
-  try {
-    Thread.sleep(10_000);
-  } catch (InterruptedException e) {
-    Thread.currentThread().interrupt();
-  }
+    try {
+        Thread.sleep(10_000);
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+    }
 });
 
 thread.interrupt();
 ```
 
-Как и с обычными потоками, interrupt является кооперативным механизмом.
-
-Это не force kill.
-
----
-
-## Future.cancel(true) с VirtualThreadPerTaskExecutor
-
-Если задача отправлена:
+При работе через executor задачу можно попытаться прервать:
 
 ```java
 try (ExecutorService executor =
         Executors.newVirtualThreadPerTaskExecutor()) {
 
-Future<?> future =
-        executor.submit(() -> longOperation());
+    Future<?> future = executor.submit(() -> longOperation());
 
     future.cancel(true);
 }
 ```
 
-`Future.cancel(true)` может попытаться прервать thread, выполняющий эту задачу.
-
-Но код задачи всё равно должен корректно реагировать на interruption.
+`Future.cancel(true)` здесь действительно попытается прервать поток, выполняющий
+задачу, но код задачи должен корректно реагировать на прерывание. Это отличается
+от `CompletableFuture.cancel(true)`, где параметр `mayInterruptIfRunning`
+гарантированного прерывания вычисления не даёт.
 
 ---
 
-## Отличие от CompletableFuture.cancel(true)
+## Virtual Threads и CompletableFuture
 
-Не следует путать:
+Инструменты решают разные задачи и друг друга не заменяют.
 
-```java
-Future.cancel(true)
+```text
+CompletableFuture
+→ асинхронные конвейеры и композиция
+→ thenApply, thenCompose, thenCombine
+→ обработка ошибок в цепочке
+
+Virtual Threads
+→ дешёвые потоки
+→ обычный последовательный блокирующий код
+→ масштабирование для задач, которые ждут
 ```
-
-для задачи, выполняемой executor,
-
-и:
-
-```java
-CompletableFuture.cancel(true)
-```
-
-У `CompletableFuture` параметр `mayInterruptIfRunning` не означает гарантированный interrupt underlying computation.
 
 ---
 
 ## Что Virtual Threads не решают
-
-Virtual Threads не решают автоматически:
 
 ```text
 медленные SQL-запросы
 плохие индексы
 ограничения PostgreSQL
 rate limit внешнего API
-нехватку DB connections
-race conditions
-deadlocks
+нехватку соединений в пуле
+race conditions и deadlocks
 ошибки синхронизации
-CPU bottleneck
+упор в процессор
 плохую архитектуру
 ```
 
-Они решают конкретную проблему:
+Они решают ровно одну проблему — стоимость большого количества одновременно
+ожидающих потоков.
 
-```text
-стоимость большого количества одновременно ожидающих потоков
-```
-
----
-
-## Virtual Threads не отменяют synchronization
-
-Если несколько virtual threads работают с общими mutable данными:
-
-```java
-counter++;
-```
-
-race condition остаётся race condition.
-
-Virtual Threads не делают код автоматически thread-safe.
-
-По-прежнему могут потребоваться:
-
-```text
-synchronized
-Lock
-Atomic*
-Concurrent Collections
-immutability
-```
-
----
-
-## Virtual Threads и Java Memory Model
-
-Для virtual threads действуют те же правила JMM:
-
-```text
-visibility
-atomicity
-ordering
-happens-before
-```
-
-Virtual Thread всё ещё является `Thread` с точки зрения модели многопоточности Java.
-
----
-
-## Когда использовать Virtual Threads
-
-Хорошие сценарии:
-
-```text
-HTTP server
-JDBC
-REST clients
-blocking network I/O
-file operations
-много одновременных запросов
-thread-per-request модель
-```
-
-Особенно если:
-
-```text
-задачи большую часть времени ждут
-```
-
----
-
-## Когда Virtual Threads мало помогают
-
-Плохой кандидат:
-
-```text
-тяжёлые CPU-bound вычисления
-```
-
-Например:
-
-```text
-рендеринг
-кодирование видео
-сложная математика
-криптография
-массовое сжатие
-```
-
-Причина:
-
-```text
-carrier постоянно занят CPU
-→ unmount почти не происходит
-→ преимущества нет
-```
-
----
-
-## Основной принцип архитектуры
-
-С platform threads часто думают:
-
-```text
-Сколько потоков я могу себе позволить?
-```
-
-С virtual threads вопрос смещается:
-
-```text
-Какой реальный ресурс является ограниченным?
-```
-
-Например:
+Отсюда смена вопроса при проектировании. С platform threads спрашивали: сколько
+потоков я могу себе позволить. С virtual threads спрашивают: какой ресурс на
+самом деле является дефицитным.
 
 ```text
 DB connections = 20
 external API concurrency = 50
-rate limit = 100 requests/sec
+rate limit = 100 запросов/сек
 CPU cores = 8
 ```
 
-И ограничивать нужно именно эти ресурсы.
+Ограничивать нужно именно их.
 
 ---
 
 ## Типичные ошибки
 
-### Ошибка 1. Использовать Virtual Threads для ускорения CPU-bound работы
+### Использовать Virtual Threads для ускорения вычислений
 
-Virtual threads не добавляют CPU cores.
+Они не добавляют процессорных ядер. Для CPU-bound работы выигрыша почти нет.
+
+### Создавать фиксированный пул из virtual threads
+
+Потоки дёшевы, ограничивать их количество ради самого ограничения незачем.
+Обычная модель — одна задача, один поток.
+
+### Считать, что 1000 потоков дадут 1000 параллельных SQL-запросов
+
+Реальным ограничением останется пул соединений.
+
+### Игнорировать pinning в Java 21
+
+Длительная блокирующая операция внутри `synchronized` закрепляет virtual thread
+за carrier и снижает масштабируемость.
+
+### Хранить большие объекты в ThreadLocal
+
+При десятках и сотнях тысяч потоков это даёт огромное потребление памяти.
+
+### Считать, что Virtual Threads делают код потокобезопасным
+
+Гонки остаются гонками, правила модели памяти не меняются.
+
+### Забывать про daemon-поведение
+
+Virtual thread не удерживает JVM живой. Если результат нужен, требуется `join()`.
+
+### Путать throughput и latency
+
+Модель повышает способность обслуживать много одновременных блокирующих задач, но
+не обязана ускорять отдельный запрос.
+
+### Путать Future.cancel и CompletableFuture.cancel
+
+Первый при работе через executor действительно попытается прервать поток, второй
+такой гарантии не даёт.
+
+---
+
+## Краткая памятка
 
 ```text
-CPU-bound
-→ выигрыша почти нет
+Platform Thread          Virtual Thread
+сравнительно дорогой     лёгкий
+тесно связан с OS thread управляется JVM
+обычно используется pool выполняется на carrier
+много — дорого           можно создавать очень много
+                         при blocking I/O может unmount
+                         обычно одна задача = один поток
 ```
-
-### Ошибка 2. Создавать fixed pool из virtual threads без причины
-
-Virtual threads дешёвые.
-
-Обычно используется:
 
 ```text
-one task
-→ one virtual thread
+carrier thread → platform thread, на котором выполняется virtual
+mount          → virtual thread начал выполняться на carrier
+unmount        → снят с carrier, carrier свободен
 ```
 
-### Ошибка 3. Считать, что 1000 Virtual Threads означают 1000 параллельных SQL-запросов
+```text
+I/O-bound: 5 мс CPU + 500 мс ожидания → подходят хорошо
+CPU-bound: 500 мс непрерывных вычислений → преимуществ почти нет
 
-Connection pool может иметь только 20 connections и станет реальным ограничением.
-
-### Ошибка 4. Игнорировать Pinning в Java 21
-
-Особенно:
-
-```java
-synchronized (lock) {
-slowBlockingOperation();
-}
+прежде всего throughput, а не latency
 ```
 
-может быть проблемным для virtual threads в Java 21.
-
-### Ошибка 5. Хранить огромные объекты в ThreadLocal
-
-При десятках или сотнях тысяч virtual threads это может привести к огромному потреблению памяти.
-
-### Ошибка 6. Думать, что Virtual Threads делают код thread-safe
-
-Race conditions остаются.
-
-### Ошибка 7. Забывать про daemon-поведение
-
-Если выполнение обязательно нужно дождаться:
-
-```java
-thread.join();
+```text
+Thread.startVirtualThread(runnable)
+Thread.ofVirtual().name(...).start(runnable)
+Thread.currentThread().isVirtual()
+Executors.newVirtualThreadPerTaskExecutor()
 ```
 
-### Ошибка 8. Путать throughput и latency
+```text
+virtual threads не пулить
+ограничивать дефицитный ресурс:
+Semaphore → лимит одновременного доступа
+DB pool   → всё ещё ограничивает SQL concurrency
+```
 
-Virtual Threads обычно повышают способность приложения обслуживать много одновременных блокирующих задач.
+```text
+pinning
+→ virtual thread не может unmount, carrier занят
+Java 21: долгий blocking I/O внутри synchronized → потенциальный pinning
+короткая критическая секция безопасна
+в новых JDK многие случаи устранены — уточнять версию
+```
 
-Они не обязаны ускорять отдельный request.
+```text
+ThreadLocal работает
+→ опасны большие per-thread объекты при огромном числе потоков
+
+virtual threads — daemon
+→ нужно дождаться → join()
+
+≠ автоматическая потокобезопасность
+≠ дополнительные ядра
+≠ замена CompletableFuture
+```
+
+---
+
+## Краткий ответ для собеседования
+
+Virtual Threads — лёгкие потоки, которыми управляет JVM, а не операционная
+система. Они стали production-ready в Java 21 и меняют привычную модель работы:
+вместо небольшого пула дорогих потоков с очередью задач используется по одному
+дешёвому потоку на задачу.
+
+Выполняется virtual thread не сам по себе: чтобы исполнить код, он временно
+монтируется на обычный platform thread, который называется carrier. Когда поток
+попадает на поддерживаемую блокирующую операцию, JVM снимает его с carrier, и тот
+берёт другую задачу. Когда ответ приходит, поток монтируется снова, возможно уже
+на другой carrier.
+
+Отсюда область применения. Для задач, которые большую часть времени ждут базу,
+внешний сервис или сеть, небольшое число carrier threads обслуживает огромное
+количество ожидающих потоков, и пропускная способность растёт. Для вычислительных
+задач выигрыша нет: carrier занят непрерывно, а количество ядер от числа потоков
+не увеличивается. И речь идёт именно о пропускной способности, а не о времени
+отдельного запроса.
+
+Важное следствие для архитектуры: ограничивать нужно не потоки, а реальный
+дефицитный ресурс. Если внешний API выдерживает тридцать одновременных запросов,
+ставят семафор на тридцать, а не урезают количество virtual threads. Пул
+соединений к базе тоже никуда не девается — тысяча потоков не даст тысячу
+параллельных запросов.
+
+Главная специфическая проблема — pinning, когда заблокированный поток не может
+быть снят с carrier и держит его вместе с собой. В Java 21 основной источник —
+длительная блокирующая операция внутри `synchronized`; в более новых JDK многие
+такие случаи устранены, поэтому версию стоит уточнять. Вторая частая проблема —
+`ThreadLocal`: при сотнях тысяч потоков большие объекты на поток дают
+катастрофический расход памяти.
+
+При этом Virtual Threads ничего не меняют в правилах конкурентности. Гонки
+остаются гонками, модель памяти та же, синхронизация по-прежнему нужна. Они
+решают ровно одну задачу — стоимость большого количества одновременно ожидающих
+потоков.
 
 ---
 
@@ -1339,273 +697,105 @@ Virtual Threads обычно повышают способность прило�
 
 ### 1. Что такое Virtual Thread?
 
-**Ответ:** Лёгкий поток, управляемый JVM, который позволяет эффективно поддерживать большое количество одновременно выполняющихся и блокирующих задач.
+**Ответ:** лёгкий поток, управляемый JVM, позволяющий поддерживать очень большое
+количество одновременно выполняющихся блокирующих задач.
 
 ### 2. Чем Virtual Thread отличается от Platform Thread?
 
-**Ответ:** Platform thread тесно связан с OS thread и является сравнительно дорогим ресурсом.
+**Ответ:** platform thread тесно связан с потоком операционной системы и потому
+дорог. Virtual thread значительно легче и временно выполняется на одном из carrier
+threads.
 
-Virtual thread значительно легче и может временно выполняться на одном из carrier platform threads.
+### 3. Что такое carrier thread?
 
-### 3. Что такое Carrier Thread?
+**Ответ:** platform thread, на котором в данный момент выполняется virtual thread.
 
-**Ответ:** Platform thread, на котором в данный момент выполняется virtual thread.
+### 4. Что означают mount и unmount?
 
-### 4. Что такое Mount?
+**Ответ:** mount — момент, когда virtual thread начинает выполняться на carrier.
+Unmount — снятие с carrier, например на подходящей блокирующей операции.
 
-**Ответ:** Момент, когда virtual thread начинает выполняться на carrier thread.
+### 5. Почему Virtual Threads хороши для задач с ожиданием?
 
-### 5. Что такое Unmount?
+**Ответ:** во время ожидания поток освобождает carrier, и тот выполняет другую
+задачу. Небольшое число carrier threads обслуживает множество ожидающих.
 
-**Ответ:** Снятие virtual thread с carrier, например во время подходящей блокирующей операции.
+### 6. Почему они почти не помогают вычислительным задачам?
 
-### 6. Почему Virtual Threads хорошо подходят для I/O-bound задач?
+**Ответ:** такая задача не блокируется и удерживает carrier постоянно, а
+количество процессорных ядер от числа потоков не растёт.
 
-**Ответ:** Потому что во время ожидания I/O virtual thread может освободить carrier thread.
+### 7. Что именно улучшают Virtual Threads — throughput или latency?
 
-### 7. Почему Virtual Threads почти не помогают CPU-bound задачам?
+**Ответ:** прежде всего пропускную способность. Время выполнения отдельной
+операции они не сокращают.
 
-**Ответ:** CPU-bound задача постоянно выполняет вычисления и удерживает carrier.
+### 8. Нужно ли создавать пул virtual threads?
 
-Количество CPU cores не увеличивается.
-
-### 8. Нужно ли создавать pool Virtual Threads?
-
-**Ответ:** Обычно нет.
-
-Рекомендуемая модель:
-
-```text
-one task
-→ one virtual thread
-```
+**Ответ:** обычно нет. Рекомендуемая модель — одна задача, один virtual thread.
 
 ### 9. Как ограничить количество одновременных запросов к внешнему API?
 
-**Ответ:** Ограничивать конкретный ресурс, например через:
+**Ответ:** ограничивать сам ресурс, например семафором на нужное число
+разрешений, а не количество потоков.
 
-```java
-Semaphore semaphore = new Semaphore(30);
-```
+### 10. Что будет, если 1000 virtual threads обратятся к базе при пуле из 20 соединений?
 
-### 10. Что произойдёт, если 1000 Virtual Threads обращаются к БД, а DB pool содержит 20 connections?
+**Ответ:** около двадцати задач будут работать с базой одновременно, остальные
+будут ждать свободное соединение.
 
-**Ответ:** Около 20 задач смогут одновременно использовать connections.
+### 11. Заменяют ли Virtual Threads пул соединений?
 
-Остальные будут ждать свободное соединение.
+**Ответ:** нет. Дешевизна потока не делает дешёвым соединение с базой, пул
+по-прежнему нужен.
 
-### 11. Что такое Pinning?
+### 12. Что такое pinning?
 
-**Ответ:** Ситуация, когда заблокированный virtual thread не может быть unmounted с carrier.
+**Ответ:** ситуация, когда заблокированный virtual thread не может быть снят с
+carrier, и тот остаётся занят вместе с ним.
 
-Carrier остаётся занят вместе с ним.
+### 13. Чем pinning плох?
 
-### 12. Почему Pinning плохо?
+**Ответ:** carrier не может выполнять другие virtual threads, и при большом числе
+закреплённых потоков масштабируемость падает.
 
-**Ответ:** Carrier thread не может выполнять другие virtual threads.
+### 14. Что важно знать о pinning в Java 21?
 
-При большом количестве pinning scalability уменьшается.
+**Ответ:** длительная блокирующая операция внутри `synchronized` приводила к
+закреплению. В более новых JDK многие такие случаи устранены, поэтому версию надо
+уточнять.
 
-### 13. Что важно знать о Pinning в Java 21?
+### 15. Опасен ли короткий synchronized?
 
-**Ответ:** Длительная blocking operation внутри `synchronized` может привести к pinning.
+**Ответ:** нет. Проблема в сочетании длительного удержания монитора с блокирующей
+операцией внутри него, а не в самом ключевом слове.
 
-### 14. Можно ли использовать ThreadLocal с Virtual Threads?
+### 16. Можно ли использовать ThreadLocal с virtual threads?
 
-**Ответ:** Да.
+**Ответ:** можно, но при огромном их количестве нельзя хранить там большие
+объекты: расход памяти умножается на число потоков.
 
-Но при огромном количестве virtual threads нельзя бездумно хранить большие объекты в `ThreadLocal`.
+### 17. Virtual threads являются daemon-потоками?
 
-### 15. Virtual Threads являются daemon threads?
+**Ответ:** да. Сами по себе они не удерживают JVM живой, и дождаться их нужно
+через `join()`.
 
-**Ответ:** Да.
+### 18. Делают ли Virtual Threads код потокобезопасным?
 
-Virtual thread сам по себе не удерживает JVM живой.
+**Ответ:** нет. Гонки, правила синхронизации и модель памяти Java остаются теми
+же.
 
-### 16. Как дождаться Virtual Thread?
+### 19. Заменяют ли они CompletableFuture?
 
-**Ответ:**
+**Ответ:** нет, задачи разные. `CompletableFuture` описывает асинхронные
+конвейеры и композицию, virtual threads позволяют дёшево писать обычный
+блокирующий код.
 
-```java
-thread.join();
-```
+### 20. Чем Future.cancel(true) отличается здесь от CompletableFuture.cancel(true)?
 
-### 17. Делают ли Virtual Threads код автоматически thread-safe?
-
-**Ответ:** Нет.
-
-Правила синхронизации и Java Memory Model остаются теми же.
-
-### 18. Virtual Threads заменяют CompletableFuture?
-
-**Ответ:** Нет.
-
-Они решают разные задачи.
-
-## Сравнение Platform Threads и Virtual Threads
-
-```text
-Platform Thread
-
-→ сравнительно дорогой
-→ тесно связан с OS thread
-→ обычно используется pool
-→ большое количество дорого
-
-
-Virtual Thread
-
-→ лёгкий
-→ управляется JVM
-→ выполняется на carrier
-→ можно создавать очень много
-→ при подходящем blocking I/O может unmount
-→ обычно one task = one virtual thread
-```
-
----
-
-## Сравнение I/O-bound и CPU-bound
-
-```text
-I/O-bound:
-
-5 мс CPU
-500 мс HTTP wait
-
-→ Virtual Threads подходят хорошо
-```
-
-```text
-CPU-bound:
-
-500 мс непрерывных вычислений
-
-→ Virtual Threads почти не дают преимуществ
-```
-
----
-
-## Итоговая шпаргалка
-
-```text
-Virtual Thread
-→ лёгкий Thread
-→ управляется JVM
-
-Platform Thread
-→ обычный Java thread
-→ тесно связан с OS thread
-
-Carrier Thread
-→ platform thread
-→ выполняет virtual thread
-
-mount
-→ virtual thread начинает выполняться на carrier
-
-unmount
-→ virtual thread снимается с carrier
-
-blocking I/O
-→ хороший сценарий для Virtual Threads
-
-CPU-bound
-→ преимуществ почти нет
-
-newVirtualThreadPerTaskExecutor()
-→ одна task = один virtual thread
-
-Virtual Threads обычно не пулить
-
-ограниченный внешний ресурс
-→ ограничивать сам ресурс
-
-Semaphore
-→ лимит concurrent access
-
-DB pool
-→ всё ещё ограничивает SQL concurrency
-
-Pinning
-→ virtual thread не может unmount
-→ carrier остаётся занят
-
-Java 21:
-долгий blocking I/O внутри synchronized
-→ потенциальный pinning
-
-ThreadLocal
-→ работает
-→ опасны большие per-thread объекты при огромном числе threads
-
-Virtual Threads
-→ daemon threads
-
-нужно дождаться:
-→ join()
-
-Virtual Threads
-≠ автоматическая thread safety
-
-Virtual Threads
-≠ больше CPU cores
-
-Virtual Threads
-→ прежде всего увеличение throughput
-  для большого числа blocking tasks
-```
-
-## Главное
-
-Virtual Threads меняют привычную модель работы с потоками.
-
-Для platform threads часто используется:
-
-```text
-небольшое количество дорогих workers
-+
-очередь задач
-```
-
-Для virtual threads основная модель:
-
-```text
-одна задача
-→ один дешёвый virtual thread
-```
-
-При blocking I/O virtual thread может быть приостановлен, снят с carrier и продолжить работу позднее.
-
-Carrier в это время используется для другой задачи.
-
-Поэтому Virtual Threads особенно хорошо подходят для backend-приложений с большим количеством одновременно ожидающих операций:
-
-```text
-JDBC
-HTTP
-REST
-файлы
-сеть
-```
-
-При этом они не отменяют реальные ограничения системы:
-
-```text
-CPU
-DB connections
-rate limits
-external API limits
-memory
-synchronization
-```
-
-Главный принцип:
-
-```text
-не ограничивать дешёвые virtual threads без причины
-→ ограничивать реальный дефицитный ресурс
-```
+**Ответ:** при работе через executor первый попытается прервать поток, выполняющий
+задачу. У `CompletableFuture` параметр `mayInterruptIfRunning` прерывания
+вычисления не гарантирует.
 
 ---
 
@@ -1617,3 +807,5 @@ synchronization
   привычная модель пулов здесь не нужна
 - [`05-completable-future.md`](05-completable-future.md) — разные задачи, а не
   замена друг другу
+- [`01-java-memory-model.md`](01-java-memory-model.md) — правила видимости и
+  упорядочивания, которые действуют и для virtual threads
