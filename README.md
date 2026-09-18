@@ -12,17 +12,23 @@
 - Collections Framework
 - JVM
 - Java Concurrency
-- Spring Framework
-- Spring Boot
 - HTTP and REST
 - PostgreSQL and SQL
+- Миграции схемы базы данных
+- JDBC
+- Spring Framework
+- Spring Boot
+- Spring Security и JWT
+- HTTP-клиенты
 - JPA and Hibernate
 - Apache Kafka
+- Logging
 - Testing
 - Backend Architecture
 - System Design
 - Docker and CI/CD
 - Git
+- Build Tools
 
 ## Прогресс
 
@@ -52,25 +58,46 @@
 
 ## Структура
 
-- `docs/java-core` — Java Core;
-- `docs/jvm` — JVM;
-- `docs/concurrency` — Java Concurrency и многопоточность;
-- `docs/spring` — Spring Framework и Spring Boot;
-- `docs/databases` — SQL и PostgreSQL;
+- `docs/java-core` — Java Core и коллекции;
+- `docs/jvm` — устройство JVM, память, сборка мусора;
+- `docs/concurrency` — многопоточность и модель памяти;
+- `docs/http_rest` — HTTP и проектирование REST API;
+- `docs/databases` — SQL, PostgreSQL, транзакции, JDBC, миграции;
+- `docs/spring` — Spring Core, AOP, Boot, MVC, транзакции, безопасность,
+  HTTP-клиенты;
 - `docs/hibernate` — JPA и Hibernate;
 - `docs/kafka` — Apache Kafka;
+- `docs/logging` — логирование;
 - `docs/testing` — тестирование;
-- `docs/system-design` — архитектура и System Design;
+- `docs/system-design` — архитектура бэкенда и System Design;
+- `docs/docker` — Docker, CI и CD;
+- `docs/git` — Git;
+- `docs/build-tools` — Gradle и Maven;
 - `docs/progress` — roadmap и прогресс подготовки.
 
 ## Соглашения по оформлению
 
 - заголовок первого уровня `#` — только название темы в начале файла;
-- разделы — `##`, подразделы — `###`;
+- разделы — `##`, подразделы — `###`, глубже не уходим;
 - заголовки не нумеруются, чтобы вставка раздела не ломала структуру;
+  исключение — вопросы на собеседовании, где нумерация сквозная;
 - схемы и перечисления оформляются блоком ` ```text `;
 - код — блоком ` ```java `;
-- имена файлов конспектов начинаются с порядкового номера внутри директории.
+- имена файлов конспектов начинаются с порядкового номера внутри директории;
+- окончания строк — LF, перенос текста по ~80 символов.
+
+Шаблон нового конспекта: [`docs/_template.md`](docs/_template.md).
+
+## Проверка формата
+
+```bash
+python3 scripts/check-format.py
+```
+
+Скрипт проверяет уровни заголовков, порядок обязательных блоков концовки,
+сквозную нумерацию вопросов и наличие ответов, присутствие блока «См. также»,
+целостность относительных ссылок, окончания строк и посторонние символы. Код
+возврата `1` при нарушениях — можно повесить на CI.
 
 ## Алгоритмы
 

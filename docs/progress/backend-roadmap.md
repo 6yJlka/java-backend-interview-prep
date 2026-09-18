@@ -1,6 +1,7 @@
 # Java Backend Interview Preparation Roadmap
 
-Полный roadmap подготовки к техническим интервью на позиции Java Backend Developer.
+Полный roadmap подготовки к техническим интервью на позиции Java Backend
+Developer.
 
 Roadmap ориентирован не на изучение Java вообще, а на подготовку к Junior /
 Junior+ Java Backend интервью. Он объединяет Java Core, JVM, Concurrency, Spring,
@@ -51,7 +52,9 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 ---
 
-## 1.2. OOP — Изучено
+## 1.2. OOP и SOLID — Изучено
+
+### ООП
 
 - [x] class и object
 - [x] encapsulation
@@ -74,6 +77,15 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 - [x] можно ли override `private`
 - [x] covariant return type
 
+### SOLID
+
+- [x] Single Responsibility
+- [x] Open/Closed
+- [x] Liskov Substitution
+- [x] Interface Segregation
+- [x] Dependency Inversion
+- [x] связь DIP и внедрения зависимостей в Spring
+
 ---
 
 ## 1.3. Object, String и Wrappers — Изучено
@@ -85,7 +97,9 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 - [x] `hashCode`
 - [x] `getClass`
 - [x] runtime type объекта
-- [ ] `clone` на концептуальном уровне
+- [x] `clone` на концептуальном уровне
+- [x] почему `clone` считается неудачным API
+- [x] конструктор копирования как замена
 
 ### String
 
@@ -99,6 +113,10 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 - [x] `StringBuffer`
 - [x] `StringBuilder` vs `StringBuffer`
 - [x] почему `String` immutable
+- [x] Compact Strings и `byte[]` с Java 9
+- [x] кеширование `hashCode`
+- [x] `invokedynamic` и `StringConcatFactory`
+- [x] стоимость конкатенации в цикле
 
 ### Primitive Types и Wrappers
 
@@ -143,6 +161,7 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 - [x] `List.of`
 - [x] `Set.of`
 - [x] `Map.of`
+- [x] Sequenced Collections в Java 21
 
 ---
 
@@ -159,9 +178,11 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 - [x] `put`
 - [x] `get`
 - [x] `computeIfAbsent`
+- [x] `compute` и `merge`
 - [x] различия реализаций
 - [x] treeification bucket
 - [x] resize и load factor
+- [x] `accessOrder` и LRU-кеш
 
 ---
 
@@ -172,6 +193,9 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 - [x] связь `equals` и `hashCode`
 - [x] `==` vs `equals`
 - [x] mutable key в `HashMap`
+- [x] `instanceof` vs `getClass`
+- [x] наследование и симметричность
+- [x] равенство JPA-сущностей
 
 ---
 
@@ -187,9 +211,10 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 - [x] invariance
 - [x] type erasure
 - [x] raw types
-- [ ] heap pollution
-- [ ] ограничения `new T()`
-- [ ] generic arrays
+- [x] heap pollution
+- [x] ограничения `new T()`
+- [x] generic arrays
+- [x] `@SafeVarargs`
 
 ---
 
@@ -205,6 +230,8 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 - [x] `AutoCloseable`
 - [x] suppressed exceptions
 - [x] multi-catch
+- [x] cause и оборачивание
+- [x] исключения и транзакции Spring
 
 ---
 
@@ -475,7 +502,7 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 - [x] phantom reference
 - [x] `ReferenceQueue`
 - [x] `WeakHashMap`
-- [x] `finalize` и почему он удалён
+- [x] `finalize`, JEP 421 и почему от него отказались
 - [x] `Cleaner`
 
 ---
@@ -566,6 +593,7 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 - [x] `SynchronousQueue`
 - [x] `ConcurrentLinkedQueue`
 - [x] weakly consistent iterator vs snapshot iterator
+- [x] backpressure
 
 ---
 
@@ -707,6 +735,24 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 ---
 
+## 5.4. Миграции схемы — Изучено
+
+- [x] зачем версионировать схему
+- [x] `ddl-auto` и почему `update` запрещён в проде
+- [x] Flyway
+- [x] Liquibase
+- [x] сравнение инструментов
+- [x] неизменяемость применённой миграции и checksum
+- [x] нумерация версий и параллельные ветки
+- [x] expand/contract при rolling update
+- [x] блокировки в PostgreSQL: `ALTER TABLE`, `CREATE INDEX CONCURRENTLY`
+- [x] `NOT VALID` и `VALIDATE CONSTRAINT`
+- [x] `lock_timeout`
+- [x] миграции данных и тестовые данные
+- [x] тестирование миграций на Testcontainers
+
+---
+
 # 6. Spring Framework — Изучено
 
 ## 6.1. Spring Core / IoC / DI
@@ -771,6 +817,44 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 - [x] proxy
 - [x] JDK Dynamic Proxy
 - [x] CGLIB basics
+
+---
+
+## 6.6. Spring Security и JWT — Изучено
+
+- [x] цепочка фильтров и `SecurityFilterChain`
+- [x] почему Security работает до `DispatcherServlet`
+- [x] `AuthenticationManager` и `AuthenticationProvider`
+- [x] `UserDetailsService`
+- [x] `PasswordEncoder`, BCrypt и соль
+- [x] `SecurityContextHolder` и `ThreadLocal`
+- [x] `authorizeHttpRequests`
+- [x] `@PreAuthorize` и method security
+- [x] `hasRole` vs `hasAuthority`
+- [x] сессия vs stateless
+- [x] структура JWT
+- [x] подпись HS256 и RS256
+- [x] access и refresh токены
+- [x] отзыв токена
+- [x] подмена алгоритма и проверка `alg`
+- [x] CORS и CSRF
+
+---
+
+## 6.7. HTTP-клиенты — Изучено
+
+- [x] `RestTemplate`
+- [x] `RestClient`
+- [x] `WebClient`
+- [x] `@HttpExchange` и декларативные клиенты
+- [x] таймауты: connect, read, `connectionRequestTimeout`
+- [x] бюджет времени
+- [x] пул соединений
+- [x] обработка кодов ответа
+- [x] повторы, backoff и jitter
+- [x] circuit breaker
+- [x] внешний вызов внутри транзакции
+- [x] `MockRestServiceServer` и WireMock
 
 ---
 
@@ -1107,6 +1191,8 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 - [x] Этап 3. Ядро backend-интервью: HTTP, SQL, Spring, JPA, транзакции
 - [x] Этап 4. Production Backend: JDBC, логирование, тестирование, Kafka,
   архитектура, System Design, Docker, Git, сборщики
+- [x] Дополнение по итогам аудита: Spring Security и JWT, HTTP-клиенты, миграции
+  схемы
 
 Отложены и конспектами не покрыты: `Date and Time API`, `Java I/O / NIO`,
 `Structured Concurrency` и `Scoped Values`.
@@ -1119,19 +1205,44 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 # Технический долг репозитория
 
-Не про изучение тем, а про приведение конспектов в порядок. Делается фоном, когда
-не хочется браться за новую тему.
+Не про изучение тем, а про приведение конспектов в порядок.
 
-- [x] привести заголовки к единому виду: `#` только для названия темы, разделы `##`
-- [x] устранить смешение стилей в `01-collections-framework.md`
+## Формат
+
+- [x] привести заголовки к единому виду: `#` только для названия темы, разделы
+  `##`, подразделы `###`, глубже не уходим
+- [x] устранить смешение стилей и дубли разделов в `01-collections-framework.md`
 - [x] убрать сквозную нумерацию заголовков в `concurrency/04`–`06`
+- [x] привести концовки `concurrency/04`–`06` к общему формату
+- [x] привести концовки `concurrency/01`–`03`, `jvm/01` и `java-core/00`–`08` к
+  общему формату: `типичные ошибки → краткая памятка → краткий ответ → вопросы →
+  см. также`
+- [x] убрать `— Part 1` и `— Part 2` из заголовков `concurrency/02` и `03`
+- [x] дописать «Краткий ответ для собеседования» там, где его не было
 - [x] добавить блок «См. также» во все конспекты
 - [x] привести окончания строк к LF, добавить `.gitattributes`
 - [x] снабдить ответами вопросы для самопроверки во всех конспектах
-- [x] привести концовки `concurrency/04`–`06` к общему формату
+- [x] починить отступы в примерах кода
+- [x] удалить неиспользуемый `docs/templates`
+
+## Содержание
+
+- [x] исправить утверждение, что `finalize` удалён в Java 18
+- [x] убрать посторонний символ в `hibernate/03-hibernate-problems.md`
+- [x] устранить противоречие про `Collectors.toList()` в `06-stream-api.md`
+- [x] убрать упоминания личных проектов и задач из алгоритмического репозитория
 - [x] в `06-stream-api.md` разбор `orElse` / `orElseGet` сокращён до ссылки на
   `09-optional.md`
-- [x] удалить неиспользуемый `docs/templates`
+- [x] сократить дубль разбора pass-by-value между `jvm/01` и `java-core/00`
+
+## Инфраструктура
+
+- [x] добавить `docs/_template.md`
+- [x] добавить `scripts/check-format.py`
+- [ ] повесить проверку формата на CI
+- [ ] прошить новые конспекты обратными ссылками «См. также» из соседей:
+  `spring/04` и `http_rest/01` → безопасность, `system-design/01` →
+  HTTP-клиенты, `databases/03` и `hibernate/01` → миграции
 
 ---
 
@@ -1144,6 +1255,7 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 3. Добавить или обновить конспект в соответствующей директории `docs`.
 4. Проставить ссылки «См. также» в связанных конспектах.
 5. Добавить конспект в порядок прохождения в `topic-tracker.md`.
+6. Прогнать `python3 scripts/check-format.py`.
 
 Roadmap не должен превращаться в список технологий ради списка. Темы изучаются с
 приоритетом на то, что реально требуется Java Backend Developer и регулярно
