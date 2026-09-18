@@ -1,11 +1,7 @@
 # Stream API в Java
 
-## Что такое Stream API
-
-Stream API предоставляет декларативный способ обработки последовательности
-элементов.
-
-Код описывает, какие преобразования нужны, а библиотека управляет обходом.
+Декларативный способ обработки последовательности элементов: код описывает, какие
+преобразования нужны, а библиотека управляет обходом.
 
 ```java
 List<String> activeEmails = users.stream()
@@ -14,25 +10,23 @@ List<String> activeEmails = users.stream()
         .toList();
 ```
 
-Stream не является структурой данных. Он представляет вычислительный pipeline.
-
-## Stream и Collection
+Stream не является структурой данных — это вычислительный конвейер.
 
 | Collection | Stream |
 |---|---|
 | хранит данные | описывает обработку данных |
-| может обходиться многократно | используется один раз |
-| предоставляет добавление и удаление | не изменяет источник сам по себе |
-| обычно вычислена заранее | промежуточные операции ленивы |
+| обходится многократно | используется один раз |
+| предоставляет добавление и удаление | не изменяет источник |
+| вычислена заранее | промежуточные операции ленивы |
 
 ```text
 Collection → где лежат элементы
 Stream     → что сделать с элементами
 ```
 
-## Структура pipeline
+---
 
-Pipeline состоит из трёх частей:
+## Устройство конвейера
 
 ```text
 источник
@@ -43,82 +37,52 @@ Pipeline состоит из трёх частей:
 ```
 
 ```java
-long criticalCount = incidents.stream()             // источник
-        .filter(incident ->                          // промежуточная
-                incident.getPriority() == CRITICAL)
-        .count();                                    // терминальная
+long urgentCount = orders.stream()                  // источник
+        .filter(order ->                            // промежуточная
+                order.getPriority() == URGENT)
+        .count();                                   // терминальная
 ```
 
 Промежуточная операция возвращает новый `Stream` и выполняется лениво.
-Терминальная операция запускает pipeline и завершает использование Stream.
+Терминальная запускает конвейер и завершает использование stream.
 
-## Создание Stream
-
-### collection.stream()
+### Создание
 
 ```java
 Stream<User> users = userList.stream();
+
+Stream<Order> orders = Arrays.stream(orderArray);
+
+Stream<String> priorities = Stream.of("LOW", "HIGH", "URGENT");
+
+Stream<User> empty = Stream.empty();
 ```
 
-### Arrays.stream()
-
-```java
-Incident[] incidents = loadIncidents();
-Stream<Incident> stream = Arrays.stream(incidents);
-```
-
-Для массива примитивов создаётся специализированный stream.
+Для массива примитивов создаётся специализированный stream:
 
 ```java
 IntStream numbers = Arrays.stream(new int[]{1, 2, 3});
 ```
 
-### Stream.of()
-
-```java
-Stream<String> priorities = Stream.of(
-        "LOW",
-        "HIGH",
-        "CRITICAL"
-);
-```
-
-### Stream.empty()
-
-```java
-Stream<User> users = Stream.empty();
-```
-
-Пустой stream удобен вместо `null`.
-
-### Stream.iterate()
-
-`Stream.iterate()` создаёт последовательность по правилу.
+`Stream.iterate()` создаёт последовательность по правилу:
 
 ```java
 List<Integer> numbers = Stream.iterate(1, value -> value + 1)
         .limit(5)
-        .toList();
+        .toList();                                  // [1, 2, 3, 4, 5]
 ```
 
-Результат:
-
-```text
-[1, 2, 3, 4, 5]
-```
-
-Без ограничивающей операции такой stream бесконечен.
-
-В Java 9 появился вариант с условием продолжения.
+Без ограничивающей операции такой stream бесконечен. В Java 9 появился вариант с
+условием продолжения:
 
 ```java
 Stream.iterate(1, value -> value <= 5, value -> value + 1)
         .toList();
 ```
 
-## Ленивость промежуточных операций
+### Ленивость
 
-Вызов промежуточной операции только строит следующий этап pipeline.
+Вызов промежуточной операции только строит следующий этап.
 
 ```java
 Stream<User> activeUsers = users.stream()
@@ -129,16 +93,15 @@ Stream<User> activeUsers = users.stream()
 ```
 
 Пока нет терминальной операции, фильтр не выполняется и строки не печатаются.
+Конвейер запустится только здесь:
 
 ```java
 List<User> result = activeUsers.toList();
 ```
 
-Теперь pipeline запускается.
+### Поэлементное выполнение
 
-## Поэлементное выполнение pipeline
-
-Операции часто выполняются не отдельными полными проходами, а поэлементно.
+Операции выполняются не отдельными полными проходами, а поэлементно.
 
 ```java
 users.stream()
@@ -148,19 +111,22 @@ users.stream()
         .toList();
 ```
 
-Упрощённо:
-
 ```text
 user 1 → filter → map → limit
 user 2 → filter → отброшен
 user 3 → filter → map → limit → достаточно элементов
 ```
 
-`limit()` может остановить обработку источника раньше.
+`limit()` может остановить обработку источника раньше, а `findFirst()` после
+`filter()` завершится на первом подходящем элементе.
 
-## filter и Predicate
+---
 
-`filter()` оставляет элементы, для которых условие возвращает `true`.
+## Промежуточные операции
+
+### filter
+
+Оставляет элементы, для которых `Predicate<T>` вернул `true`.
 
 ```java
 List<User> activeUsers = users.stream()
@@ -168,19 +134,9 @@ List<User> activeUsers = users.stream()
         .toList();
 ```
 
-Он принимает `Predicate<T>`.
+### map
 
-```java
-boolean test(T value);
-```
-
-```java
-Predicate<User> active = User::isActive;
-```
-
-## map и Function
-
-`map()` преобразует каждый элемент в другой элемент.
+Преобразует каждый элемент в другой через `Function<T, R>`, меняя тип потока.
 
 ```java
 List<String> emails = users.stream()
@@ -188,22 +144,9 @@ List<String> emails = users.stream()
         .toList();
 ```
 
-Он принимает `Function<T, R>`.
+### flatMap
 
-```java
-R apply(T value);
-```
-
-Тип входного и выходного элемента может отличаться.
-
-```text
-User → String
-```
-
-## flatMap
-
-`flatMap()` преобразует каждый элемент в stream и объединяет вложенные stream в
-один плоский stream.
+Преобразует каждый элемент в stream и объединяет вложенные stream в один плоский.
 
 ```java
 List<List<String>> groups = List.of(
@@ -212,7 +155,7 @@ List<List<String>> groups = List.of(
 );
 
 List<String> values = groups.stream()
-        .flatMap(group -> group.stream())
+        .flatMap(List::stream)
         .toList();
 ```
 
@@ -220,45 +163,25 @@ List<String> values = groups.stream()
 группа 1 → [network, database]
 группа 2 → [security]
 
-flatMap
-→ [network, database, security]
+flatMap → [network, database, security]
 ```
 
-`flatMap` раскрывает вложенные структуры.
-
-## map и flatMap
+Разница видна по типу результата:
 
 ```java
-Stream<Stream<String>> nested = groups.stream()
-        .map(List::stream);
-```
-
-```java
-Stream<String> flat = groups.stream()
-        .flatMap(List::stream);
+Stream<Stream<String>> nested = groups.stream().map(List::stream);
+Stream<String> flat = groups.stream().flatMap(List::stream);
 ```
 
 ```text
 map     → один вход превращается в одно значение
-flatMap → один вход превращается в несколько значений, затем уровни объединяются
+flatMap → один вход превращается в несколько, затем уровни объединяются
 ```
 
-## distinct
+### distinct и sorted
 
-`distinct()` удаляет дубликаты по `equals()` и `hashCode()`.
-
-```java
-List<User> uniqueUsers = users.stream()
-        .distinct()
-        .toList();
-```
-
-Если контракт `equals()` и `hashCode()` нарушен или равенство сущности выбрано
-неверно, результат `distinct()` тоже будет неверным.
-
-## sorted и Comparator
-
-Без аргумента `sorted()` использует естественный порядок.
+`distinct()` удаляет дубликаты по `equals()` и `hashCode()`. Если контракт нарушен
+или равенство сущности выбрано неверно, результат тоже будет неверным.
 
 ```java
 List<String> emails = users.stream()
@@ -267,34 +190,27 @@ List<String> emails = users.stream()
         .toList();
 ```
 
-Пользовательский порядок задаётся через `Comparator`.
+Без аргумента `sorted()` требует, чтобы элементы реализовывали `Comparable`, иначе
+во время выполнения будет `ClassCastException`. Пользовательский порядок задаётся
+компаратором:
 
 ```java
-List<Incident> sorted = incidents.stream()
-        .sorted(Comparator.comparing(Incident::getCreatedAt).reversed())
+List<Order> sorted = orders.stream()
+        .sorted(Comparator.comparing(Order::getCreatedAt).reversed())
         .toList();
 ```
 
-Если элементы не реализуют `Comparable` и comparator не передан, выполнение
-завершится `ClassCastException`.
-
-## limit и skip
-
-`limit(n)` оставляет не более первых `n` элементов.
-
-`skip(n)` пропускает первые `n` элементов.
+### limit и skip
 
 ```java
-List<Incident> page = incidents.stream()
+List<Order> page = orders.stream()
         .skip(20)
         .limit(10)
         .toList();
 ```
 
-### Почему это не пагинация в базе данных
-
-Если данные уже загружены в коллекцию, база передала приложению все строки.
-`skip()` и `limit()` уменьшают только результат обработки в памяти.
+Важная оговорка: это **не пагинация в базе данных**. Если данные уже загружены в
+коллекцию, база передала приложению все строки.
 
 ```text
 плохой вариант
@@ -304,13 +220,12 @@ List<Incident> page = incidents.stream()
 БД → LIMIT и OFFSET или keyset pagination → Java получает 20 строк
 ```
 
-Пагинацию нужно выполнять запросом репозитория. `partitioningBy()` к пагинации
-отношения не имеет.
+Пагинацию выполняют запросом репозитория.
 
-## peek
+### peek
 
-`peek()` позволяет наблюдать элементы при прохождении pipeline и главным образом
-предназначен для отладки.
+Позволяет наблюдать элементы при прохождении конвейера и предназначен прежде всего
+для отладки.
 
 ```java
 List<String> emails = users.stream()
@@ -320,15 +235,15 @@ List<String> emails = users.stream()
         .toList();
 ```
 
-Из-за ленивости без терминальной операции `peek()` не выполнится.
+Бизнес-логику в `peek()` помещать нельзя. Операция ленивая и может не выполниться
+вовсе, а реализация вправе пропустить её, если результат не влияет на итог —
+например, при подсчёте размера у потока с известным числом элементов.
 
-Бизнес-логику в `peek()` помещать не следует. Её выполнение зависит от устройства
-pipeline, short-circuit операций и оптимизаций. Изменение состояния в `peek()`
-делает код неочевидным.
+---
 
 ## Терминальные операции
 
-### toList
+### toList и collect
 
 ```java
 List<String> emails = users.stream()
@@ -336,24 +251,11 @@ List<String> emails = users.stream()
         .toList();
 ```
 
-`Stream.toList()` возвращает немодифицируемый список.
+`Stream.toList()` возвращает немодифицируемый список: попытка изменения даст
+`UnsupportedOperationException`. В отличие от некоторых сборщиков, он допускает
+`null` среди элементов.
 
-```java
-emails.add("new@example.com");
-```
-
-Результат:
-
-```text
-UnsupportedOperationException
-```
-
-Контракт `Stream.toList()` допускает `null`, в отличие от некоторых способов
-сбора через collectors.
-
-### collect
-
-`collect()` выполняет изменяемое свёртывание результата.
+`collect()` выполняет изменяемое свёртывание:
 
 ```java
 ArrayList<User> activeUsers = users.stream()
@@ -361,18 +263,11 @@ ArrayList<User> activeUsers = users.stream()
         .collect(Collectors.toCollection(ArrayList::new));
 ```
 
-Так получают явно изменяемый `ArrayList`.
-
-```java
-List<User> result = users.stream()
-        .collect(Collectors.toList());
-```
-
 Для `Collectors.toList()` не гарантируются ни конкретная реализация списка, ни его
-изменяемость. Если нужен гарантированно изменяемый `ArrayList`, следует использовать
+изменяемость. Если нужен гарантированно изменяемый `ArrayList`, используют
 `Collectors.toCollection(ArrayList::new)`.
 
-### forEach
+### forEach, count, find и match
 
 ```java
 users.stream()
@@ -380,103 +275,74 @@ users.stream()
         .forEach(System.out::println);
 ```
 
-У parallel stream `forEach()` не гарантирует encounter order. Для сохранения
-порядка существует `forEachOrdered()`.
-
-### count
+У параллельного stream `forEach()` не гарантирует порядок; для его сохранения
+существует `forEachOrdered()`.
 
 ```java
-long criticalCount = incidents.stream()
-        .filter(incident -> incident.getPriority() == CRITICAL)
+long urgentCount = orders.stream()
+        .filter(order -> order.getPriority() == URGENT)
         .count();
 ```
 
-### findFirst и findAny
-
 ```java
-Optional<Incident> firstCritical = incidents.stream()
-        .filter(incident -> incident.getPriority() == CRITICAL)
-        .findFirst();
+Order order = orders.stream()
+        .filter(value -> value.getId() == orderId)
+        .findFirst()
+        .orElseThrow(() -> new OrderNotFoundException(orderId));
 ```
 
-`findFirst()` учитывает encounter order. `findAny()` может вернуть любой подходящий
+`findFirst()` учитывает порядок обхода, `findAny()` может вернуть любой подходящий
 элемент и даёт больше свободы при параллельной обработке.
 
 ```java
-Incident incident = incidents.stream()
-        .filter(value -> value.getId() == incidentId)
-        .findFirst()
-        .orElseThrow(() -> new IncidentNotFoundException(incidentId));
+boolean hasUrgent = orders.stream()
+        .anyMatch(order -> order.getPriority() == URGENT);
+
+boolean allActive = users.stream().allMatch(User::isActive);
+boolean noActive = users.stream().noneMatch(User::isActive);
 ```
 
-### anyMatch, allMatch и noneMatch
+Эти операции используют короткое замыкание и могут не обходить весь источник. Для
+пустого stream `allMatch()` и `noneMatch()` возвращают `true`, а `anyMatch()` —
+`false`.
 
 ```java
-boolean hasCritical = incidents.stream()
-        .anyMatch(incident -> incident.getPriority() == CRITICAL);
-
-boolean allActive = users.stream()
-        .allMatch(User::isActive);
-
-boolean noActive = users.stream()
-        .noneMatch(User::isActive);
+Optional<Order> newest = orders.stream()
+        .max(Comparator.comparing(Order::getCreatedAt));
 ```
 
-Эти операции используют короткое замыкание и могут не обходить весь источник.
-
-Для пустого stream `allMatch()` и `noneMatch()` возвращают `true`, а `anyMatch()`
-возвращает `false`.
-
-### min и max
-
-```java
-Optional<Incident> newest = incidents.stream()
-        .max(Comparator.comparing(Incident::getCreatedAt));
-```
-
-Результат является `Optional`, потому что stream может быть пустым.
+Результат `Optional`, потому что stream может быть пустым.
 
 ### reduce
 
-`reduce()` объединяет элементы в одно неизменяемое значение.
+Объединяет элементы в одно неизменяемое значение.
 
 ```java
-int totalTitleLength = incidents.stream()
-        .map(Incident::getTitle)
+int totalTitleLength = orders.stream()
+        .map(Order::getTitle)
         .map(String::length)
         .reduce(0, Integer::sum);
 ```
 
-Без начального значения результат оборачивается в `Optional`.
+Без начального значения результат оборачивается в `Optional`:
 
 ```java
-Optional<Integer> maximumTitleLength = incidents.stream()
-        .map(Incident::getTitle)
+Optional<Integer> maximumTitleLength = orders.stream()
+        .map(Order::getTitle)
         .map(String::length)
         .reduce(Integer::max);
 ```
 
-## reduce и collect
-
-`reduce()` подходит для комбинирования значений без изменения общего контейнера.
+### reduce против collect
 
 ```text
-1 + 2 + 3 → 6
+reduce  → комбинирование значений без изменения общего контейнера: 1 + 2 + 3 → 6
+collect → накопление в изменяемый контейнер: ArrayList, HashMap, StringBuilder
 ```
 
-`collect()` предназначен для накопления в изменяемый контейнер.
-
-```text
-элементы → ArrayList
-элементы → HashMap
-элементы → StringBuilder
-```
-
-Изменяемые контейнеры собирают через `collect()`, потому что collector отдельно
-описывает создание, накопление и объединение частей результата. Это позволяет
-корректно работать и с parallel stream.
-
-Плохой вариант:
+Изменяемые контейнеры собирают через `collect()`, потому что сборщик отдельно
+описывает создание, накопление и объединение частей результата — это позволяет
+корректно работать и с параллельным stream.
 
 ```java
 List<User> result = users.stream()
@@ -493,12 +359,14 @@ List<User> result = users.stream()
         );
 ```
 
-Здесь нарушается идея неизменяемого накопления `reduce()` и появляется опасное
+Так делать нельзя: нарушается идея неизменяемого накопления и появляется опасное
 общее изменяемое состояние.
 
-## Collectors.joining
+---
 
-`joining()` соединяет строки.
+## Collectors
+
+### joining
 
 ```java
 String emails = users.stream()
@@ -506,7 +374,7 @@ String emails = users.stream()
         .collect(Collectors.joining(", "));
 ```
 
-Можно указать разделитель, префикс и суффикс.
+Можно указать разделитель, префикс и суффикс:
 
 ```java
 String emails = users.stream()
@@ -514,55 +382,39 @@ String emails = users.stream()
         .collect(Collectors.joining(", ", "[", "]"));
 ```
 
-## Collectors.groupingBy
-
-`groupingBy()` создаёт группы по произвольному ключу.
+### groupingBy и partitioningBy
 
 ```java
-Map<IncidentPriority, List<Incident>> byPriority = incidents.stream()
-        .collect(Collectors.groupingBy(Incident::getPriority));
+Map<OrderPriority, List<Order>> byPriority = orders.stream()
+        .collect(Collectors.groupingBy(Order::getPriority));
 ```
 
-Количество групп зависит от полученных ключей.
-
-Можно использовать downstream collector.
+Можно передать вложенный сборщик:
 
 ```java
-Map<IncidentPriority, Long> countByPriority = incidents.stream()
+Map<OrderPriority, Long> countByPriority = orders.stream()
         .collect(Collectors.groupingBy(
-                Incident::getPriority,
+                Order::getPriority,
                 Collectors.counting()
         ));
 ```
 
-## Collectors.partitioningBy
-
-`partitioningBy()` делит элементы по boolean-условию.
+`partitioningBy()` делит элементы по булеву условию:
 
 ```java
 Map<Boolean, List<User>> usersByActivity = users.stream()
         .collect(Collectors.partitioningBy(User::isActive));
 ```
 
-Результат содержит две группы с ключами `true` и `false`.
-
-```text
-true  → активные пользователи
-false → неактивные пользователи
-```
-
-### groupingBy и partitioningBy
-
 | Операция | Ключ | Количество групп |
 |---|---|---|
 | `groupingBy` | произвольный | произвольное |
-| `partitioningBy` | `Boolean` | две группы `true` и `false` |
+| `partitioningBy` | `Boolean` | ровно две, `true` и `false` |
 
-`partitioningBy()` означает разделение по условию и не связано с пагинацией.
+Обе группы присутствуют в результате даже пустыми. Название `partitioningBy`
+означает разделение по условию и к пагинации отношения не имеет.
 
-## Collectors.toMap
-
-`toMap()` собирает элементы в карту.
+### toMap
 
 ```java
 Map<Long, User> usersById = users.stream()
@@ -572,26 +424,10 @@ Map<Long, User> usersById = users.stream()
         ));
 ```
 
-```java
-Map<String, User> usersByEmail = users.stream()
-        .collect(Collectors.toMap(
-                User::getEmail,
-                Function.identity()
-        ));
-```
+Если два элемента дают одинаковый ключ, перегрузка без функции слияния выбросит
+`IllegalStateException` с сообщением `Duplicate key`.
 
-### Duplicate key
-
-Если два элемента дают одинаковый ключ, перегрузка без merge-функции выбросит
-`IllegalStateException` с сообщением о повторяющемся ключе.
-
-```text
-Duplicate key
-```
-
-### Merge-функция
-
-Для ожидаемых повторов нужно явно решить, какое значение сохранить.
+Для ожидаемых повторов решение принимают явно:
 
 ```java
 Map<String, User> usersByEmail = users.stream()
@@ -607,107 +443,65 @@ existing    → значение, уже находящееся в Map
 replacement → новое значение с тем же ключом
 ```
 
-Можно сохранить последнее значение.
+Чтобы сохранить последнее, возвращают `replacement`. Выбор правила должен отражать
+бизнес-смысл, а не случайно скрывать плохие данные.
 
-```java
-(existing, replacement) -> replacement
-```
+Отдельно стоит понимать, почему `distinct()` эту проблему не решает. Он сравнивает
+целые элементы через `equals()` и `hashCode()`, а `toMap()` определяет конфликт по
+результату функции ключа. Два разных пользователя с разными идентификаторами не
+равны между собой, но могут вернуть одинаковую почту: `distinct()` их пропустит, и
+`toMap()` всё равно обнаружит повторяющийся ключ.
 
-Выбор merge-правила должен отражать бизнес-смысл, а не случайно скрывать плохие
-данные.
+---
 
-### Почему distinct не решает конфликт ключей
+## Особенности выполнения
 
-`distinct()` сравнивает целые элементы через `equals()` и `hashCode()`. `toMap()`
-определяет конфликт по результату key mapper.
+### Одноразовость
 
-Два разных пользователя могут иметь разные ID и не быть равными, но возвращать
-одинаковый email. Они пройдут `distinct()`, после чего `toMap()` обнаружит
-повторяющийся ключ. Поэтому `distinct()` не является универсальным решением.
-
-## Method references
-
-Method reference является компактной записью lambda, когда она только вызывает
-существующий метод.
-
-```java
-user -> user.isActive()
-User::isActive
-```
-
-Основные формы:
-
-```java
-User::getEmail          // метод экземпляра произвольного объекта типа
-userService::activate  // метод конкретного объекта
-User::new               // конструктор
-Objects::nonNull        // статический метод
-```
-
-Method reference не создаёт новый механизм вызова. Он должен соответствовать
-сигнатуре функционального интерфейса.
-
-## Одноразовость Stream
-
-После терминальной операции stream закрыт для повторного использования.
+После терминальной операции stream закрыт.
 
 ```java
 Stream<User> stream = users.stream();
 
 long count = stream.count();
-List<User> result = stream.toList();
+List<User> result = stream.toList();   // IllegalStateException
 ```
 
-Второй вызов завершится `IllegalStateException`.
+Он не хранит элементы, а связан с источником и состоянием обхода. Для повторной
+обработки создают новый stream.
 
-Для повторной обработки нужно создать новый stream из источника.
-
-## Stateless и stateful операции
-
-Stateless-операции обрабатывают элемент независимо от остальных.
+### Stateless и stateful
 
 ```text
-filter
-map
-peek
+stateless → filter, map, peek
+stateful  → distinct, sorted, limit и skip для упорядоченного parallel stream
 ```
 
-Stateful-операциям нужно помнить уже встреченные элементы или увидеть значительную
-часть источника.
+`sorted()` должен накопить элементы до выдачи результата, `distinct()` — помнить
+уже встреченные значения. Такие операции дороже и хуже распараллеливаются.
 
-```text
-distinct
-sorted
-limit и skip для упорядоченного parallel stream
-```
+### Порядок операций
 
-Например, `sorted()` обычно должен накопить элементы до выдачи отсортированного
-результата, а `distinct()` должен отслеживать уже встреченные значения.
-
-## Порядок операций и эффективность
-
-Сначала полезно уменьшить число элементов дешёвой операцией, а затем выполнять
+Сначала полезно уменьшить число элементов дешёвой операцией, затем выполнять
 дорогую обработку.
 
 ```java
-List<IncidentView> views = incidents.stream()
-        .filter(incident ->
-                incident.getStatus() == IncidentStatus.OPEN)
+List<OrderView> views = orders.stream()
+        .filter(order -> order.getStatus() == OrderStatus.OPEN)
         .map(expensiveMapper::toView)
         .limit(20)
         .toList();
 ```
 
-Если `map()` поставить до `filter()`, дорогая трансформация выполнится и для
+Если `map()` поставить до `filter()`, дорогое преобразование выполнится и для
 элементов, которые затем будут отброшены.
 
-Порядок нельзя менять механически. Операции могут зависеть от преобразованного
-значения, а `sorted()`, `distinct()` и `limit()` меняют семантику в зависимости от
-расположения.
+Менять порядок механически нельзя: операции могут зависеть от преобразованного
+значения, а `sorted()`, `distinct()` и `limit()` меняют смысл в зависимости от
+расположения. `sorted().limit(3)` берёт три наименьших элемента,
+`limit(3).sorted()` — сортирует первые три.
 
-## Побочные эффекты
-
-Lambda с побочным эффектом изменяет состояние вне своего результата.
+### Побочные эффекты
 
 ```java
 List<String> emails = new ArrayList<>();
@@ -725,55 +519,44 @@ List<String> emails = users.stream()
         .toList();
 ```
 
-Изменение внешнего `ArrayList` опасно не только для производительности. Оно
-создаёт:
+Изменение внешней коллекции создаёт гонки при параллельном выполнении, потерю или
+повреждение данных, зависимость результата от порядка, непредсказуемое поведение
+после изменения конвейера и сложность тестирования. Даже синхронизированный
+контейнер не делает алгоритм логически корректным.
 
-- гонки при параллельном выполнении
-- потерю или повреждение данных
-- зависимость результата от порядка выполнения
-- непредсказуемое поведение после изменения pipeline
-- сложность тестирования и повторного использования
-
-Даже синхронизированный контейнер не всегда делает алгоритм логически корректным.
+---
 
 ## Parallel Stream
 
-Parallel stream разбивает обработку на части и выполняет их параллельно.
-
 ```java
-long criticalCount = incidents.parallelStream()
-        .filter(incident -> incident.getPriority() == CRITICAL)
+long urgentCount = orders.parallelStream()
+        .filter(order -> order.getPriority() == URGENT)
         .count();
 ```
 
-Но parallel stream не всегда быстрее. На результат влияют:
+Параллельный stream не всегда быстрее. На результат влияют размер источника,
+стоимость операции над элементом, возможность эффективно разделить источник,
+необходимость сохранять порядок, стоимость объединения результатов и текущая
+нагрузка на процессоры.
 
-- размер источника
-- стоимость операции над элементом
-- возможность эффективного разделения источника
-- необходимость сохранять порядок
-- стоимость объединения результатов
-- доступное число процессоров и текущая нагрузка
+По умолчанию используется общий `ForkJoinPool.commonPool()`, один на приложение.
+Долгая блокирующая операция займёт его потоки и повлияет на другой код процесса.
 
-По умолчанию parallel stream использует общую `ForkJoinPool.commonPool()`. Долгая
-блокирующая операция может занять её потоки и повлиять на другой код процесса.
-
-Общее изменяемое состояние создаёт гонки.
+Общее изменяемое состояние даёт гонку:
 
 ```java
 List<User> result = new ArrayList<>();
+
 users.parallelStream().forEach(result::add);
 ```
 
-Так делать нельзя.
+Так делать нельзя. `parallelStream()` применяют после измерений на реалистичных
+данных и проверки корректности. Для запросов к базе или внешним сервисам нужен
+явно управляемый механизм конкурентности.
 
-`parallelStream()` нельзя применять автоматически. Его используют после измерений
-на реалистичных данных и проверки корректности. Для запросов к базе или внешним
-сервисам обычно нужен явно управляемый механизм конкурентности.
+---
 
-## IntStream, LongStream и DoubleStream
-
-Для примитивов существуют специализированные stream:
+## Примитивные stream
 
 ```text
 IntStream
@@ -783,68 +566,59 @@ DoubleStream
 
 ```java
 int total = IntStream.of(10, 20, 30).sum();
-double average = incidents.stream()
-        .mapToInt(incident -> incident.getTitle().length())
+
+double average = orders.stream()
+        .mapToInt(order -> order.getTitle().length())
         .average()
         .orElse(0.0);
 ```
 
-Они предоставляют операции `sum()`, `average()` и `summaryStatistics()` без
-создания wrapper-объекта для каждого значения.
+Они дают операции `sum()`, `average()` и `summaryStatistics()` без создания
+объекта-обёртки на каждое значение.
 
-## Boxing и unboxing
-
-`Stream<Integer>` хранит ссылки на wrapper-объекты. `IntStream` работает с `int`.
+`Stream<Integer>` хранит ссылки на обёртки, `IntStream` работает с примитивами:
 
 ```java
 IntStream ids = users.stream()
         .mapToInt(user -> Math.toIntExact(user.getId()));
-```
 
-Переход к объектному stream:
-
-```java
 Stream<Integer> boxed = ids.boxed();
 ```
 
-Boxing преобразует примитив в wrapper, unboxing выполняет обратное преобразование.
-На больших объёмах лишний boxing создаёт дополнительные объекты и нагрузку на GC.
+На больших объёмах лишняя упаковка создаёт дополнительные объекты и нагрузку на
+сборщик мусора.
+
+---
 
 ## Optional в Stream API
 
 Операции, которые могут не найти значение, возвращают `Optional`.
 
 ```java
-Optional<Incident> incident = incidents.stream()
-        .filter(value -> value.getId() == incidentId)
+Optional<Order> order = orders.stream()
+        .filter(value -> value.getId() == orderId)
         .findFirst();
 ```
 
-Результат можно обработать явно.
-
 ```java
-Incident found = incident.orElseThrow(
-        () -> new IncidentNotFoundException(incidentId)
-);
+Order found = order.orElseThrow(() -> new OrderNotFoundException(orderId));
 ```
 
-Не следует без проверки вызывать `get()`.
+Вызывать `get()` без проверки не следует.
 
 Извлекая значение, важно помнить о различии `orElse()` и `orElseGet()`: аргумент
 первого вычисляется всегда, даже когда значение присутствует. Для константы это
 безразлично, для запроса к базе или другого дорогого вызова — нет.
 
 ```java
-String name = incident.map(Incident::getTitle).orElse("не найден");
+String name = order.map(Order::getTitle).orElse("не найден");
 ```
 
-Подробно `Optional` разобран в [`09-optional.md`](09-optional.md): создание,
-преобразования, различие `orElse()` и `orElseGet()` и случаи, когда его применять
-не стоит.
+---
 
 ## Checked exceptions внутри lambda
 
-Стандартные функциональные интерфейсы Stream API не объявляют checked exceptions.
+Стандартные функциональные интерфейсы не объявляют проверяемых исключений:
 
 ```java
 public interface Function<T, R> {
@@ -852,8 +626,7 @@ public interface Function<T, R> {
 }
 ```
 
-Поэтому стандартный `Function<T, R>` не позволяет напрямую пробросить
-`IOException`.
+Поэтому такой код не компилируется:
 
 ```java
 paths.stream()
@@ -861,9 +634,7 @@ paths.stream()
         .toList();
 ```
 
-Такой код не компилируется.
-
-Исключение можно обработать внутри lambda или вынести адаптацию в отдельный метод.
+Исключение обрабатывают внутри лямбды или выносят адаптацию в отдельный метод:
 
 ```java
 private String readUnchecked(Path path) {
@@ -881,36 +652,39 @@ List<String> contents = paths.stream()
         .toList();
 ```
 
-`UncheckedIOException` сохраняет `IOException` как причину и позволяет передать
-сбой через API, не объявляющий checked exception. Если исключение нужно обработать
-для каждого элемента отдельно, обычный цикл часто читается лучше.
+`UncheckedIOException` сохраняет исходное исключение как причину. Если обработка
+нужна для каждого элемента отдельно, обычный цикл читается лучше.
+
+---
 
 ## Когда обычный цикл лучше
 
-Цикл предпочтительнее, когда:
-
-- алгоритм содержит сложные ветвления
-- нужны `break` или `continue`
-- требуется изменять несколько связанных состояний
-- checked exceptions делают lambda громоздкой
-- важен точный пошаговый контроль
-- Stream-версия хуже объясняет намерение
+```text
+алгоритм содержит сложные ветвления
+нужны break или continue
+требуется изменять несколько связанных состояний
+checked exceptions делают lambda громоздкой
+важен точный пошаговый контроль
+Stream-версия хуже объясняет намерение
+```
 
 ```java
-for (Incident incident : incidents) {
-    if (incident.getStatus() != IncidentStatus.OPEN) {
+for (Order order : orders) {
+    if (order.getStatus() != OrderStatus.OPEN) {
         continue;
     }
 
     try {
-        exporter.export(incident);
+        exporter.export(order);
     } catch (IOException exception) {
-        handleExportFailure(incident, exception);
+        handleExportFailure(order, exception);
     }
 }
 ```
 
-Stream API является инструментом, а не обязательной заменой циклов.
+Stream API — инструмент, а не обязательная замена циклов.
+
+---
 
 ## Типичные ошибки
 
@@ -924,11 +698,12 @@ Stream API является инструментом, а не обязатель
 
 ### Изменение списка из Stream.toList
 
-Результат `Stream.toList()` немодифицируемый.
+Результат немодифицируемый.
 
 ### Бизнес-логика в peek
 
-Выполнение `peek()` зависит от фактического прохождения элемента через pipeline.
+Выполнение зависит от фактического прохождения элемента через конвейер и может не
+произойти вовсе.
 
 ### Побочные эффекты во внешней коллекции
 
@@ -937,10 +712,10 @@ Stream API является инструментом, а не обязатель
 
 ### Автоматический parallelStream
 
-Параллелизм имеет накладные расходы, использует общую pool и может замедлить
+Параллелизм имеет накладные расходы, использует общий пул и может замедлить
 операцию.
 
-### toMap без merge-функции
+### toMap без функции слияния
 
 Повторяющийся ключ приводит к `IllegalStateException`.
 
@@ -958,11 +733,11 @@ Stream API является инструментом, а не обязатель
 
 ### reduce для изменяемого контейнера
 
-Списки и карты нужно накапливать через `collect()`.
+Списки и карты накапливают через `collect()`.
 
 ### Игнорирование Optional
 
-Безусловный `get()` приводит к `NoSuchElementException` для пустого результата.
+Безусловный `get()` даёт `NoSuchElementException` для пустого результата.
 
 ### Непонимание orElse
 
@@ -970,82 +745,105 @@ Stream API является инструментом, а не обязатель
 
 ### Checked exception напрямую в Function
 
-`Function<T, R>` не объявляет `throws IOException`, поэтому lambda не
-компилируется без обработки или оборачивания.
-
-## Краткий ответ для собеседования
-
-Stream API описывает одноразовый pipeline обработки данных. Collection хранит
-элементы, а Stream задаёт вычисление над источником. Pipeline состоит из источника,
-ленивых промежуточных операций и терминальной операции, которая запускает
-вычисление и завершает использование stream.
-
-`filter()` отбирает элементы, `map()` преобразует один элемент в один результат,
-а `flatMap()` раскрывает вложенные структуры. Для накопления изменяемых контейнеров
-используют `collect()`, для неизменяемого комбинирования значений подходит
-`reduce()`. `Stream.toList()` возвращает немодифицируемый список.
-
-Побочные эффекты делают pipeline непредсказуемым и опасным при параллельном
-выполнении. `parallelStream()` применяют только после измерений. Стандартный
-`Function<T, R>` не позволяет напрямую выбросить checked exception вроде
-`IOException`.
+Интерфейс не объявляет `throws IOException`, поэтому лямбда не компилируется без
+обработки или оборачивания.
 
 ---
 
 ## Краткая памятка
 
 ```text
-источник
-→ ленивые промежуточные операции
-→ терминальная операция
-→ stream использован
-```
+источник → ленивые промежуточные → терминальная → stream использован
 
-```text
 Collection → хранит данные
-Stream     → описывает обработку
+Stream     → описывает обработку, одноразовый, источник не меняет
+элементы проходят конвейер поэлементно, а не полными проходами
 ```
 
 ```text
-filter  → отбор
-map     → преобразование
+filter  → отбор, Predicate
+map     → преобразование, Function
 flatMap → раскрытие вложенности
+distinct → по equals и hashCode
+sorted  → без компаратора требует Comparable, иначе ClassCastException
+limit / skip → не пагинация в базе
+peek    → только отладка
 ```
 
 ```text
-toList → немодифицируемый List
+toList  → немодифицируемый список
+изменяемый ArrayList → collect(toCollection(ArrayList::new))
 
-изменяемый ArrayList
-→ collect(toCollection(ArrayList::new))
+reduce  → одно неизменяемое значение
+collect → изменяемый контейнер, корректен при parallel
+
+findFirst → учитывает порядок, findAny → любой
+пустой stream: allMatch и noneMatch → true, anyMatch → false
 ```
 
 ```text
-reduce  → одно значение
-collect → изменяемый контейнер
+groupingBy     → произвольное количество групп
+partitioningBy → ровно две, true и false
+toMap + повторяющиеся ключи → нужна функция слияния
+distinct её не заменяет: конфликт по ключу, а не по элементу
 ```
 
 ```text
-groupingBy    → произвольное количество групп
-partitioningBy → true и false
-```
+stateless → filter, map, peek
+stateful  → distinct, sorted, limit
 
-```text
-toMap + повторяющиеся ключи
-→ нужна merge-функция
+фильтрацию раньше дорогого map
+sorted().limit(3) ≠ limit(3).sorted()
 ```
 
 ```text
 parallelStream
 → не применять автоматически
+→ общий ForkJoinPool.commonPool()
 → избегать общего изменяемого состояния
-→ измерять производительность
+→ измерять
+
+IntStream / LongStream / DoubleStream → без упаковки
+sum, average, summaryStatistics
 ```
 
 ```text
-Function<T, R>
-→ не объявляет checked exception
-→ IOException обработать или обернуть
+Function<T, R> не объявляет checked exception
+→ обработать внутри или обернуть в UncheckedIOException
+orElse вычисляется всегда, orElseGet — только при отсутствии
 ```
+
+---
+
+## Краткий ответ для собеседования
+
+Stream API описывает одноразовый конвейер обработки данных. Коллекция хранит
+элементы, а stream задаёт вычисление над источником и сам его не меняет. Конвейер
+состоит из источника, ленивых промежуточных операций и одной терминальной, которая
+запускает вычисление и закрывает stream.
+
+Ленивость не просто откладывает работу: элементы идут через цепочку поэлементно,
+поэтому `findFirst()` после `filter()` останавливается на первом подходящем, а
+`limit()` прекращает чтение источника раньше.
+
+Из операций основные три: `filter()` отбирает, `map()` превращает один элемент в
+один результат, `flatMap()` раскрывает вложенные структуры. Для накопления в
+изменяемый контейнер служит `collect()`, для свёртки в одно значение — `reduce()`.
+Собирать список через `reduce()` с изменяемым аккумулятором нельзя: при
+параллельном выполнении это даёт гонку, тогда как сборщик отдельно описывает
+создание, накопление и объединение частей.
+
+Отдельно стоит помнить про `toMap()`: при совпадении ключей без функции слияния
+будет `IllegalStateException`, и `distinct()` эту проблему не решает, потому что
+сравнивает элементы целиком, а конфликт возникает по ключу.
+
+Побочные эффекты делают конвейер непредсказуемым и опасным при параллельном
+выполнении, поэтому накопление во внешнюю коллекцию заменяют на `collect()`.
+`parallelStream()` применяют только после измерений: он добавляет накладные
+расходы и работает в общем `ForkJoinPool`, одном на приложение.
+
+Наконец, стандартный `Function<T, R>` не объявляет проверяемых исключений, поэтому
+`IOException` внутри лямбды нужно обработать или обернуть в непроверяемое.
 
 ---
 
@@ -1053,16 +851,16 @@ Function<T, R>
 
 ### 1. Что такое Stream API?
 
-**Ответ:** средство декларативной обработки последовательностей элементов. Описывает
-что нужно сделать с данными, а не как обходить коллекцию.
+**Ответ:** средство декларативной обработки последовательностей элементов.
+Описывает, что нужно сделать с данными, а не как обходить коллекцию.
 
 ### 2. Чем Stream отличается от Collection?
 
-**Ответ:** коллекция хранит элементы, stream их только пропускает через себя.
-Stream не имеет собственного хранилища, не изменяет источник, вычисляется лениво и
-может быть использован один раз.
+**Ответ:** коллекция хранит элементы, stream их только пропускает через себя. Он
+не имеет собственного хранилища, не изменяет источник, вычисляется лениво и может
+быть использован один раз.
 
-### 3. Из каких частей состоит pipeline?
+### 3. Из каких частей состоит конвейер?
 
 **Ответ:** из источника, произвольного числа промежуточных операций и одной
 терминальной. Без терминальной операции ничего не выполняется.
@@ -1077,14 +875,13 @@ Stream не имеет собственного хранилища, не изм�
 ### 5. Что означает ленивость промежуточных операций?
 
 **Ответ:** они не выполняются в момент вызова, а лишь строят цепочку. Работа
-начинается только при вызове терминальной операции, и это позволяет не обрабатывать
+начинается при вызове терминальной операции, и это позволяет не обрабатывать
 лишние элементы.
 
-### 6. Как выполняется pipeline по элементам?
+### 6. Как выполняется конвейер по элементам?
 
 **Ответ:** каждый элемент проходит всю цепочку до конца, и лишь затем берётся
-следующий. Обхода коллекции заново на каждую операцию не происходит, поэтому
-`findFirst()` после `filter()` остановится на первом подходящем элементе.
+следующий. Обхода коллекции заново на каждую операцию не происходит.
 
 ### 7. Как связаны filter() и Predicate?
 
@@ -1093,14 +890,14 @@ Stream не имеет собственного хранилища, не изм�
 
 ### 8. Как связаны map() и Function?
 
-**Ответ:** `map()` принимает `Function<T, R>` и заменяет каждый элемент результатом
-её применения, меняя тип потока.
+**Ответ:** `map()` принимает `Function<T, R>` и заменяет каждый элемент
+результатом её применения, меняя тип потока.
 
 ### 9. Чем map() отличается от flatMap()?
 
-**Ответ:** `map()` возвращает один элемент на входной, `flatMap()` возвращает поток
-и разворачивает вложенность. Нужен, когда из каждого элемента получается коллекция,
-а на выходе требуется плоский поток.
+**Ответ:** `map()` возвращает один элемент на входной, `flatMap()` возвращает
+поток и разворачивает вложенность. Нужен, когда из каждого элемента получается
+коллекция, а на выходе требуется плоский поток.
 
 ### 10. От чего зависит результат distinct()?
 
@@ -1109,9 +906,9 @@ Stream не имеет собственного хранилища, не изм�
 
 ### 11. Как sorted() использует Comparator?
 
-**Ответ:** без аргументов требует, чтобы элементы реализовывали `Comparable`, иначе
-будет `ClassCastException` во время выполнения. С аргументом использует переданный
-компаратор.
+**Ответ:** без аргументов требует, чтобы элементы реализовывали `Comparable`,
+иначе будет `ClassCastException` во время выполнения. С аргументом использует
+переданный компаратор.
 
 ### 12. Почему limit() и skip() не заменяют пагинацию в базе?
 
@@ -1127,8 +924,7 @@ Stream не имеет собственного хранилища, не изм�
 ### 14. Почему бизнес-логика в peek() опасна?
 
 **Ответ:** операция промежуточная и ленивая, поэтому может не выполниться вовсе.
-Кроме того, реализация вправе пропустить её, если результат не влияет на итог —
-например, при подсчёте размера у потока с известным числом элементов.
+Кроме того, реализация вправе пропустить её, если результат не влияет на итог.
 
 ### 15. Какие операции являются терминальными?
 
@@ -1143,8 +939,9 @@ Stream не имеет собственного хранилища, не изм�
 
 ### 17. Как собрать результат в изменяемый ArrayList?
 
-**Ответ:** через `collect(Collectors.toList())` либо явно
-`collect(Collectors.toCollection(ArrayList::new))`, если тип важен.
+**Ответ:** через `collect(Collectors.toCollection(ArrayList::new))`.
+`Collectors.toList()` на практике возвращает `ArrayList`, но контракт не
+гарантирует ни реализацию, ни изменяемость, поэтому опираться на него не стоит.
 
 ### 18. Чем reduce() отличается от collect()?
 
@@ -1159,122 +956,128 @@ Stream не имеет собственного хранилища, не изм�
 части. При свёртке через `reduce()` с изменяемым аккумулятором параллельное
 выполнение приведёт к гонке.
 
-### 20. Для чего нужны joining(), groupingBy() и partitioningBy()?
+### 20. Чем findFirst() отличается от findAny()?
+
+**Ответ:** первый учитывает порядок обхода и возвращает именно первый подходящий
+элемент, второй вправе вернуть любой, что даёт больше свободы при параллельной
+обработке.
+
+### 21. Что вернут allMatch() и anyMatch() для пустого stream?
+
+**Ответ:** `allMatch()` и `noneMatch()` вернут `true`, `anyMatch()` — `false`.
+
+### 22. Для чего нужны joining(), groupingBy() и partitioningBy()?
 
 **Ответ:** `joining()` соединяет строки с разделителем, `groupingBy()` группирует
 по ключу, `partitioningBy()` разделяет на две группы по предикату.
 
-### 21. Чем groupingBy() отличается от partitioningBy()?
+### 23. Чем groupingBy() отличается от partitioningBy()?
 
 **Ответ:** первый строит произвольное число групп по значению ключа, второй всегда
 даёт ровно две группы с ключами `true` и `false`, причём обе присутствуют в
 результате даже пустыми.
 
-### 22. Когда toMap() выбрасывает ошибку Duplicate key?
+### 24. Когда toMap() выбрасывает ошибку Duplicate key?
 
 **Ответ:** когда два элемента дали одинаковый ключ, а функция разрешения конфликта
 не задана. Возникает `IllegalStateException`.
 
-### 23. Как работает merge-функция toMap()?
+### 25. Как работает функция слияния в toMap()?
 
 **Ответ:** это третий аргумент, `BinaryOperator`, получающий существующее и новое
 значения и возвращающий то, которое останется в карте.
 
-### 24. Почему distinct() не гарантирует уникальность ключей toMap()?
+### 26. Почему distinct() не гарантирует уникальность ключей toMap()?
 
 **Ответ:** `distinct()` убирает одинаковые элементы, а конфликт возникает при
 одинаковых ключах. Два разных объекта могут дать один ключ, и дубликат останется.
 
-### 25. Какие формы method reference существуют?
-
-**Ответ:** ссылка на статический метод, на метод конкретного объекта, на метод
-произвольного объекта типа и на конструктор.
-
-### 26. Почему Stream является одноразовым?
+### 27. Почему Stream является одноразовым?
 
 **Ответ:** он не хранит элементы, а связан с источником и состоянием обхода. После
 терминальной операции поток помечается использованным, и повторное обращение даёт
 `IllegalStateException`.
 
-### 27. Чем stateless-операции отличаются от stateful?
+### 28. Чем stateless-операции отличаются от stateful?
 
 **Ответ:** stateless обрабатывают элемент независимо от остальных — `filter`,
-`map`. Stateful требуют информации о других элементах или всей
-последовательности — `sorted`, `distinct`, `limit`. Они дороже и хуже
-распараллеливаются.
+`map`. Stateful требуют информации о других элементах или всей последовательности
+— `sorted`, `distinct`, `limit`. Они дороже и хуже распараллеливаются.
 
-### 28. Как порядок операций влияет на эффективность и результат?
+### 29. Как порядок операций влияет на эффективность и результат?
 
 **Ответ:** фильтрацию ставят раньше преобразования и сортировки, чтобы уменьшить
 объём работы. Порядок может менять и результат: `sorted().limit(3)` берёт три
 наименьших элемента, `limit(3).sorted()` — сортирует первые три.
 
-### 29. Чем опасны побочные эффекты?
+### 30. Чем опасны побочные эффекты?
 
 **Ответ:** они делают результат зависящим от порядка и способа выполнения, а при
 параллельном выполнении приводят к гонке. Накопление во внешнюю коллекцию через
 `forEach` следует заменять на `collect`.
 
-### 30. Почему нельзя без измерений применять parallelStream()?
+### 31. Почему нельзя без измерений применять parallelStream()?
 
 **Ответ:** распараллеливание добавляет накладные расходы на разбиение, передачу
 задач и объединение. На малых объёмах и при дешёвой операции оно медленнее
 последовательного варианта.
 
-### 31. Какую pool обычно использует parallel stream?
+### 32. Какой пул обычно использует parallel stream?
 
 **Ответ:** общий `ForkJoinPool.commonPool()`, размер которого по умолчанию на
 единицу меньше числа доступных процессоров. Он один на приложение, поэтому долгая
-блокирующая операция в параллельном потоке задерживает и остальные задачи.
+блокирующая операция задерживает и остальные задачи.
 
-### 32. Для чего нужны IntStream, LongStream и DoubleStream?
+### 33. Для чего нужны IntStream, LongStream и DoubleStream?
 
 **Ответ:** для работы с примитивами без упаковки. Дают специализированные операции
 вроде `sum()`, `average()` и `summaryStatistics()`.
 
-### 33. Что такое boxing и unboxing?
+### 34. Что такое boxing и unboxing в контексте stream?
 
-**Ответ:** упаковка примитива в обёртку и обратное преобразование. В потоках это
-основная скрытая цена: `Stream<Integer>` создаёт объект на каждое значение, тогда
-как `IntStream` работает с примитивами напрямую.
+**Ответ:** упаковка примитива в обёртку и обратное преобразование.
+`Stream<Integer>` создаёт объект на каждое значение, тогда как `IntStream`
+работает с примитивами напрямую.
 
-### 34. Почему findFirst() возвращает Optional?
+### 35. Почему findFirst() возвращает Optional?
 
 **Ответ:** поток может оказаться пустым, и результата не будет. `Optional` делает
 эту возможность видимой в сигнатуре вместо возврата `null`.
 
-### 35. Чем orElse() отличается от orElseGet()?
+### 36. Чем orElse() отличается от orElseGet()?
 
 **Ответ:** аргумент `orElse()` вычисляется всегда, даже когда значение есть.
 `orElseGet()` принимает `Supplier` и вызывает его только при отсутствии значения,
 поэтому подходит для дорогих вычислений.
 
-### 36. Почему Function<T, R> не принимает IOException напрямую?
+### 37. Почему Function<T, R> не принимает IOException напрямую?
 
-**Ответ:** метод `apply()` не объявляет проверяемых исключений, а lambda не может
+**Ответ:** метод `apply()` не объявляет проверяемых исключений, а лямбда не может
 выбросить больше, чем объявлено интерфейсом.
 
-### 37. Для чего используется UncheckedIOException?
+### 38. Для чего используется UncheckedIOException?
 
 **Ответ:** чтобы обернуть `IOException` в непроверяемое исключение и передать его
 через операции потока, сохранив исходную причину.
 
-### 38. Когда обычный цикл понятнее Stream API?
+### 39. Когда обычный цикл понятнее Stream API?
 
 **Ответ:** при сложном условии выхода, при работе с индексами, при изменении
-нескольких переменных сразу и при необходимости прервать обработку по нетривиальному
-критерию. Stream выигрывает на преобразованиях и агрегации, цикл — на императивной
-логике.
+нескольких переменных сразу и при необходимости прервать обработку по
+нетривиальному критерию. Stream выигрывает на преобразованиях и агрегации, цикл —
+на императивной логике.
 
 ---
 
 ## См. также
 
 - [`08-functional-interfaces-lambda.md`](08-functional-interfaces-lambda.md) —
-  функциональные интерфейсы, лежащие в основе операций Stream, и почему `reduce`
-  требует `BinaryOperator`
+  функциональные интерфейсы в основе операций Stream, формы method reference и
+  почему `reduce` требует `BinaryOperator`
 - [`01-collections-framework.md`](01-collections-framework.md) — источники stream
 - [`09-optional.md`](09-optional.md) — `Optional`, который возвращают
   `findFirst()`, `findAny()` и `reduce()` без начального значения
+- [`05-exceptions.md`](05-exceptions.md) — проверяемые исключения и оборачивание в
+  непроверяемые
 - [`../concurrency/03-locks-atomics-executors.md`](../concurrency/03-locks-atomics-executors.md) —
   `ForkJoinPool.commonPool()`, который использует parallel stream
