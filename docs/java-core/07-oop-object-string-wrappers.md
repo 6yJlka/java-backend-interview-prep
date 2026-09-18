@@ -1,8 +1,14 @@
 # OOP, Object, String и Wrapper Classes в Java
 
-## Основные принципы ООП
+Три темы, которые почти всегда открывают собеседование: принципы проектирования,
+базовый контракт `Object` и устройство строк и обёрток. Вопросы отсюда задают
+первыми, и отвечать на них нужно уверенно.
 
-Классическая четвёрка принципов ООП:
+---
+
+## Принципы ООП
+
+Классическая четвёрка:
 
 ```text
 Инкапсуляция
@@ -11,17 +17,16 @@
 Абстракция
 ```
 
-Композиция не входит в классическую четвёрку, но является важным принципом проектирования.
+Композиция в неё не входит, но на практике важнее большинства из них.
 
-## Инкапсуляция
+### Инкапсуляция
 
-Инкапсуляция — это сокрытие внутреннего состояния и деталей реализации за контролируемым интерфейсом.
-
-Плохой вариант:
+Сокрытие внутреннего состояния и деталей реализации за контролируемым
+интерфейсом.
 
 ```java
 class User {
-  public int age;
+    public int age;
 }
 ```
 
@@ -31,7 +36,7 @@ class User {
 user.age = -100;
 ```
 
-Лучше:
+Класс должен сам контролировать допустимое состояние:
 
 ```java
 class User {
@@ -48,11 +53,7 @@ class User {
 }
 ```
 
-Класс сам контролирует допустимое состояние.
-
-Важно:
-
-> Инкапсуляция — это не просто `private` + getter/setter.
+> Инкапсуляция — это не просто `private` плюс геттер и сеттер.
 
 Часто правильнее предоставить бизнес-операцию:
 
@@ -66,9 +67,12 @@ account.deposit(amount);
 account.setBalance(...);
 ```
 
-## Абстракция
+Пара «геттер и сеттер на каждое поле» инкапсуляцию не создаёт: состояние
+по-прежнему открыто, просто через два метода.
 
-Абстракция — выделение существенного контракта и сокрытие деталей реализации.
+### Абстракция
+
+Выделение существенного контракта и сокрытие деталей реализации.
 
 ```java
 interface PaymentService {
@@ -76,23 +80,15 @@ interface PaymentService {
 }
 ```
 
-Коду, использующему `PaymentService`, не обязательно знать, как выполняется HTTP-запрос, где хранятся данные, как устроена авторизация или какой платёжный провайдер используется.
+Коду, использующему этот интерфейс, не нужно знать, как выполняется
+HTTP-запрос, где хранятся данные и какой провайдер используется.
 
 ```text
-инкапсуляция
-→ как скрыть и защитить внутренности объекта
-
-абстракция
-→ какие детали пользователю объекта вообще не нужно знать
+инкапсуляция → как скрыть и защитить внутренности объекта
+абстракция   → какие детали пользователю объекта вообще не нужно знать
 ```
 
-## Наследование
-
-Наследование выражает отношение:
-
-```text
-is-a
-```
+### Наследование и композиция
 
 ```java
 class Animal {
@@ -103,15 +99,7 @@ class Dog extends Animal {
 ```
 
 ```text
-Dog is an Animal
-```
-
-## Композиция
-
-Композиция выражает отношение:
-
-```text
-has-a
+наследование → is-a → Dog is an Animal
 ```
 
 ```java
@@ -121,10 +109,10 @@ class Car {
 ```
 
 ```text
-Car has an Engine
+композиция → has-a → Car has an Engine
 ```
 
-Композиция может быть как `1:1`, так и `1:n`.
+Композиция бывает и `1:n`:
 
 ```java
 class Car {
@@ -132,17 +120,13 @@ class Car {
 }
 ```
 
-Часто применяется принцип:
+Правило, которое стоит знать по имени: favor composition over inheritance.
+Композиция уменьшает связанность, не раскрывает внутренности родителя и позволяет
+менять поведение во время выполнения.
 
-```text
-favor composition over inheritance
-```
+### Полиморфизм
 
-Композиция обычно уменьшает связанность и позволяет легче менять реализацию.
-
-## Полиморфизм
-
-Полиморфизм позволяет работать через общий тип, но получать разное поведение в зависимости от реального объекта.
+Работа через общий тип с поведением, зависящим от реального объекта.
 
 ```java
 class Animal {
@@ -161,25 +145,15 @@ class Dog extends Animal {
 
 ```java
 Animal animal = new Dog();
-animal.speak();
+animal.speak();   // Dog
 ```
 
-Результат:
+Для переопределённых методов экземпляра реализация выбирается во время выполнения
+по реальному типу.
 
-```text
-Dog
-```
-
-Для переопределённых instance-методов реализация выбирается во время выполнения по реальному типу объекта.
-
-## Тип ссылки и реальный тип
+### Тип ссылки и реальный тип
 
 ```java
-class Animal {
-    void speak() {
-    }
-}
-
 class Dog extends Animal {
     @Override
     void speak() {
@@ -192,60 +166,192 @@ class Dog extends Animal {
 
 ```java
 Animal animal = new Dog();
+
+animal.speak();   // можно
+animal.fetch();   // не компилируется
 ```
 
-Так можно:
-
-```java
-animal.speak();
-```
-
-Так нельзя:
-
-```java
-animal.fetch();
-```
-
-Потому что компилятор видит ссылку типа `Animal`, а в `Animal` нет `fetch()`.
+Компилятор видит ссылку типа `Animal`, а метода `fetch()` в нём нет.
 
 ```text
-compile time
-→ тип ссылки определяет, какие методы доступны
-
-runtime
-→ реальный тип определяет, какая override-реализация вызывается
+compile time → тип ссылки определяет, какие методы доступны
+runtime      → реальный тип определяет, какая реализация вызывается
 ```
 
-## Overriding
+---
 
-Overriding — переопределение метода родителя в наследнике.
+## SOLID
+
+Пять принципов проектирования классов. Спрашивают почти всегда, и ценится не
+расшифровка аббревиатуры, а умение привести пример нарушения.
+
+### S — Single Responsibility
+
+У класса должна быть одна причина для изменения.
 
 ```java
-class Animal {
-    void speak() {
-        System.out.println("Animal");
+class OrderService {
+    void create(Order order) { }
+    void sendEmail(Order order) { }
+    byte[] exportToPdf(Order order) { }
+}
+```
+
+Меняется формат письма — правим класс. Меняется формат отчёта — тот же класс.
+Меняется логика заказа — снова он.
+
+Формулировка «класс делает одно дело» неточна: речь именно о причинах изменения,
+то есть о заинтересованных сторонах.
+
+### O — Open/Closed
+
+Класс открыт для расширения и закрыт для изменения: новое поведение добавляется
+новым кодом, а не правкой существующего.
+
+```java
+BigDecimal fee(Payment payment) {
+    if (payment.type() == CARD) return ...;
+    if (payment.type() == SBP) return ...;
+    return BigDecimal.ZERO;
+}
+```
+
+Каждый новый способ оплаты правит этот метод. Решение — вынести варианты за
+интерфейс:
+
+```java
+interface FeePolicy {
+    boolean supports(PaymentType type);
+    BigDecimal fee(Payment payment);
+}
+```
+
+Spring делает такой приём естественным: все реализации внедряются списком.
+
+```java
+public FeeCalculator(List<FeePolicy> policies) { }
+```
+
+### L — Liskov Substitution
+
+Объект подкласса должен быть применим везде, где ожидается родитель, без
+сюрпризов для вызывающего кода.
+
+```java
+class Bird {
+    void fly() {
     }
 }
 
-class Dog extends Animal {
+class Penguin extends Bird {
+}
+```
+
+Базовый тип обещает способность летать, и пингвин это обещание ломает.
+Правильнее разделить сущность и способность:
+
+```java
+class Bird {
+}
+
+interface Flyable {
+    void fly();
+}
+
+class Sparrow extends Bird implements Flyable {
     @Override
-    void speak() {
-        System.out.println("Dog");
+    public void fly() {
     }
+}
+
+class Penguin extends Bird {
 }
 ```
 
-```text
-overriding
-→ наследование
-→ та же сигнатура
-→ другая реализация
-→ runtime
+Признаки нарушения: подкласс бросает исключение там, где родитель работал; сужает
+диапазон допустимых аргументов; возвращает `null` вместо объекта. Отсюда же
+правило, что переопределённый метод не может расширять список проверяемых
+исключений.
+
+### I — Interface Segregation
+
+Лучше несколько узких интерфейсов, чем один широкий: реализация не должна
+зависеть от методов, которые ей не нужны.
+
+```java
+interface Handler {
+    void handle(Event event);
+    void retry(Event event);
+    Report report();
+}
 ```
 
-## Overloading
+Признак нарушения — реализации, где часть методов бросает
+`UnsupportedOperationException` или оставлена пустой.
 
-Overloading — несколько методов с одним именем и разными параметрами.
+### D — Dependency Inversion
+
+Модули верхнего уровня не зависят от модулей нижнего; и те и другие зависят от
+абстракций.
+
+```java
+class ReportService {
+    private PdfGenerator generator = new PdfGenerator();
+}
+```
+
+```java
+class ReportService {
+
+    private final ReportGenerator generator;
+
+    ReportService(ReportGenerator generator) {
+        this.generator = generator;
+    }
+}
+
+interface ReportGenerator {
+    void generate();
+}
+```
+
+Важная деталь: интерфейс объявляется на стороне потребителя и выражает его
+потребность, а не повторяет API конкретной библиотеки. Иначе абстракция есть, а
+инверсии нет.
+
+Именно этот принцип реализует внедрение зависимостей в Spring: контейнер
+подставляет реализацию, а сервис знает только контракт.
+
+### Как отвечать
+
+```text
+SRP → одна причина для изменения
+OCP → расширять новым кодом, не править старый
+LSP → подкласс подставляется без сюрпризов
+ISP → узкие интерфейсы вместо широкого
+DIP → зависеть от абстракции, интерфейс принадлежит потребителю
+```
+
+Полезная оговорка: принципы — не закон. Доведённый до предела SRP даёт россыпь
+классов по одному методу, а преждевременное следование OCP — абстракции ради
+абстракций. Это ориентиры для рефакторинга, когда код начал сопротивляться
+изменениям.
+
+---
+
+## Overriding и overloading
+
+### Overriding
+
+Переопределение метода родителя в наследнике.
+
+```text
+overriding → наследование → та же сигнатура → другая реализация → runtime
+```
+
+### Overloading
+
+Несколько методов с одним именем и разными параметрами.
 
 ```java
 class Printer {
@@ -258,29 +364,20 @@ class Printer {
 ```
 
 ```text
-overloading
-→ одно имя
-→ разные параметры
-→ compile time
+overloading → одно имя → разные параметры → compile time
 ```
 
-## Нельзя перегрузить метод только по возвращаемому типу
-
-Так нельзя:
+Перегрузить метод только по возвращаемому типу нельзя:
 
 ```java
-int getValue() {
-    return 1;
-}
+int getValue() { return 1; }
 
-String getValue() {
-    return "1";
-}
+String getValue() { return "1"; }
 ```
 
-Возвращаемый тип сам по себе не различает overload.
+Возвращаемый тип в сигнатуру не входит, и компилятор не смог бы выбрать метод.
 
-## Overloading и тип ссылки
+### Overloading выбирается по типу ссылки
 
 ```java
 class Parent {
@@ -298,18 +395,12 @@ class Child extends Parent {
 
 ```java
 Parent obj = new Child();
-obj.print("Java");
+obj.print("Java");   // Object
 ```
 
-Результат:
+Через ссылку `Parent` на этапе компиляции виден только `print(Object)`.
 
-```text
-Object
-```
-
-На этапе компиляции через ссылку `Parent` виден только `print(Object)`.
-
-## Сначала overloading, потом overriding
+### Сначала overloading, потом overriding
 
 ```java
 class Parent {
@@ -332,26 +423,15 @@ class Child extends Parent {
 
 ```java
 Parent obj = new Child();
-obj.print("Java");
+obj.print("Java");   // Child Object
 ```
-
-Результат:
 
 ```text
-Child Object
+1. compile time → выбирается сигнатура print(Object)
+2. runtime      → выбирается реализация Child.print(Object)
 ```
 
-Логика:
-
-```text
-1. compile time
-   → выбирается сигнатура print(Object)
-
-2. runtime
-   → выбирается реализация Child.print(Object)
-```
-
-## Overload и null
+### Overload и null
 
 ```java
 void print(String value) {
@@ -362,16 +442,10 @@ void print(Integer value) {
 ```
 
 ```java
-print(null);
+print(null);   // reference to print is ambiguous
 ```
 
-Не скомпилируется:
-
-```text
-reference to print is ambiguous
-```
-
-Но:
+Но если один из вариантов более специфичен, выбор однозначен:
 
 ```java
 void print(Object value) {
@@ -382,16 +456,12 @@ void print(String value) {
 ```
 
 ```java
-print(null);
+print(null);   // вызовет print(String)
 ```
 
-вызовет `print(String)`, потому что `String` более специфичен, чем `Object`.
+### Правила overriding
 
-## Правила overriding: access modifiers
-
-При overriding нельзя уменьшать видимость метода.
-
-Нельзя:
+**Видимость нельзя сужать.**
 
 ```java
 class Parent {
@@ -401,27 +471,14 @@ class Parent {
 
 class Child extends Parent {
     @Override
-    protected void print() {
+    protected void print() {   // не компилируется
     }
 }
 ```
 
-Можно расширять:
+Расширять можно: `protected` в родителе и `public` в наследнике допустимы.
 
-```java
-class Parent {
-    protected void print() {
-    }
-}
-
-class Child extends Parent {
-    @Override
-    public void print() {
-    }
-}
-```
-
-## Ковариантный возвращаемый тип
+**Возвращаемый тип можно сузить.**
 
 ```java
 class Parent {
@@ -438,46 +495,9 @@ class Child extends Parent {
 }
 ```
 
-Это допустимо, если `Dog extends Animal`.
+Это ковариантный возвращаемый тип, допустимый при `Dog extends Animal`.
 
-Наследник может возвращать более конкретный тип.
-
-## Checked exceptions при overriding
-
-```java
-class Parent {
-    void read() throws IOException {
-    }
-}
-```
-
-Нельзя:
-
-```java
-class Child extends Parent {
-    @Override
-    void read() throws Exception {
-    }
-}
-```
-
-Можно:
-
-```java
-void read() throws IOException
-```
-
-Можно сузить:
-
-```java
-void read() throws FileNotFoundException
-```
-
-Можно убрать checked exception:
-
-```java
-void read()
-```
+**Проверяемые исключения нельзя расширять.**
 
 ```text
 checked exception при overriding
@@ -487,24 +507,19 @@ checked exception при overriding
 → нельзя расширить
 ```
 
-## Unchecked exceptions при overriding
-
 ```java
 class Parent {
-    void read() {
-    }
-}
-
-class Child extends Parent {
-    @Override
-    void read() throws IllegalStateException {
+    void read() throws IOException {
     }
 }
 ```
 
-Это корректно, потому что `IllegalStateException` — unchecked exception.
+Наследник может объявить `IOException`, `FileNotFoundException` или ничего, но не
+`Exception`.
 
-## private и overriding
+**Непроверяемые исключения добавлять можно** — они в сигнатуру не входят.
+
+**`private`-метод не переопределяется.**
 
 ```java
 class Parent {
@@ -518,66 +533,34 @@ class Child extends Parent {
 }
 ```
 
-`Child.test()` — новый метод, а не overriding. `private`-метод родителя не виден наследнику.
+Это новый метод: `private`-метод родителя наследнику не виден.
 
-## final
+---
 
-Для разных сущностей:
+## final, abstract и интерфейсы
+
+### final
 
 ```text
-final variable
-→ нельзя переназначить
-
-final method
-→ нельзя override
-
-final class
-→ нельзя extends
+final variable → нельзя переназначить
+final method   → нельзя override
+final class    → нельзя extends
 ```
 
-Пример:
+Неизменяемость объекта `final` не гарантирует: ссылка может указывать на
+изменяемый объект.
 
-```java
-final class Parent {
-}
-```
-
-От такого класса наследоваться нельзя.
-
-## abstract и final
-
-Так нельзя:
-
-```java
-abstract final class Example {
-}
-```
-
-Потому что:
+Совместить `abstract` и `final` нельзя:
 
 ```text
 abstract → предполагает наследование
 final    → запрещает наследование
 ```
 
-## Abstract class
+### Abstract class
 
-Абстрактный класс нельзя создать напрямую:
-
-```java
-abstract class Animal {
-}
-```
-
-Но он может иметь:
-
-- поля;
-- обычные методы;
-- abstract-методы;
-- конструкторы;
-- методы с любыми допустимыми модификаторами доступа.
-
-Пример:
+Создать напрямую нельзя, но он может иметь поля, обычные и абстрактные методы,
+конструкторы и члены с любыми модификаторами доступа.
 
 ```java
 abstract class Animal {
@@ -596,17 +579,9 @@ abstract class Animal {
 }
 ```
 
-## Abstract class и interface
-
-`abstract class` обычно выбирают, когда нужны:
-
-- общее состояние;
-- общая реализация;
-- конструкторы;
-- protected-члены;
-- общий базовый тип тесно связанных классов.
-
-`interface` чаще используют для контракта поведения:
+Абстрактный класс выбирают, когда нужны общее состояние, общая реализация,
+конструкторы, `protected`-члены и общий базовый тип тесно связанных классов.
+Интерфейс — когда нужен контракт поведения:
 
 ```java
 interface Flyable {
@@ -614,11 +589,10 @@ interface Flyable {
 }
 ```
 
-Класс может наследоваться только от одного класса, но реализовывать несколько интерфейсов.
+Класс наследуется только от одного класса, но реализует сколько угодно
+интерфейсов.
 
-## Default methods
-
-Интерфейс может иметь метод с реализацией:
+### Default-методы
 
 ```java
 interface A {
@@ -628,26 +602,10 @@ interface A {
 }
 ```
 
-## Конфликт default methods
+Появились в Java 8, чтобы добавлять методы в существующие интерфейсы, не ломая
+написанные реализации.
 
-```java
-interface A {
-    default void print() {
-        System.out.println("A");
-    }
-}
-
-interface B {
-    default void print() {
-        System.out.println("B");
-    }
-}
-
-class Example implements A, B {
-}
-```
-
-Не скомпилируется. Класс должен разрешить конфликт:
+При конфликте двух одинаковых default-методов класс обязан разрешить его явно:
 
 ```java
 class Example implements A, B {
@@ -658,46 +616,21 @@ class Example implements A, B {
 }
 ```
 
-## Class wins over interface
+Правило class wins over interface: метод класса приоритетнее default-метода
+интерфейса.
 
 ```java
-class Parent {
-    public void print() {
-        System.out.println("Parent");
-    }
-}
-
-interface A {
-    default void print() {
-        System.out.println("A");
-    }
-}
-
 class Child extends Parent implements A {
 }
 ```
 
 ```java
-new Child().print();
+new Child().print();   // Parent
 ```
 
-Выведет:
-
-```text
-Parent
-```
-
-Метод класса имеет приоритет над default-методом интерфейса.
-
-## Более специфичный интерфейс
+Между интерфейсами выигрывает более специфичный:
 
 ```java
-interface A {
-    default void print() {
-        System.out.println("A");
-    }
-}
-
 interface B extends A {
     @Override
     default void print() {
@@ -710,16 +643,10 @@ class Example implements B {
 ```
 
 ```java
-new Example().print();
+new Example().print();   // B
 ```
 
-Выведет:
-
-```text
-B
-```
-
-## Static methods интерфейса
+### Static-методы интерфейса
 
 ```java
 interface A {
@@ -729,15 +656,14 @@ interface A {
 }
 ```
 
-Вызывается:
+Вызываются только через имя интерфейса: `A.print()`. Реализующему классу они не
+наследуются.
 
-```java
-A.print();
-```
+---
 
-Static-метод интерфейса не наследуется реализующим классом.
+## Что полиморфизму не подчиняется
 
-## Static methods класса и method hiding
+### Static-методы: method hiding
 
 ```java
 class Animal {
@@ -755,18 +681,13 @@ class Dog extends Animal {
 
 ```java
 Animal animal = new Dog();
-animal.speak();
+animal.speak();   // Animal
 ```
 
-Выведет:
+Выбор делается по типу ссылки на этапе компиляции. Это не переопределение, а
+сокрытие.
 
-```text
-Animal
-```
-
-Static-методы не участвуют в runtime polymorphism. Это method hiding.
-
-## Поля и field hiding
+### Поля: field hiding
 
 ```java
 class Parent {
@@ -780,18 +701,10 @@ class Child extends Parent {
 
 ```java
 Parent obj = new Child();
-System.out.println(obj.value);
+System.out.println(obj.value);   // 10
 ```
 
-Выведет:
-
-```text
-10
-```
-
-Поля выбираются по типу ссылки.
-
-## Поля и методы вместе
+Поля выбираются по типу ссылки. Вместе с методом разница видна особенно наглядно:
 
 ```java
 class Parent {
@@ -815,48 +728,26 @@ class Child extends Parent {
 ```java
 Parent obj = new Child();
 
-System.out.println(obj.value);
-System.out.println(obj.getValue());
+System.out.println(obj.value);      // 10
+System.out.println(obj.getValue()); // 20
 ```
 
-Результат:
-
-```text
-10
-20
-```
-
-## this и super
+### this и super
 
 ```java
-class Parent {
-    int value = 10;
-}
-
 class Child extends Parent {
     int value = 20;
 
     void print() {
-        System.out.println(super.value);
-        System.out.println(this.value);
+        System.out.println(super.value);   // поле родителя
+        System.out.println(this.value);    // поле текущего объекта
     }
 }
 ```
 
-```text
-super.value → поле родителя
-this.value  → поле текущего объекта
-```
-
-## super.method()
+Вызов родительской реализации метода:
 
 ```java
-class Parent {
-    void print() {
-        System.out.println("Parent");
-    }
-}
-
 class Child extends Parent {
     @Override
     void print() {
@@ -866,14 +757,7 @@ class Child extends Parent {
 }
 ```
 
-Результат:
-
-```text
-Parent
-Child
-```
-
-## Cast не отключает полиморфизм
+### Приведение типа не отключает полиморфизм
 
 ```java
 Child child = new Child();
@@ -881,63 +765,31 @@ Child child = new Child();
 ((Parent) child).print();
 ```
 
-Если `print()` переопределён, всё равно будет вызван `Child.print()`.
+Если `print()` переопределён, всё равно вызовется `Child.print()`. Приведение
+меняет только тип ссылки. Вызвать реализацию родителя можно исключительно через
+`super.print()` изнутри наследника.
 
-Чтобы вызвать именно реализацию родителя из наследника:
+---
 
-```java
-super.print();
-```
+## Конструкторы
 
-## Конструкторы не наследуются
+Конструкторы не наследуются: объявление `Parent(int value)` не создаёт
+автоматически `Child(int value)`.
 
-Конструкторы родителя не становятся конструкторами наследника автоматически.
-
-```java
-class Parent {
-    Parent(int value) {
-    }
-}
-```
-
-Это не создаёт автоматически `Child(int value)`.
-
-## Порядок вызова конструкторов
-
-```java
-class Parent {
-    Parent() {
-        System.out.println("Parent");
-    }
-}
-
-class Child extends Parent {
-    Child() {
-        System.out.println("Child");
-    }
-}
-```
+Порядок выполнения — сверху вниз по иерархии:
 
 ```java
 new Child();
 ```
-
-Вывод:
 
 ```text
 Parent
 Child
 ```
 
-## Неявный super()
-
-Если конструктор наследника не вызывает `this(...)` или `super(...)`, компилятор пытается вставить:
-
-```java
-super();
-```
-
-Если у родителя конструктора без аргументов нет, нужно вызвать существующий явно:
+Если конструктор наследника не начинается с `this(...)` или `super(...)`,
+компилятор вставляет `super()`. Если конструктора без аргументов у родителя нет,
+нужно вызвать существующий явно:
 
 ```java
 class Child extends Parent {
@@ -947,28 +799,13 @@ class Child extends Parent {
 }
 ```
 
-## super() и this() должны быть первыми
+`super(...)` или `this(...)` обязан быть первым вызовом: родительская часть
+объекта должна быть инициализирована раньше, чем начнёт выполняться остальной код
+конструктора.
 
-Так нельзя:
-
-```java
-Child() {
-    System.out.println("Before");
-    super();
-}
-```
-
-`super(...)` или `this(...)` должен быть первым вызовом конструктора.
-
-## Цепочка this() и super()
+Цепочка вызовов разворачивается так:
 
 ```java
-class Parent {
-    Parent(int value) {
-        System.out.println("Parent(int)");
-    }
-}
-
 class Child extends Parent {
     Child() {
         this(10);
@@ -982,19 +819,13 @@ class Child extends Parent {
 }
 ```
 
-```java
-new Child();
-```
-
-Результат:
-
 ```text
 Parent(int)
 Child(int)
 Child()
 ```
 
-## Вызов overridable method из конструктора
+### Переопределяемый метод в конструкторе
 
 ```java
 class Parent {
@@ -1018,20 +849,13 @@ class Child extends Parent {
 ```
 
 ```java
-new Child();
+new Child();   // 0
 ```
 
-Выведет:
+`Child.print()` вызывается до того, как поле получит значение. Поэтому
+переопределяемые методы из конструктора вызывать не следует.
 
-```text
-0
-```
-
-`Child.print()` вызывается до того, как поле `value` получит значение `20`.
-
-Поэтому переопределяемые методы из конструктора обычно вызывать не следует.
-
-## private method в конструкторе
+С `private`-методом такой проблемы нет, потому что он не переопределяется:
 
 ```java
 class Parent {
@@ -1043,96 +867,17 @@ class Parent {
         print();
     }
 }
-
-class Child extends Parent {
-    void print() {
-        System.out.println("Child");
-    }
-}
 ```
 
 ```java
-new Child();
+new Child();   // Parent
 ```
 
-Выведет:
-
-```text
-Parent
-```
-
-`private`-метод не переопределяется.
-
-## Liskov Substitution Principle
-
-Плохая модель:
-
-```java
-class Bird {
-    void fly() {
-    }
-}
-
-class Penguin extends Bird {
-}
-```
-
-Если базовый тип обещает способность летать, `Penguin` ломает ожидания.
-
-Лучше:
-
-```java
-class Bird {
-}
-
-interface Flyable {
-    void fly();
-}
-
-class Sparrow extends Bird implements Flyable {
-    @Override
-    public void fly() {
-    }
-}
-
-class Penguin extends Bird {
-}
-```
-
-## Dependency on abstraction
-
-Жёсткая зависимость:
-
-```java
-class ReportService {
-    private PdfGenerator generator = new PdfGenerator();
-}
-```
-
-Лучше:
-
-```java
-class ReportService {
-
-    private final ReportGenerator generator;
-
-    ReportService(ReportGenerator generator) {
-        this.generator = generator;
-    }
-}
-
-interface ReportGenerator {
-    void generate();
-}
-```
-
-Так класс зависит от абстракции, а реализацию можно подменять.
+---
 
 ## Object
 
-Все Java-классы прямо или косвенно наследуются от `java.lang.Object`.
-
-Основные методы:
+Все классы прямо или косвенно наследуются от `java.lang.Object`.
 
 ```text
 equals(Object obj)
@@ -1140,207 +885,304 @@ hashCode()
 toString()
 getClass()
 clone()
-wait()
-notify()
-notifyAll()
+wait() / notify() / notifyAll()
 ```
 
-`equals/hashCode` и `wait/notify` обычно разбираются отдельными темами.
+`equals`/`hashCode` и механизм `wait`/`notify` разбираются отдельными темами.
 
-## Object.toString()
+### toString()
 
-Если `toString()` не переопределён:
-
-```java
-class User {
-}
-```
-
-```java
-System.out.println(new User());
-```
-
-результат примерно:
+Без переопределения результат выглядит примерно так:
 
 ```text
 com.example.User@3f99bd52
 ```
 
-Упрощённо стандартный формат:
+Упрощённо стандартная реализация:
 
 ```java
-getClass().getName()
-        + "@"
-        + Integer.toHexString(hashCode());
+getClass().getName() + "@" + Integer.toHexString(hashCode());
 ```
 
-Часть после `@` не является гарантированным адресом объекта в памяти.
+Часть после `@` не является адресом объекта в памяти.
 
-## getClass()
+### getClass() и instanceof
 
 ```java
 Animal animal = new Dog();
 
-animal.getClass() == Animal.class // false
-animal.getClass() == Dog.class    // true
-```
+animal.getClass() == Animal.class   // false
+animal.getClass() == Dog.class      // true
 
-`getClass()` возвращает точный runtime-класс объекта.
-
-## getClass и instanceof
-
-```java
-animal instanceof Animal // true
-animal instanceof Dog    // true
+animal instanceof Animal   // true
+animal instanceof Dog      // true
 ```
 
 ```text
-getClass()
-→ точный runtime-класс
-→ возвращает Class<?>
-
-instanceof
-→ проверяет совместимость по иерархии
-→ возвращает boolean
+getClass()  → точный runtime-класс, возвращает Class<?>
+instanceof  → проверяет совместимость по иерархии, возвращает boolean
 ```
+
+### clone и копирование объектов
+
+```java
+class User implements Cloneable {
+
+    @Override
+    public User clone() {
+        try {
+            return (User) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
+    }
+}
+```
+
+`Object.clone()` — нативный метод, создающий объект того же класса и побитово
+копирующий поля, минуя конструктор. `Cloneable` при этом не интерфейс в обычном
+смысле: в нём нет ни одного метода, он работает как флаг — без него `clone()`
+выбрасывает `CloneNotSupportedException`.
+
+Копия получается поверхностной:
+
+```java
+class Order implements Cloneable {
+    private List<Item> items;
+}
+```
+
+```java
+Order copy = original.clone();
+
+copy.getItems().add(newItem);   // изменится и у original
+```
+
+Побитовое копирование копирует ссылку, а не объект за ней. Исправлять приходится
+вручную:
+
+```java
+@Override
+public Order clone() {
+    Order copy = (Order) super.clone();
+    copy.items = new ArrayList<>(items);
+    return copy;
+}
+```
+
+И даже так копия неполная: элементы списка остаются общими. Настоящее глубокое
+копирование пишется вручную на каждом уровне вложенности.
+
+Почему API считают неудачным:
+
+```text
+Cloneable не объявляет clone() — флаг вместо контракта
+clone() объявлен в Object как protected — снаружи не вызвать
+объект создаётся в обход конструктора — инварианты не проверяются
+final-поля нельзя переназначить в clone()
+глубина копирования не определена контрактом
+CloneNotSupportedException — checked, хотя обрабатывать её нечем
+```
+
+Вместо него используют конструктор копирования:
+
+```java
+public User(User other) {
+    this.name = other.name;
+    this.roles = new ArrayList<>(other.roles);
+}
+```
+
+Он не требует приведения типов, не бросает проверяемых исключений, вызывает
+обычный конструктор со всеми проверками и позволяет менять тип результата. Для
+неизменяемых объектов копия чаще всего вообще не нужна.
+
+Ответ на собеседовании звучит так: `clone()` знать нужно, чтобы понимать чужой
+код, а в своём применять конструктор копирования.
+
+---
 
 ## String
 
-`String` — immutable-класс.
+### Неизменяемость
 
 ```java
 String s = "Java";
 
 s.concat(" Backend");
 
-System.out.println(s);
+System.out.println(s);   // Java
 ```
 
-Выведет:
+`concat()` возвращает новый объект, исходный не меняется. Из неизменяемости
+следует всё остальное: кеширование хеша, безопасное разделение между потоками и
+существование пула.
 
-```text
-Java
-```
-
-`concat()` возвращает новый `String`, но исходный объект не меняется.
-
-## String Pool
+### Пул строк
 
 ```java
 String a = "Java";
 String b = "Java";
+
+a == b   // true
 ```
 
-Обычно:
-
-```java
-a == b // true
-```
-
-Обе ссылки указывают на один объект из String Pool.
-
-## new String()
+Обе ссылки указывают на один объект из пула.
 
 ```java
 String a = "Java";
 String b = new String("Java");
+
+a == b        // false
+a.equals(b)   // true
 ```
 
-```java
-a == b       // false
-a.equals(b)  // true
-```
+`new String()` всегда создаёт отдельный объект вне пула.
 
-`new String()` создаёт отдельный объект.
-
-## Compile-time concatenation
+Константное выражение компилятор сворачивает:
 
 ```java
 String a = "Ja" + "va";
 String b = "Java";
+
+a == b   // true
 ```
 
-```java
-a == b // true
-```
-
-Компилятор сворачивает константное выражение до `"Java"`.
-
-## Runtime concatenation
+А конкатенация во время выполнения — нет:
 
 ```java
 String part = "Ja";
 
 String a = part + "va";
 String b = "Java";
+
+a == b        // false
+a.equals(b)   // true
 ```
 
-Обычно:
-
-```java
-a == b       // false
-a.equals(b)  // true
-```
-
-Конкатенация выполняется во время выполнения.
-
-## final compile-time constant
+Но если переменная объявлена `final` и её значение известно на этапе компиляции,
+выражение снова сворачивается:
 
 ```java
 final String part = "Ja";
 
 String a = part + "va";
 String b = "Java";
+
+a == b   // true
 ```
 
-Компилятор может свернуть выражение, поэтому:
-
-```java
-a == b // true
-```
-
-## intern()
+Метод `intern()` возвращает каноническую ссылку из пула:
 
 ```java
 String a = new String("Java");
 String b = a.intern();
 String c = "Java";
+
+a == b   // false
+b == c   // true
 ```
 
-```java
-a == b // false
-b == c // true
-```
+Пул с Java 7 находится в куче и потому подчиняется сборке мусора; его размер
+настраивается флагом `-XX:StringTableSize`. Вызывать `intern()` вручную почти
+никогда не нужно: выигрыш памяти съедается стоимостью поиска, а неудачное
+применение раздувает сам пул.
 
-`intern()` возвращает каноническую ссылку из String Pool.
+### Compact Strings
 
-## StringBuilder
+До Java 9 строка хранила `char[]` — два байта на символ независимо от
+содержимого. С Java 9 внутри лежит `byte[]` плюс поле-кодировщик:
 
 ```text
-mutable
-not thread-safe
+coder = LATIN1 → один байт на символ
+coder = UTF16  → два байта, как раньше
 ```
+
+Большинство строк в типичном приложении — латиница и цифры, поэтому изменение
+заметно сократило потребление кучи. Отключается флагом `-XX:-CompactStrings`, но
+делать это незачем.
+
+Практическое следствие: одна кириллическая буква переводит строку целиком в
+UTF16. Тысяча латинских символов плюс один русский займут вдвое больше, чем без
+него.
+
+### Кеширование hashCode
+
+```java
+private int hash;          // 0, пока не вычислен
+private boolean hashIsZero;
+```
+
+Хеш вычисляется один раз и сохраняется в поле. Это безопасно именно потому, что
+строка неизменяема: значение не может устареть. Поэтому `String` — дешёвый ключ
+для `HashMap` при повторных обращениях.
+
+Поле `hashIsZero` появилось, чтобы не пересчитывать хеш у строк, чей хеш
+действительно равен нулю, — например у пустой.
+
+### Конкатенация и её стоимость
+
+```java
+String result = "a" + variable + "b";
+```
+
+Одно выражение компилятор превращает в эффективный код. До Java 9 — в цепочку
+`StringBuilder.append()`, с Java 9 — в вызов `invokedynamic`, который связывается
+с `StringConcatFactory`. Фабрика собирает оптимальный обработчик при первом
+вызове: он может сразу посчитать итоговую длину и заполнить массив за один
+проход, без промежуточного буфера.
+
+В цикле оптимизация не работает:
+
+```java
+String result = "";
+
+for (String part : parts) {
+    result = result + part;
+}
+```
+
+Компилятор оптимизирует выражение, а не цикл. На каждой итерации создаётся новый
+`StringBuilder`, копируется всё накопленное и создаётся новая строка. Сложность —
+квадратичная от суммарной длины.
 
 ```java
 StringBuilder builder = new StringBuilder();
 
-builder.append("Java");
-builder.append(" ");
-builder.append("Backend");
+for (String part : parts) {
+    builder.append(part);
+}
 
 String result = builder.toString();
 ```
 
-`append()` меняет существующий буфер.
+Так буфер один, а копирование амортизировано.
 
-## StringBuffer
+### StringBuilder и StringBuffer
 
 ```text
-mutable
-thread-safe
+StringBuilder → mutable, не потокобезопасен
+StringBuffer  → mutable, методы синхронизированы
 ```
 
-Похож на `StringBuilder`, но его основные методы синхронизированы.
+`StringBuffer` медленнее из-за синхронизации. В современном коде используют
+`StringBuilder`, а при необходимости разделять состояние между потоками —
+подходящие средства синхронизации, а не синхронизированный буфер.
+
+### Практические следствия
+
+```text
+пароль в String → остаётся в памяти до сборки, очистить нельзя
+                  для секретов используют char[] и затирают после использования
+
+подстроки       → с Java 7 substring() копирует массив, а не ссылается на исходный
+                  утечка «маленькая подстрока держит огромную строку» больше не воспроизводится
+
+split()         → компилирует регулярное выражение при каждом вызове
+                  для горячего пути лучше заранее скомпилированный Pattern
+```
+
+---
 
 ## Wrapper Classes
 
@@ -1355,229 +1197,134 @@ thread-safe
 | `char` | `Character` |
 | `boolean` | `Boolean` |
 
-Wrapper-классы являются объектами.
-
-## Boxing
-
-```text
-primitive → wrapper
-```
+### Boxing и unboxing
 
 ```java
 int value = 10;
-Integer boxed = value;
-```
+Integer boxed = value;        // Integer.valueOf(value)
 
-Упрощённо:
-
-```java
-Integer boxed = Integer.valueOf(value);
-```
-
-## Unboxing
-
-```text
-wrapper → primitive
-```
-
-```java
 Integer boxed = 10;
-int value = boxed;
+int value = boxed;            // boxed.intValue()
 ```
 
-Упрощённо:
-
-```java
-int value = boxed.intValue();
-```
-
-## Unboxing null
+Распаковка `null` компилируется, но падает во время выполнения:
 
 ```java
 Integer number = null;
 
-int value = number;
+int value = number;   // NullPointerException
 ```
 
-Код компилируется, но во время выполнения будет:
+### Integer Cache
 
-```text
-NullPointerException
-```
-
-## Integer Cache
-
-При autoboxing используется `Integer.valueOf()`.
-
-Как минимум диапазон:
-
-```text
--128 .. 127
-```
-
-кэшируется.
+При автоупаковке вызывается `Integer.valueOf()`, и как минимум диапазон от −128
+до 127 кешируется.
 
 ```java
 Integer a = 127;
 Integer b = 127;
 
-a == b // true
+a == b   // true
 ```
-
-Но:
 
 ```java
 Integer a = 128;
 Integer b = 128;
 
-a == b // обычно false
+a == b   // обычно false
 ```
 
-## equals у Integer
+Верхняя граница настраивается, поэтому опираться на неё нельзя тем более.
+
+### Сравнение
 
 ```java
 Integer a = 1000;
 Integer b = 1000;
 
-a.equals(b); // true
+a.equals(b);   // true
 ```
 
-`equals()` сравнивает числовое значение для объектов того же wrapper-типа.
-
-## Integer == int
+`equals()` сравнивает числовое значение для объектов того же типа обёртки.
 
 ```java
 Integer a = 100;
 int b = 100;
 
-a == b // true
+a == b   // true
 ```
 
-Происходит unboxing:
-
-```text
-Integer → int
-```
-
-после чего сравниваются примитивы.
-
-## null и ==
+Здесь происходит распаковка, и сравниваются примитивы. Но с `null` это ловушка:
 
 ```java
 Integer a = null;
 Integer b = 10;
 
-a == b // false
+a == b   // false, сравниваются ссылки
+a == 10  // NullPointerException, нужна распаковка
 ```
 
-Сравниваются ссылки.
-
-Но:
-
-```java
-Integer a = null;
-
-a == 10
-```
-
-приведёт к `NullPointerException`, потому что потребуется unboxing.
-
-## Разные wrapper-типы
+Разные типы обёрток не равны никогда:
 
 ```java
 Integer a = 10;
 Long b = 10L;
 
-a.equals(b); // false
+a.equals(b);                      // false
+a.intValue() == b.longValue();    // true
 ```
 
-`Integer.equals()` не выполняет числовое приведение к `Long`.
+Во втором случае сравниваются примитивы, а `int` расширяется до `long`.
 
-Но:
-
-```java
-a.intValue() == b.longValue()
-```
-
-даст:
-
-```text
-true
-```
-
-потому что сравниваются примитивы, а `int` расширяется до `long`.
-
-## compareTo()
+`compareTo()` сравнивает числовые значения и применяется только к обёрткам одного
+типа:
 
 ```java
 Integer a = 128;
 Integer b = 128;
 
-a.compareTo(b); // 0
+a.compareTo(b);   // 0
 ```
 
-```text
-< 0 → меньше
-  0 → равно
-> 0 → больше
-```
-
-## Unboxing + widening
+### Преобразования при присваивании
 
 ```java
 Integer number = 100;
 long value = number;
 ```
 
-Происходит:
-
 ```text
 Integer → int → long
 unboxing   widening
 ```
 
-## Long value = 100
-
-Так нельзя:
+А вот так нельзя:
 
 ```java
 Long value = 100;
 ```
 
-Литерал `100` имеет тип `int`, а цепочка `int → long → Long` автоматически не выполняется.
-
-Нужно:
-
-```java
-Long value = 100L;
-```
-
-## Integer value = 100L
-
-Так нельзя:
+Литерал имеет тип `int`, и цепочка `int → long → Long` автоматически не
+выполняется. Нужно `100L`.
 
 ```java
 Integer value = 100L;
 ```
 
-Нужно было бы выполнить narrowing `long → int`, который автоматически не происходит.
-
-## Number value = 100
-
-Так можно:
+Потребовалось бы сужение `long → int`, которое неявно не происходит.
 
 ```java
 Number value = 100;
 ```
 
-Происходит:
+А это допустимо:
 
 ```text
 int → Integer → Number
 boxing          widening reference
 ```
 
-## Integer++
+### Инкремент обёртки
 
 ```java
 Integer number = 10;
@@ -1585,136 +1332,226 @@ Integer number = 10;
 number++;
 ```
 
-Упрощённо:
-
 ```text
 Integer(10)
-→ unboxing
-→ int 10
-→ +1
-→ int 11
-→ boxing
-→ Integer(11)
+→ unboxing → int 10
+→ +1 → int 11
+→ boxing → Integer(11)
 → новая ссылка записывается в number
 ```
 
-Исходный `Integer` не изменяется.
+Исходный объект не изменяется. В цикле это порождает заметное число лишних
+объектов, а при `null` даёт `NullPointerException`.
+
+---
 
 ## Типичные ошибки
 
-- Путать overloading и overriding.
-- Считать static-методы полиморфными.
-- Считать поля полиморфными.
-- Пытаться override `private`-метод.
-- Сужать visibility при overriding.
-- Расширять checked exception при overriding.
-- Считать конструкторы наследуемыми.
-- Забывать про `super(...)`.
-- Вызывать overridable-метод из конструктора.
-- Считать `String` изменяемым.
-- Сравнивать строки через `==`.
-- Сравнивать значения wrapper-классов через `==`.
-- Забывать, что unboxing `null` приводит к `NullPointerException`.
+### Путать overloading и overriding
+
+Первое разрешается компилятором по типам аргументов, второе — во время выполнения
+по реальному типу объекта.
+
+### Считать static-методы полиморфными
+
+Они не переопределяются, а скрываются, и выбор делается по типу ссылки.
+
+### Считать поля полиморфными
+
+К полям обращение разрешается статически. Поле подкласса скрывает родительское, а
+не заменяет его.
+
+### Пытаться переопределить private-метод
+
+Он не виден наследнику, поэтому метод с тем же именем — новый.
+
+### Сужать видимость при overriding
+
+Нарушился бы контракт: объект подкласса перестал бы подходить туда, где ожидается
+родитель.
+
+### Расширять список проверяемых исключений при overriding
+
+Допустимо только оставить, сузить или убрать.
+
+### Считать конструкторы наследуемыми
+
+Подкласс объявляет собственные и может вызвать родительский через `super()`.
+
+### Вызывать переопределяемый метод из конструктора
+
+Поля подкласса в этот момент ещё не инициализированы, и метод увидит значения по
+умолчанию.
+
+### Считать String изменяемым
+
+Все методы возвращают новый объект.
+
+### Сравнивать строки через ==
+
+Сравниваются ссылки. Литералы совпадут из-за пула, а строки, собранные во время
+выполнения, — нет.
+
+### Использовать конкатенацию в цикле
+
+Оптимизация компилятора распространяется на одно выражение, а не на цикл. Нужен
+один `StringBuilder`.
+
+### Хранить пароль в String
+
+Строка неизменяема и живёт до сборки мусора, стереть её содержимое нельзя. Для
+секретов используют `char[]`.
+
+### Сравнивать обёртки через ==
+
+Внутри диапазона кеша объекты совпадут, за его пределами — нет, и поведение
+начнёт зависеть от значения.
+
+### Забывать про NullPointerException при распаковке
+
+`Integer` из коллекции или результата запроса легко оказывается `null`, а
+арифметика требует распаковки.
+
+### Считать, что clone даёт глубокую копию
+
+Копия поверхностная: ссылочные поля указывают на те же объекты. В своём коде
+лучше конструктор копирования.
+
+---
 
 ## Краткая памятка
 
 ```text
-ООП:
-инкапсуляция
-наследование
-полиморфизм
-абстракция
-```
-
-```text
+ООП: инкапсуляция, наследование, полиморфизм, абстракция
 наследование → is-a
-композиция   → has-a
+композиция   → has-a, предпочтительнее
 ```
 
 ```text
-overloading
-→ compile time
+SOLID
+SRP → одна причина для изменения
+OCP → расширять новым кодом
+LSP → подкласс подставляется без сюрпризов
+ISP → узкие интерфейсы
+DIP → зависеть от абстракции, интерфейс у потребителя
+```
 
+```text
+overloading → compile time, по типу ссылки
+overriding  → runtime, по реальному типу
+
+static method → hiding
+field         → по типу ссылки
+override      → по реальному типу
+cast          → полиморфизм не отключает
+```
+
+```text
 overriding
-→ runtime
-```
-
-```text
-static method
-→ hiding
-
-field
-→ тип ссылки
-
-override method
-→ реальный тип
+видимость   → нельзя сужать
+return type → можно сузить (ковариантный)
+checked     → оставить, сузить, убрать; нельзя расширить
+unchecked   → можно добавлять
+private     → не переопределяется
 ```
 
 ```text
 final variable → нельзя переназначить
 final method   → нельзя override
 final class    → нельзя extends
+abstract + final — несовместимы
+
+abstract class → поля, конструкторы, состояние, один родитель
+interface      → контракт, default/static/private, много реализаций
+class wins over interface
 ```
 
 ```text
-abstract class
-→ поля
-→ конструкторы
-→ обычные методы
-→ abstract methods
-→ нельзя new
+конструкторы не наследуются
+super()/this() — первым вызовом
+порядок: родитель → наследник
+overridable-метод из конструктора видит поля неинициализированными
 ```
 
 ```text
-interface
-→ контракт
-→ default/static/private methods
-→ несколько implements
+Object: equals, hashCode, toString, getClass, clone, wait/notify
+toString по умолчанию → Class@hex(hashCode), не адрес
+getClass  → точный тип
+instanceof → совместимость по иерархии
+clone → поверхностная копия, в обход конструктора
+        в своём коде — конструктор копирования
 ```
 
 ```text
-String
-→ immutable
+String immutable
+→ пул литералов, кешируемый hash, безопасность между потоками
 
-StringBuilder
-→ mutable
-→ not thread-safe
+с Java 9 внутри byte[] + coder (Compact Strings)
+hash кешируется в поле
+"a" + b + "c" → invokedynamic + StringConcatFactory
+в цикле → квадратично, нужен StringBuilder
 
-StringBuffer
-→ mutable
-→ thread-safe
+new String() → всегда новый объект
+intern() → каноническая ссылка из пула
+пул в Heap с Java 7
+
+StringBuilder → mutable, не потокобезопасен
+StringBuffer  → mutable, синхронизирован
 ```
 
 ```text
-boxing:
-int → Integer
+boxing: int → Integer, через Integer.valueOf()
+unboxing: Integer → int
+unboxing null → NullPointerException
 
-unboxing:
-Integer → int
+Integer Cache → минимум -128..127
+
+wrapper == wrapper     → ссылки
+wrapper.equals(wrapper) → значение и совместимый тип
+wrapper == primitive   → unboxing, сравнение примитивов
+Integer.equals(Long)   → всегда false
 ```
 
-```text
-Integer null
-→ unboxing
-→ NullPointerException
-```
+---
 
-```text
-Integer Cache
-→ минимум -128..127
-```
+## Краткий ответ для собеседования
 
-```text
-wrapper == wrapper
-→ ссылки
+Классических принципов ООП четыре: инкапсуляция скрывает состояние за
+контролируемым интерфейсом, абстракция выделяет существенный контракт,
+наследование выражает отношение is-a, полиморфизм позволяет работать через общий
+тип и получать поведение реального объекта. Композиция в четвёрку не входит, но на
+практике предпочтительнее наследования, поскольку даёт меньшую связанность.
 
-wrapper.equals(wrapper)
-→ значение + совместимый wrapper-тип
+Перегрузка разрешается на этапе компиляции по типам ссылок, переопределение — во
+время выполнения по реальному типу объекта. Статические методы и поля
+полиморфизмом не обладают: первые скрываются, вторые выбираются по типу ссылки.
+При переопределении нельзя сужать видимость и расширять список проверяемых
+исключений, а возвращаемый тип, наоборот, можно сузить.
 
-wrapper == primitive
-→ unboxing
-→ сравнение примитивов
-```
+Поверх этого лежат пять принципов SOLID. Единственная ответственность означает
+одну причину для изменения; открытость-закрытость — расширение новым кодом вместо
+правки старого; принцип подстановки Лисков — возможность подставить наследника без
+сюрпризов для вызывающего; разделение интерфейсов — узкие контракты вместо одного
+широкого; инверсия зависимостей — опора на абстракцию, причём интерфейс
+принадлежит потребителю. Последний принцип и реализует внедрение зависимостей в
+Spring.
+
+`String` неизменяем, и из этого следует всё остальное: литералы разделяются через
+пул, хеш кешируется в поле, строку можно безопасно передавать между потоками. С
+Java 9 внутри лежит массив байтов с признаком кодировки, что вдвое сокращает
+память для латиницы. Конкатенация в одном выражении компилируется через
+`invokedynamic` и `StringConcatFactory`, но в цикле остаётся квадратичной, поэтому
+там нужен `StringBuilder`.
+
+Классы-обёртки кешируют небольшие значения — для `Integer` это как минимум
+диапазон от минус 128 до 127, — поэтому сравнение через `==` иногда даёт `true` и
+тем опаснее. Сравнивать нужно через `equals()`, причём у разных типов обёрток он
+всегда возвращает `false`. Распаковка `null` приводит к `NullPointerException`.
+
+Метод `clone()` создаёт поверхностную копию в обход конструктора, и его API
+считается неудачным; в своём коде применяют конструктор копирования.
+
+---
 
 ## Вопросы на собеседовании
 
@@ -1760,257 +1597,329 @@ wrapper == primitive
 вызвать. Реальный тип определяется во время выполнения и решает, какая реализация
 будет вызвана.
 
-### 9. Чем overriding отличается от overloading?
+### 9. Что означает аббревиатура SOLID?
+
+**Ответ:** Single Responsibility, Open/Closed, Liskov Substitution, Interface
+Segregation, Dependency Inversion — пять принципов проектирования классов.
+
+### 10. Как правильно формулировать Single Responsibility?
+
+**Ответ:** у класса должна быть одна причина для изменения. Формулировка «класс
+делает одно дело» неточна: речь о заинтересованных сторонах, чьи требования
+заставляют его меняться.
+
+### 11. Приведите пример нарушения Open/Closed.
+
+**Ответ:** метод с цепочкой условий по типу, который приходится править при
+появлении каждого нового варианта. Решение — вынести варианты за интерфейс и
+внедрять реализации списком.
+
+### 12. Как понять, что нарушен принцип подстановки Лисков?
+
+**Ответ:** подкласс бросает исключение там, где родитель работал, сужает
+допустимые аргументы или меняет смысл операции. Классический пример — пингвин,
+наследующий птицу с методом «летать».
+
+### 13. Как понять, что нарушен Interface Segregation?
+
+**Ответ:** по реализациям, в которых часть методов пустая или бросает
+`UnsupportedOperationException`. Значит, интерфейс слишком широкий.
+
+### 14. Как связаны Dependency Inversion и Spring?
+
+**Ответ:** сервис зависит от интерфейса, а конкретную реализацию подставляет
+контейнер. Интерфейс при этом принадлежит потребителю и выражает его потребность,
+а не повторяет API библиотеки.
+
+### 15. Чем overriding отличается от overloading?
 
 **Ответ:** переопределение — замена реализации метода родителя в подклассе с той
-же сигнатурой, выбор происходит во время выполнения. Перегрузка — несколько методов
-с одним именем и разными параметрами в пределах класса, выбор делает компилятор.
+же сигнатурой, выбор происходит во время выполнения. Перегрузка — несколько
+методов с одним именем и разными параметрами, выбор делает компилятор.
 
-### 10. На каком этапе выбирается overload?
+### 16. На каком этапе выбирается overload?
 
 **Ответ:** на этапе компиляции, по объявленным типам аргументов.
 
-### 11. На каком этапе выбирается override-реализация?
+### 17. На каком этапе выбирается override-реализация?
 
 **Ответ:** во время выполнения, по фактическому типу объекта.
 
-### 12. Можно ли перегрузить метод только изменением return type?
+### 18. Можно ли перегрузить метод только изменением возвращаемого типа?
 
 **Ответ:** нет. Возвращаемый тип не входит в сигнатуру, и компилятор не смог бы
 выбрать нужный метод.
 
-### 13. Что такое covariant return type?
+### 19. Что такое ковариантный возвращаемый тип?
 
 **Ответ:** возможность при переопределении сузить возвращаемый тип до наследника
 исходного. Позволяет обойтись без приведения на стороне вызывающего кода.
 
-### 14. Можно ли сузить visibility при overriding?
+### 20. Можно ли сузить видимость при overriding?
 
-**Ответ:** нет, только сохранить или расширить. Иначе нарушился бы контракт: объект
-подкласса перестал бы подходить туда, где ожидается родитель.
+**Ответ:** нет, только сохранить или расширить. Иначе нарушился бы контракт:
+объект подкласса перестал бы подходить туда, где ожидается родитель.
 
-### 15. Можно ли расширить checked exception при overriding?
+### 21. Можно ли расширить checked exception при overriding?
 
 **Ответ:** нет. Переопределяющий метод может объявлять только те же проверяемые
 исключения или их подтипы, либо не объявлять вовсе.
 
-### 16. Можно ли добавить unchecked exception при overriding?
+### 22. Можно ли добавить unchecked exception при overriding?
 
 **Ответ:** да, непроверяемые исключения не входят в контракт и в сигнатуре не
 учитываются.
 
-### 17. Почему private-метод не переопределяется?
+### 23. Почему private-метод не переопределяется?
 
-**Ответ:** он не виден подклассу, поэтому метод с тем же именем — новый метод, а не
-переопределение. Динамическая диспетчеризация к нему не применяется.
+**Ответ:** он не виден подклассу, поэтому метод с тем же именем — новый метод, а
+не переопределение. Динамическая диспетчеризация к нему не применяется.
 
-### 18. Что означает final для переменной, метода и класса?
+### 24. Что означает final для переменной, метода и класса?
 
 **Ответ:** для переменной — запрет переприсваивания, для метода — запрет
 переопределения, для класса — запрет наследования. Неизменяемость объекта при этом
 не гарантируется: `final`-ссылка может указывать на изменяемый объект.
 
-### 19. Почему нельзя совместить abstract и final у класса?
+### 25. Почему нельзя совместить abstract и final у класса?
 
 **Ответ:** абстрактный класс существует ради наследования, `final` его запрещает.
 Такой класс невозможно было бы использовать.
 
-### 20. Что может содержать abstract class?
+### 26. Что может содержать abstract class?
 
 **Ответ:** абстрактные и обычные методы, поля с состоянием, конструкторы,
 статические члены, блоки инициализации.
 
-### 21. Чем abstract class отличается от interface?
+### 27. Чем abstract class отличается от interface?
 
 **Ответ:** абстрактный класс может хранить состояние и иметь конструктор, но
 наследуется только один. Интерфейсов можно реализовать сколько угодно, но
 состояния у них нет — только константы. Абстрактный класс выражает общую основу
 родственных типов, интерфейс — способность.
 
-### 22. Что такое default method?
+### 28. Что такое default method?
 
 **Ответ:** метод интерфейса с реализацией. Появился в Java 8, чтобы добавлять
 методы в существующие интерфейсы, не ломая уже написанные реализации.
 
-### 23. Что происходит при конфликте двух default-методов?
+### 29. Что происходит при конфликте двух default-методов?
 
-**Ответ:** если класс реализует два интерфейса с одинаковым default-методом,
-компилятор требует разрешить конфликт явно, переопределив метод. Обратиться к
-конкретной реализации можно через `Имя.super.method()`.
+**Ответ:** компилятор требует разрешить конфликт явно, переопределив метод.
+Обратиться к конкретной реализации можно через `Имя.super.method()`.
 
-### 24. Что означает правило class wins over interface?
+### 30. Что означает правило class wins over interface?
 
 **Ответ:** если метод есть и в суперклассе, и в интерфейсе, побеждает реализация
 класса. Наследование от класса приоритетнее.
 
-### 25. Наследуются ли static-методы интерфейса?
+### 31. Наследуются ли static-методы интерфейса?
 
 **Ответ:** нет. Они вызываются только через имя интерфейса и не видны ни
 реализациям, ни наследникам.
 
-### 26. Что такое method hiding?
+### 32. Что такое method hiding?
 
 **Ответ:** объявление в подклассе статического метода с той же сигнатурой, что у
 родителя. Переопределения не происходит: выбор делается по типу ссылки на этапе
 компиляции.
 
-### 27. Почему поля не участвуют в runtime polymorphism?
+### 33. Почему поля не участвуют в runtime polymorphism?
 
 **Ответ:** к полям обращение разрешается статически, по типу ссылки. Поле с тем же
 именем в подклассе скрывает родительское, а не заменяет его.
 
-### 28. Что означают this и super?
+### 34. Что означают this и super?
 
 **Ответ:** `this` — ссылка на текущий объект, `super` — доступ к членам и
 конструктору родительского класса.
 
-### 29. Наследуются ли конструкторы?
+### 35. Наследуются ли конструкторы?
 
 **Ответ:** нет. Подкласс объявляет собственные конструкторы, но может вызвать
 родительский через `super()`.
 
-### 30. Что делает неявный super()?
+### 36. Что делает неявный super()?
 
 **Ответ:** если конструктор не начинается с явного `this()` или `super()`,
 компилятор вставляет вызов конструктора родителя без аргументов. Если такого
 конструктора нет, будет ошибка компиляции.
 
-### 31. Почему super() и this() должны быть первыми?
+### 37. Почему super() и this() должны быть первыми?
 
 **Ответ:** родительская часть объекта обязана быть инициализирована до того, как
 начнёт выполняться код текущего конструктора. Иначе он мог бы работать с
 неинициализированным состоянием.
 
-### 32. Почему опасно вызывать overridable-методы из конструктора?
+### 38. Почему опасно вызывать переопределяемые методы из конструктора?
 
 **Ответ:** конструктор родителя выполняется раньше конструктора подкласса, и
 переопределённый метод увидит поля подкласса ещё не инициализированными — со
-значениями по умолчанию. Такую ошибку трудно заметить и легко получить `null` там,
-где его не ждут.
+значениями по умолчанию.
 
-### 33. Почему cast к родительскому типу не отключает overriding?
+### 39. Почему приведение к родительскому типу не отключает overriding?
 
 **Ответ:** приведение меняет только тип ссылки. Реальный тип объекта остаётся
 прежним, и вызывается его реализация.
 
-### 34. Какие методы Object нужно знать?
+### 40. Какие методы Object нужно знать?
 
-**Ответ:** `equals`, `hashCode`, `toString`, `getClass`, а также `wait`, `notify`,
-`notifyAll` из механизма синхронизации. Метод `finalize` удалён в Java 18.
+**Ответ:** `equals`, `hashCode`, `toString`, `getClass`, `clone`, а также `wait`,
+`notify` и `notifyAll` из механизма синхронизации. Метод `finalize` в Java 18
+помечен устаревшим с намерением удалить и отключается флагом
+`--finalization=disabled`, но в JDK 21 ещё существует.
 
-### 35. Что возвращает стандартный Object.toString()?
+### 41. Что возвращает стандартный Object.toString()?
 
 **Ответ:** имя класса, символ `@` и шестнадцатеричное представление хеш-кода. Это
 не адрес объекта в памяти.
 
-### 36. Чем getClass() отличается от instanceof?
+### 42. Чем getClass() отличается от instanceof?
 
-**Ответ:** `getClass()` даёт точный тип и при сравнении требует полного совпадения,
-`instanceof` учитывает наследование. Поэтому `getClass()` в `equals` делает
-несравнимыми объекты родителя и наследника, а `instanceof` — нет.
+**Ответ:** `getClass()` даёт точный тип и при сравнении требует полного
+совпадения, `instanceof` учитывает наследование. Поэтому `getClass()` в `equals`
+делает несравнимыми объекты родителя и наследника, а `instanceof` — нет.
 
-### 37. Почему String immutable?
+### 43. Что делает Object.clone()?
+
+**Ответ:** создаёт объект того же класса и побитово копирует поля, минуя
+конструктор. Копия поверхностная: ссылочные поля указывают на те же объекты.
+
+### 44. Зачем нужен интерфейс Cloneable, если в нём нет методов?
+
+**Ответ:** он работает как флаг. Без него `Object.clone()` выбрасывает
+`CloneNotSupportedException`.
+
+### 45. Почему clone() считают неудачным API?
+
+**Ответ:** контракт не выражен интерфейсом, объект создаётся в обход
+конструктора, `final`-поля переназначить нельзя, глубина копирования не
+определена, а исключение объявлено проверяемым без возможности что-либо с ним
+сделать. Вместо него используют конструктор копирования.
+
+### 46. Почему String immutable?
 
 **Ответ:** это позволяет кешировать хеш-код, безопасно разделять строки между
-потоками и держать пул литералов. Кроме того, строки используются как ключи `Map` и
-в проверках безопасности, где изменение после проверки было бы опасно.
+потоками и держать пул литералов. Кроме того, строки используются как ключи `Map`
+и в проверках безопасности, где изменение после проверки было бы опасно.
 
-### 38. Что такое String Pool?
+### 47. Что такое String Pool?
 
-**Ответ:** область, где хранятся строковые литералы. Одинаковые литералы ссылаются
-на один объект, что экономит память. Находится в куче.
+**Ответ:** область, где хранятся строковые литералы. Одинаковые литералы
+ссылаются на один объект, что экономит память. Находится в куче начиная с Java 7.
 
-### 39. Чем "Java" отличается от new String("Java")?
+### 48. Чем "Java" отличается от new String("Java")?
 
 **Ответ:** литерал берётся из пула, и одинаковые литералы дают одну ссылку.
-Оператор `new` всегда создаёт новый объект вне пула, даже если такая строка там уже
-есть.
+Оператор `new` всегда создаёт новый объект вне пула.
 
-### 40. Когда конкатенация строк выполняется на этапе компиляции?
+### 49. Когда конкатенация строк выполняется на этапе компиляции?
 
 **Ответ:** когда все операнды — константы времени компиляции: литералы или
 `final`-переменные с известным значением. Результат тоже становится литералом и
 попадает в пул.
 
-### 41. Что делает intern()?
+### 50. Что делает intern()?
 
 **Ответ:** возвращает ссылку на строку из пула, помещая её туда при отсутствии.
-Позволяет привести созданную во время выполнения строку к пуловому экземпляру.
+Вручную вызывать его почти никогда не нужно.
 
-### 42. Чем StringBuilder отличается от String?
+### 51. Как внутри устроена String начиная с Java 9?
+
+**Ответ:** вместо `char[]` используется `byte[]` и поле-кодировщик. Строки из
+латиницы занимают один байт на символ вместо двух — это Compact Strings.
+
+### 52. Почему String кеширует свой hashCode?
+
+**Ответ:** объект неизменяем, поэтому вычисленное значение не может устареть. Хеш
+считается один раз при первом обращении и сохраняется в поле.
+
+### 53. Что делает компилятор с выражением "a" + b + "c"?
+
+**Ответ:** с Java 9 подставляет `invokedynamic`, связываемый с
+`StringConcatFactory`, который собирает оптимальный обработчик. До Java 9
+использовалась цепочка `StringBuilder.append()`.
+
+### 54. Почему конкатенация в цикле остаётся дорогой?
+
+**Ответ:** оптимизируется отдельное выражение, а не цикл. На каждой итерации
+создаётся новый объект и копируется всё накопленное, что даёт квадратичную
+сложность. Нужен один `StringBuilder` на весь цикл.
+
+### 55. Почему пароль не хранят в String?
+
+**Ответ:** строка неизменяема и живёт в памяти до сборки мусора, стереть её
+содержимое нельзя. Для секретов используют `char[]`, который затирают после
+использования.
+
+### 56. Чем StringBuilder отличается от String?
 
 **Ответ:** он изменяем, поэтому добавление символов не создаёт новый объект. При
-конкатенации в цикле разница принципиальна: со строками создаётся объект на каждой
-итерации.
+конкатенации в цикле разница принципиальна.
 
-### 43. Чем StringBuffer отличается от StringBuilder?
+### 57. Чем StringBuffer отличается от StringBuilder?
 
 **Ответ:** методы `StringBuffer` синхронизированы, поэтому он медленнее. В
-современном коде используют `StringBuilder`, а при необходимости разделять состояние
-между потоками — иные средства синхронизации.
+современном коде используют `StringBuilder`.
 
-### 44. Что такое boxing?
+### 58. Что такое boxing и unboxing?
 
-**Ответ:** преобразование примитива в объект-обёртку, например `int` в `Integer`.
+**Ответ:** упаковка примитива в объект-обёртку и обратное преобразование.
+Выполняются автоматически там, где требуется соответствующий тип.
 
-### 45. Что такое unboxing?
+### 59. Что произойдёт при unboxing null?
 
-**Ответ:** обратное преобразование обёртки в примитив. Выполняется автоматически
-там, где ожидается примитивный тип.
+**Ответ:** будет `NullPointerException`. Частая причина ошибки — `Integer` из
+коллекции или результата запроса, участвующий в арифметике.
 
-### 46. Что произойдёт при unboxing null?
-
-**Ответ:** будет `NullPointerException`. Это частая причина ошибки в местах, где
-`Integer` из коллекции или результата запроса участвует в арифметике.
-
-### 47. Что такое Integer Cache?
+### 60. Что такое Integer Cache?
 
 **Ответ:** кеш объектов `Integer` для значений от −128 до 127, из которого
 возвращаются экземпляры при автоупаковке. Верхняя граница настраивается.
 
-### 48. Почему нельзя сравнивать значения Integer через ==?
+### 61. Почему нельзя сравнивать значения Integer через ==?
 
 **Ответ:** сравниваются ссылки. Для значений из диапазона кеша объекты совпадут, а
 за его пределами — нет, и код начнёт вести себя по-разному в зависимости от
 значения. Нужен `equals`.
 
-### 49. Почему Integer(10).equals(Long(10)) возвращает false?
+### 62. Почему Integer(10).equals(Long(10)) возвращает false?
 
-**Ответ:** `equals` у обёрток сначала проверяет тип. Разные классы обёрток не равны
-между собой независимо от числового значения.
+**Ответ:** `equals` у обёрток сначала проверяет тип. Разные классы обёрток не
+равны между собой независимо от числового значения.
 
-### 50. Что происходит при Integer == int?
+### 63. Что происходит при сравнении Integer с int через ==?
 
 **Ответ:** обёртка распаковывается, и сравниваются примитивные значения. Здесь
 `==` работает корректно, но при `null` в обёртке возникнет `NullPointerException`.
 
-### 51. Как работает compareTo() у wrapper-классов?
+### 64. Как работает compareTo() у обёрток?
 
 **Ответ:** сравнивает числовые значения и возвращает отрицательное число, ноль или
-положительное. В отличие от `equals`, применяется только к обёрткам того же типа —
-иначе код не скомпилируется.
+положительное. Применяется только к обёрткам того же типа — иначе код не
+скомпилируется.
 
-### 52. Почему Long value = 100 не компилируется?
+### 65. Почему Long value = 100 не компилируется?
 
 **Ответ:** литерал имеет тип `int`. Автоупаковка возможна только в `Integer`, а
 расширение до `long` с одновременной упаковкой в `Long` не выполняется — за одну
 операцию присваивания допустимо одно преобразование такого рода.
 
-### 53. Почему Integer value = 100L не компилируется?
+### 66. Почему Integer value = 100L не компилируется?
 
 **Ответ:** сужение `long` до `int` неявно не выполняется, а упаковать `long` в
 `Integer` нельзя.
 
-### 54. Почему Number value = 100 компилируется?
+### 67. Почему Number value = 100 компилируется?
 
 **Ответ:** литерал упаковывается в `Integer`, а `Integer` наследует `Number`.
 Здесь выполняется упаковка и расширение ссылочного типа, что допустимо.
 
-### 55. Как работает number++, если number имеет тип Integer?
+### 68. Как работает number++, если number имеет тип Integer?
 
-**Ответ:** обёртка распаковывается, значение увеличивается, результат упаковывается
-обратно — создаётся новый объект. В цикле это порождает заметное число лишних
-объектов, а при `null` даёт `NullPointerException`.
+**Ответ:** обёртка распаковывается, значение увеличивается, результат
+упаковывается обратно — создаётся новый объект. В цикле это порождает заметное
+число лишних объектов, а при `null` даёт `NullPointerException`.
 
 ---
 
@@ -2018,7 +1927,9 @@ wrapper == primitive
 
 - [`03-equals-hashcode.md`](03-equals-hashcode.md) — подробный разбор контракта
 - [`08-functional-interfaces-lambda.md`](08-functional-interfaces-lambda.md) —
-  анонимные классы против lambda, разрешение default-методов у функциональных
+  анонимные классы против лямбд, разрешение default-методов у функциональных
   интерфейсов
-- [`../jvm/01-jvm-memory.md`](../jvm/01-jvm-memory.md) — String Pool и передача
-  параметров по значению
+- [`../jvm/01-jvm-memory.md`](../jvm/01-jvm-memory.md) — где физически находится
+  String Pool и как устроены области памяти
+- [`../spring/01-spring-core.md`](../spring/01-spring-core.md) — внедрение
+  зависимостей как реализация принципа инверсии зависимостей
