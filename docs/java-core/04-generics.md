@@ -1,70 +1,30 @@
 # Generics в Java
 
-Generics позволяют задавать типы, с которыми работает класс, интерфейс или метод.
+Обобщения задают типы, с которыми работает класс, интерфейс или метод, и
+переносят проверку типов со времени выполнения на этап компиляции.
 
-Основные цели:
-
-- типобезопасность на этапе компиляции
-- уменьшение количества ручных приведений типов
-- создание переиспользуемого кода
-- более точное описание API
-
----
-
-## Код без generics
+Без них коллекция хранит что угодно, а ошибка всплывает при чтении:
 
 ```java
 List values = new ArrayList();
 
 values.add("Java");
 values.add(10);
-values.add(new Object());
+
+String value = (String) values.get(1);   // ClassCastException
 ```
 
-Коллекция может содержать объекты разных типов.
-
-При чтении требуется ручное приведение:
-
-```java
-String value = (String) values.get(0);
-```
-
-Ошибка может появиться во время выполнения:
-
-```java
-String value = (String) values.get(1);
-```
-
-В элементе находится `Integer`.
-
-Результат:
-
-```text
-ClassCastException
-```
-
----
-
-## Код с generics
+С ними та же ошибка обнаруживается компилятором:
 
 ```java
 List<String> values = new ArrayList<>();
 
 values.add("Java");
-values.add("Spring");
+values.add(10);   // не компилируется
 ```
 
-Добавить число нельзя:
-
-```java
-values.add(10);
-```
-
-Ошибка обнаруживается компилятором.
-
-Основной принцип:
-
-> Generics переносят проверку типов со времени выполнения на этап компиляции.
+Отсюда и остальные выгоды: меньше ручных приведений, переиспользуемый код и более
+точное описание API.
 
 ---
 
@@ -83,90 +43,10 @@ Box<String> box;
 
 `String` — аргумент типа.
 
-Аналогично обычному методу:
+Соотношение то же, что у обычного метода: в объявлении `void print(String value)`
+параметр — `value`, а аргумент — конкретная строка при вызове.
 
-```java
-void print(String value)
-```
-
-`value` является параметром метода.
-
-Конкретная переданная строка является аргументом.
-
----
-
-## Generic-класс
-
-```java
-public class Box<T> {
-
-  private T value;
-
-  public Box(T value) {
-    this.value = value;
-  }
-
-  public T getValue() {
-    return value;
-  }
-
-  public void setValue(T value) {
-    this.value = value;
-  }
-}
-```
-
-Использование:
-
-```java
-Box<String> stringBox = new Box<>("Java");
-
-String text = stringBox.getValue();
-```
-
-С другим типом:
-
-```java
-Box<Integer> integerBox = new Box<>(10);
-
-Integer number = integerBox.getValue();
-```
-
-Один класс может работать с различными типами без `Object` и ручных cast.
-
----
-
-## Несколько параметров типа
-
-```java
-public class Pair<K, V> {
-
-  private final K key;
-  private final V value;
-
-  public Pair(K key, V value) {
-    this.key = key;
-    this.value = value;
-  }
-
-  public K getKey() {
-    return key;
-  }
-
-  public V getValue() {
-    return value;
-  }
-}
-```
-
-Использование:
-
-```java
-Pair<Long, String> user =
-        new Pair<>(1L, "Dmitry");
-```
-
-Распространённые обозначения:
+Распространённые обозначения — соглашение, а не требование языка:
 
 ```text
 T → Type
@@ -177,95 +57,76 @@ R → Result
 N → Number
 ```
 
-Это соглашение об именовании, а не требование языка.
-
----
-
-## Generic-метод
-
-Метод может иметь собственный параметр типа.
-
-```java
-public static <T> T first(List<T> values) {
-  return values.getFirst();
-}
-```
-
-Расположение `<T>`:
-
-```java
-public static <T> T first(...)
-              ↑   ↑
-параметр   возвращаемый тип
-```
-
-Использование:
-
-```java
-String firstName =
-        first(List.of("Alice", "Bob"));
-
-Integer firstNumber =
-        first(List.of(10, 20));
-```
-
-Компилятор обычно самостоятельно выводит аргумент типа.
-
 ---
 
 ## Generic-класс и generic-метод
 
-Generic-класс:
+Класс объявляет параметры типа, которые использует в полях и методах:
 
 ```java
 public class Box<T> {
 
-  public T getValue() {
-    return value;
-  }
+    private T value;
+
+    public Box(T value) {
+        this.value = value;
+    }
+
+    public T getValue() {
+        return value;
+    }
 }
 ```
 
-Тип задаётся при создании объекта:
-
 ```java
-Box<String> box = new Box<>("Java");
+Box<String> stringBox = new Box<>("Java");
+Box<Integer> integerBox = new Box<>(10);
 ```
 
-Generic-метод:
+Параметров может быть несколько:
 
 ```java
-public static <T> T identity(T value) {
-  return value;
+public class Pair<K, V> {
+
+    private final K key;
+    private final V value;
+
+    public Pair(K key, V value) {
+        this.key = key;
+        this.value = value;
+    }
 }
 ```
 
-Тип определяется при каждом вызове:
+```java
+Pair<Long, String> user = new Pair<>(1L, "Dmitry");
+```
+
+Метод может иметь собственный параметр типа, объявленный перед возвращаемым:
 
 ```java
-String text = identity("Java");
-Integer number = identity(10);
+public static <T> T first(List<T> values) {
+    return values.getFirst();
+}
+```
+
+```java
+String firstName = first(List.of("Alice", "Bob"));
+Integer firstNumber = first(List.of(10, 20));
+```
+
+Разница в том, когда фиксируется тип:
+
+```text
+generic-класс  → при создании объекта
+generic-метод  → при каждом вызове, обычно выводится компилятором
 ```
 
 ---
 
 ## Raw types
 
-Raw type — использование generic-типа без аргумента типа.
-
-```java
-List values = new ArrayList();
-```
-
-Вместо:
-
-```java
-List<String> values = new ArrayList<>();
-```
-
-Raw types существуют для совместимости со старым Java-кодом.
-
-Проблемы:
+Использование обобщённого типа без аргумента:
 
 ```java
 List values = new ArrayList();
@@ -274,611 +135,146 @@ values.add("Java");
 values.add(10);
 ```
 
-Компилятор не обеспечивает полноценную проверку.
-
-```java
-String value = (String) values.get(1);
-```
-
-Ошибка возникает во время выполнения:
-
-```text
-ClassCastException
-```
-
-В новом коде raw types использовать не следует.
+Проверки типов отключаются, и ошибка снова проявится при чтении как
+`ClassCastException`. Raw types существуют только ради совместимости с кодом,
+написанным до Java 5; в новом коде их использовать не следует.
 
 ---
 
-## Инвариантность generics
+## Инвариантность
 
-`Integer` наследует `Number`.
-
-```text
-Integer <: Number
-```
-
-Но:
-
-```text
-List<Integer>
-```
-
-не является наследником:
-
-```text
-List<Number>
-```
-
-Такой код не компилируется:
+`Integer` наследует `Number`, но `List<Integer>` не является `List<Number>`.
 
 ```java
 List<Integer> integers = new ArrayList<>();
 
-List<Number> numbers = integers;
+List<Number> numbers = integers;   // не компилируется
 ```
 
-Если бы это разрешалось:
+Если бы это разрешалось, через вторую ссылку можно было бы добавить `Double` в
+список целых:
 
 ```java
 numbers.add(3.14);
 ```
 
-В `List<Integer>` удалось бы добавить `Double`.
-
-Поэтому generics в Java инвариантны.
-
 ```text
 Integer является Number
-
 не означает
-
 List<Integer> является List<Number>
 ```
+
+Именно так устроены массивы, и там та же дыра закрыта проверкой во время
+выполнения с `ArrayStoreException`.
 
 ---
 
 ## Wildcard
 
-Wildcard обозначается символом `?`.
-
-```java
-List<?>
-```
-
-Это список неизвестного типа.
+Символ `?` обозначает неизвестный тип.
 
 ```java
 public static void print(List<?> values) {
-  for (Object value : values) {
-    System.out.println(value);
-  }
+    for (Object value : values) {
+        System.out.println(value);
+    }
 }
 ```
 
-Метод принимает:
+Метод примет `List<String>`, `List<Integer>` и любой другой. Читать элементы можно
+как `Object`, а добавлять нельзя ничего, кроме `null`: компилятор не знает
+реального типа списка.
 
-```java
-List<String>
-List<Integer>
-List<User>
-```
-
-Читать элементы можно как `Object`.
-
-```java
-Object value = values.get(0);
-```
-
-Добавлять обычные значения нельзя.
-
-```java
-values.add("Java");
-values.add(10);
-```
-
-Компилятор не знает реальный тип списка.
-
-Добавить можно только `null`.
-
-```java
-values.add(null);
-```
-
----
-
-## Upper bounded wildcard
+### Upper bounded wildcard
 
 ```java
 List<? extends Number>
 ```
 
-Означает:
-
-> Список неизвестного типа, который является Number или его наследником.
-
-Можно передать:
+Неизвестный тип, являющийся `Number` или его наследником. Принимает
+`List<Integer>`, `List<Long>`, `List<Double>`.
 
 ```java
-List<Integer>
-List<Long>
-List<Double>
-```
+public static double sum(List<? extends Number> values) {
+    double result = 0;
 
-Пример:
+    for (Number value : values) {
+        result += value.doubleValue();
+    }
 
-```java
-public static double sum(
-        List<? extends Number> values
-) {
-  double result = 0;
-
-  for (Number value : values) {
-    result += value.doubleValue();
-  }
-
-  return result;
+    return result;
 }
 ```
-
-Использование:
 
 ```java
 sum(List.of(1, 2, 3));
 sum(List.of(1.5, 2.5));
 ```
 
-Читать можно как `Number`.
+Читать можно как `Number`, добавлять — нельзя: реальным списком может оказаться
+любой из перечисленных, и подходящего типа для записи не существует. Разрешён
+только `null`.
 
-```java
-Number value = values.get(0);
-```
-
-Добавлять конкретные значения нельзя.
-
-```java
-values.add(10);
-values.add(10.5);
-```
-
-Реальный список может быть:
-
-```text
-List<Integer>
-List<Double>
-List<Long>
-```
-
-Разрешён только `null`.
-
----
-
-## Lower bounded wildcard
+### Lower bounded wildcard
 
 ```java
 List<? super Integer>
 ```
 
-Означает:
-
-> Список неизвестного типа, который является Integer или родительским типом Integer.
-
-Допустимые варианты:
+Неизвестный тип, являющийся `Integer` или его предком: `List<Integer>`,
+`List<Number>`, `List<Object>`.
 
 ```java
-List<Integer>
-List<Number>
-List<Object>
-```
-
-Добавлять можно `Integer`.
-
-```java
-public static void addNumbers(
-        List<? super Integer> values
-) {
-  values.add(10);
-  values.add(20);
+public static void addNumbers(List<? super Integer> values) {
+    values.add(10);
+    values.add(20);
 }
 ```
 
-Читать можно только как `Object`.
+Добавлять `Integer` безопасно в любом из этих случаев. А вот читать можно только
+как `Object`: компилятор не знает, насколько широк реальный тип элементов.
 
-```java
-Object value = values.get(0);
-```
-
-Компилятор не знает, является ли реальный список:
-
-```text
-List<Integer>
-List<Number>
-List<Object>
-```
-
----
-
-## PECS
-
-PECS:
+### PECS
 
 ```text
 Producer Extends
 Consumer Super
 ```
 
-### Producer Extends
-
-Структура производит значения для чтения.
-
-```java
-List<? extends Number>
-```
-
-```java
-Number value = values.get(0);
-```
-
-### Consumer Super
-
-Структура принимает значения.
-
-```java
-List<? super Integer>
-```
-
-```java
-values.add(10);
-```
-
-Краткое правило:
+Структура, которая отдаёт значения, объявляется через `extends`; структура,
+которая их принимает, — через `super`.
 
 ```text
-нужно читать T
-→ ? extends T
-
-нужно добавлять T
-→ ? super T
+нужно читать T   → ? extends T
+нужно добавлять T → ? super T
 ```
 
----
-
-## Пример копирования
+Классический пример, где встречаются оба:
 
 ```java
 public static <T> void copy(
         List<? extends T> source,
         List<? super T> destination
 ) {
-  for (T value : source) {
-    destination.add(value);
-  }
+    for (T value : source) {
+        destination.add(value);
+    }
 }
 ```
-
-Здесь:
 
 ```text
 source      → producer → extends
 destination → consumer → super
 ```
 
-Использование:
-
 ```java
-List<Integer> source =
-        List.of(1, 2, 3);
-
-List<Number> destination =
-        new ArrayList<>();
+List<Integer> source = List.of(1, 2, 3);
+List<Number> destination = new ArrayList<>();
 
 copy(source, destination);
 ```
 
----
-
-## Ограниченный параметр типа
-
-```java
-public static <T extends Number> double sum(
-        List<T> values
-) {
-  double result = 0;
-
-  for (T value : values) {
-    result += value.doubleValue();
-  }
-
-  return result;
-}
-```
-
-`T` должен быть `Number` или его наследником.
-
-Допустимо:
-
-```java
-sum(List.of(1, 2, 3));
-sum(List.of(1.5, 2.5));
-```
-
-Недопустимо:
-
-```java
-sum(List.of("A", "B"));
-```
-
----
-
-## Несколько ограничений
-
-```java
-<T extends Number & Comparable<T>>
-```
-
-Тип должен:
-
-- быть `Number` или его наследником
-- реализовывать `Comparable<T>`
-
-```java
-public static <
-        T extends Number & Comparable<T>
-        > T max(T first, T second) {
-  return first.compareTo(second) >= 0
-          ? first
-          : second;
-}
-```
-
-Класс должен указываться первым.
-
-Правильно:
-
-```java
-<T extends Number & Comparable<T>>
-```
-
-Неправильно:
-
-```java
-<T extends Comparable<T> & Number>
-```
-
-В generic-ограничениях `extends` используется и для классов, и для интерфейсов.
-
-```java
-<T extends Comparable<T>>
-```
-
-Слово `implements` не используется.
-
----
-
-## Wildcard и параметр типа
-
-Wildcard:
-
-```java
-public static void print(List<?> values) {
-}
-```
-
-Используется, когда конкретный тип не важен.
-
-Параметр типа:
-
-```java
-public static <T> T first(List<T> values) {
-}
-```
-
-Используется, когда нужно связать несколько частей сигнатуры.
-
-```java
-public static <T> void add(
-        List<T> values,
-        T value
-) {
-  values.add(value);
-}
-```
-
-Здесь тип списка и добавляемого значения обязан совпадать.
-
-Главное различие:
-
-```text
-? → неизвестный тип
-
-T → именованный тип,
-    связывающий параметры и результат
-```
-
----
-
-## Type erasure
-
-Generics в Java реализованы в основном через стирание типов.
-
-Исходный код:
-
-```java
-List<String> values =
-        new ArrayList<>();
-```
-
-После компиляции информация о `String` в значительной степени удаляется.
-
-Упрощённо JVM работает с:
-
-```java
-List values = new ArrayList();
-```
-
-Компилятор добавляет проверки и приведения типов.
-
-```java
-String value = values.get(0);
-```
-
-Упрощённо превращается в:
-
-```java
-String value =
-        (String) values.get(0);
-```
-
-Причины применения стирания:
-
-- совместимость со старым байткодом
-- одна реализация generic-класса для разных типов
-
-Следствия стирания создают ограничения generics.
-
----
-
-## Ограничения generics
-
-### Нельзя создать new T
-
-```java
-public class Factory<T> {
-
-  public T create() {
-    return new T();
-  }
-}
-```
-
-После стирания типов неизвестно:
-
-- какой класс представляет `T`
-- существует ли конструктор без аргументов
-- доступен ли конструктор
-
-Обычно передают фабрику:
-
-```java
-public class Factory<T> {
-
-  private final Supplier<T> supplier;
-
-  public Factory(Supplier<T> supplier) {
-    this.supplier = supplier;
-  }
-
-  public T create() {
-    return supplier.get();
-  }
-}
-```
-
-Использование:
-
-```java
-Factory<ArrayList<String>> factory =
-        new Factory<>(ArrayList::new);
-```
-
----
-
-### Нельзя создать массив T
-
-```java
-T[] values = new T[10];
-```
-
-Также нельзя:
-
-```java
-List<String>[] lists =
-        new List<String>[10];
-```
-
-Массивы знают свой тип во время выполнения.
-
-Generic-типы стираются.
-
----
-
-### Нельзя использовать примитивы
-
-Нельзя:
-
-```java
-List<int>
-```
-
-Нужно:
-
-```java
-List<Integer>
-```
-
-Generics работают только со ссылочными типами.
-
-Автоупаковка:
-
-```java
-List<Integer> values =
-        new ArrayList<>();
-
-values.add(10);
-```
-
-Значение `int` автоматически преобразуется в `Integer`.
-
----
-
-### Нельзя instanceof List<String>
-
-Нельзя:
-
-```java
-if (value instanceof List<String>) {
-        }
-```
-
-После стирания JVM не различает:
-
-```text
-List<String>
-List<Integer>
-```
-
-Можно:
-
-```java
-if (value instanceof List<?>) {
-        }
-```
-
----
-
-### Нельзя static T
-
-```java
-public class Box<T> {
-
-  private static T value;
-}
-```
-
-Статическое поле принадлежит классу и является общим для всех экземпляров.
-
-Но параметр типа задаётся отдельно:
-
-```java
-Box<String>
-Box<Integer>
-```
-
-Общее поле не может одновременно иметь тип `String` и `Integer`.
-
----
-
-## Таблица wildcard
+### Сводная таблица
 
 | Тип | Чтение | Добавление |
 |---|---|---|
@@ -887,110 +283,398 @@ Box<Integer>
 | `List<? extends T>` | `T` | только `null` |
 | `List<? super T>` | `Object` | `T` и его наследники |
 
-Для:
+Для `List<? super Number>` можно добавлять `Number`, `Integer`, `Long`, `Double`,
+но нельзя `Object` и `String`.
+
+### Wildcard против параметра типа
 
 ```java
-List<? super Number>
+public static void print(List<?> values) {
+}
 ```
 
-можно добавлять:
+Wildcard подходит, когда конкретный тип не важен и упоминается однократно.
 
 ```java
-Number
-        Integer
-Long
-        Double
+public static <T> void add(List<T> values, T value) {
+    values.add(value);
+}
 ```
 
-Нельзя добавлять:
+Именованный параметр нужен, когда типы разных частей сигнатуры обязаны совпадать.
+
+```text
+? → неизвестный тип
+T → именованный тип, связывающий параметры и результат
+```
+
+---
+
+## Ограниченные параметры типа
 
 ```java
-Object
-        String
+public static <T extends Number> double sum(List<T> values) {
+    double result = 0;
+
+    for (T value : values) {
+        result += value.doubleValue();
+    }
+
+    return result;
+}
+```
+
+Аргументом может быть только `Number` или его наследник, поэтому внутри метода
+доступны методы `Number`.
+
+```java
+sum(List.of(1, 2, 3));      // допустимо
+sum(List.of("A", "B"));     // не компилируется
+```
+
+Ограничений может быть несколько, через амперсанд:
+
+```java
+public static <T extends Number & Comparable<T>> T max(T first, T second) {
+    return first.compareTo(second) >= 0 ? first : second;
+}
+```
+
+Класс, если он присутствует, указывается первым:
+
+```text
+<T extends Number & Comparable<T>>   корректно
+<T extends Comparable<T> & Number>   ошибка
+```
+
+В ограничениях всегда используется слово `extends` — и для классов, и для
+интерфейсов. `implements` здесь не применяется.
+
+---
+
+## Type erasure
+
+Обобщения реализованы через стирание типов: после компиляции информация об
+аргументах типа в основном удаляется.
+
+```java
+List<String> values = new ArrayList<>();
+```
+
+Упрощённо JVM работает с:
+
+```java
+List values = new ArrayList();
+```
+
+Компилятор сам вставляет приведения в местах чтения:
+
+```java
+String value = values.get(0);
+```
+
+превращается в:
+
+```java
+String value = (String) values.get(0);
+```
+
+Причины — совместимость со старым байт-кодом и единственная реализация класса для
+всех типов. Из стирания вытекают все ограничения обобщений.
+
+### Нельзя создать new T
+
+```java
+public class Factory<T> {
+
+    public T create() {
+        return new T();   // не компилируется
+    }
+}
+```
+
+Во время выполнения неизвестно, какой класс представляет `T`, есть ли у него
+конструктор без аргументов и доступен ли он. Обычно передают фабрику:
+
+```java
+public class Factory<T> {
+
+    private final Supplier<T> supplier;
+
+    public Factory(Supplier<T> supplier) {
+        this.supplier = supplier;
+    }
+
+    public T create() {
+        return supplier.get();
+    }
+}
+```
+
+```java
+Factory<ArrayList<String>> factory = new Factory<>(ArrayList::new);
+```
+
+### Нельзя создать массив T
+
+```java
+T[] values = new T[10];                       // не компилируется
+List<String>[] lists = new List<String>[10];  // не компилируется
+```
+
+Массивы хранят информацию о типе элементов во время выполнения и проверяют её при
+записи, а обобщённые типы стираются. Подставить нужный тип невозможно.
+
+### Нельзя использовать примитивы
+
+```java
+List<int> values;      // не компилируется
+List<Integer> values;  // корректно
+```
+
+После стирания остаётся `Object`, а примитив им не является. Автоупаковка
+скрывает это при использовании:
+
+```java
+List<Integer> values = new ArrayList<>();
+
+values.add(10);
+```
+
+### Нельзя проверить instanceof с аргументом типа
+
+```java
+if (value instanceof List<String>) {   // не компилируется
+}
+```
+
+После стирания `List<String>` и `List<Integer>` неотличимы. Допустима только
+проверка с wildcard:
+
+```java
+if (value instanceof List<?>) {
+}
+```
+
+### Нельзя объявить static-поле типа T
+
+```java
+public class Box<T> {
+
+    private static T value;   // не компилируется
+}
+```
+
+Статическое поле принадлежит классу и общее для всех экземпляров, а аргумент типа
+задаётся отдельно для `Box<String>` и `Box<Integer>`. Одно поле не может
+одновременно иметь оба типа.
+
+---
+
+## Heap pollution
+
+Ситуация, когда переменная параметризованного типа ссылается на объект, этому
+параметру не соответствующий. Компилятор предупреждает, но пропускает, а падает
+код позже и в другом месте.
+
+```java
+List<String> strings = new ArrayList<>();
+List rawList = strings;              // сырой тип
+
+rawList.add(42);                     // предупреждение, но компилируется
+
+String value = strings.get(0);       // ClassCastException здесь
+```
+
+Причина — стирание: во время выполнения `List<String>` и `List<Integer>` — один и
+тот же `List`, и проверить содержимое при добавлении некому. Приведение компилятор
+вставляет в месте чтения, там же и происходит отказ.
+
+### Varargs и обобщённые типы
+
+Основной практический источник загрязнения.
+
+```java
+static <T> void unsafe(List<T>... lists) {   // предупреждение компилятора
+    Object[] array = lists;                  // массивы ковариантны
+    array[0] = List.of(42);                  // компилятор не возражает
+    T value = lists[0].get(0);               // ClassCastException
+}
+```
+
+Почему это возможно:
+
+```text
+1. varargs превращается в массив: List<T>[]
+2. создать массив параметризованного типа нельзя, поэтому создаётся List[]
+3. массивы ковариантны: List[] можно присвоить Object[]
+4. через Object[] в него кладётся что угодно — проверки нет
+```
+
+Иными словами, обобщения и массивы устроены противоположным образом: массивы
+ковариантны и проверяются во время выполнения, обобщения инвариантны и
+проверяются только при компиляции. Varargs сводит их вместе, и в этом стыке
+возникает дыра.
+
+### @SafeVarargs
+
+```java
+@SafeVarargs
+static <T> List<T> listOf(T... elements) {
+    return List.of(elements);
+}
+```
+
+Аннотация подавляет предупреждение и ничего не проверяет: ответственность целиком
+на авторе. Ставить её допустимо, когда метод только читает массив и не публикует
+его наружу.
+
+```text
+безопасно → только читаем элементы
+опасно    → записываем в массив
+опасно    → возвращаем массив или сохраняем ссылку на него
+```
+
+Применима к `static`-, `final`- и `private`-методам и к конструкторам — то есть
+там, где метод нельзя переопределить и тем самым нарушить обещание.
+
+Как избегать:
+
+```text
+не использовать сырые типы
+не подавлять unchecked без разбора причины
+вместо varargs параметризованного типа принимать Collection<T>
+```
+
+```java
+static <T> void safe(List<List<T>> lists) {   // вместо List<T>...
+}
 ```
 
 ---
 
 ## Типичные ошибки
 
-### Raw type
+### Использовать raw type
 
-```java
-List values = new ArrayList();
-```
+Проверки типов отключаются, и ошибка проявится при чтении как
+`ClassCastException`.
 
-Теряется проверка типов.
+### Ожидать ковариантности от обобщений
 
-### Нарушение инвариантности
+`List<Integer>` не является `List<Number>` — такой код не скомпилируется.
 
-```java
-List<Integer> integers =
-        new ArrayList<>();
+### Пытаться записывать в extends-коллекцию
 
-List<Number> numbers = integers;
-```
+`List<? extends Number>` предназначен для чтения. Реальный тип элементов
+неизвестен, поэтому подходящего типа для записи не существует.
 
-Такой код не компилируется.
+### Ожидать точного чтения из super-коллекции
 
-### Запись в extends
+Из `List<? super Integer>` безопасно читать только как `Object`.
 
-```java
-List<? extends Number> values
-```
+### Использовать wildcard там, где нужен параметр типа
 
-Предназначен в первую очередь для чтения.
+Если типы нескольких аргументов или результата обязаны совпадать, нужен
+именованный `<T>`; wildcard связать их не может.
 
-### Точное чтение из super
+### Подавлять unchecked не разобравшись
 
-```java
-List<? super Integer> values
-```
+Предупреждение компилятора об непроверяемой операции почти всегда указывает на
+потенциальное загрязнение кучи.
 
-Читать безопасно можно только как `Object`.
+### Ставить @SafeVarargs на метод, который пишет в массив
 
-### Неправильное применение wildcard
-
-Когда нужно связать типы нескольких аргументов или результата, следует использовать `<T>`.
+Аннотация ничего не проверяет. Если метод записывает в переданный массив или
+публикует ссылку на него, обещание безопасности ложное.
 
 ---
 
 ## Краткая памятка
 
 ```text
-Generics
-→ типобезопасность на этапе компиляции
+generics → типобезопасность на этапе компиляции
+raw type → проверки отключены, ошибка при чтении
+
+параметр типа  → T в объявлении
+аргумент типа  → String при использовании
+generic-класс  → тип фиксируется при создании объекта
+generic-метод  → при каждом вызове
 ```
 
 ```text
-List<Integer>
-не является
-List<Number>
+инвариантность
+List<Integer> не является List<Number>
+массивы ковариантны, generics — нет
 ```
 
 ```text
 ? → неизвестный тип
-T → именованный связанный тип
+T → именованный, связывает части сигнатуры
+
+List<?>              читать Object,   добавлять только null
+List<? extends T>    читать T,        добавлять только null
+List<? super T>      читать Object,   добавлять T и наследников
+List<T>              читать T,        добавлять T
+
+Producer Extends, Consumer Super
 ```
 
 ```text
-Producer Extends
-Consumer Super
+<T extends Number>                ограничение сверху
+<T extends Number & Comparable<T>> класс первым, дальше интерфейсы
+в ограничениях всегда extends, никогда implements
 ```
 
 ```text
-? extends T
-→ читаем T
-→ не добавляем
+type erasure — параметры типов стираются после компиляции
 
-? super T
-→ добавляем T
-→ читаем Object
+следствия:
+new T()                  нельзя
+new T[10]                нельзя
+List<int>                нельзя
+instanceof List<String>  нельзя, только List<?>
+static T                 нельзя
 ```
 
 ```text
-Type erasure
-→ параметры типов в основном стираются после компиляции
+heap pollution
+переменная параметризованного типа ссылается на чужой объект
+ClassCastException возникает далеко от места ошибки
+
+источник — varargs параметризованного типа
+@SafeVarargs ничего не проверяет
+допустима, только если метод читает массив и не публикует его
 ```
+
+---
+
+## Краткий ответ для собеседования
+
+Обобщения переносят проверку типов на этап компиляции: коллекция
+параметризуется, положить в неё чужой элемент нельзя, а приведение при чтении
+компилятор вставляет сам. Во время выполнения параметр стирается, поэтому
+`List<String>` и `List<Integer>` — один и тот же класс. Отсюда все ограничения:
+нельзя выполнить `instanceof` по параметру, создать `new T()` или массив `T[]`,
+объявить статическое поле типа `T` и использовать примитив в качестве аргумента
+типа.
+
+Обобщённые типы инвариантны: `List<String>` не является `List<Object>`, хотя
+`String` наследует `Object`. Иначе в список строк можно было бы положить что
+угодно. Гибкость возвращают маски: `? extends T` даёт источник, из которого можно
+читать, но нельзя писать, а `? super T` — приёмник, в который можно писать, но
+читается он только как `Object`. Мнемоника — producer extends, consumer super.
+Если же типы нескольких частей сигнатуры должны совпадать, маска не подходит и
+нужен именованный параметр.
+
+Массивы устроены противоположным образом: они ковариантны и проверяют тип во
+время выполнения. Стык этих двух механизмов даёт загрязнение кучи — ситуацию,
+когда переменная параметризованного типа ссылается на объект другого типа, а
+`ClassCastException` возникает далеко от места ошибки. Основной источник — varargs
+параметризованного типа, потому что он превращается в сырой массив, а массивы
+ковариантны. Предупреждение подавляется аннотацией `@SafeVarargs`, которая ничего
+не проверяет и допустима, только если метод исключительно читает переданный
+массив.
 
 ---
 
@@ -1026,7 +710,7 @@ Type erasure
 
 **Ответ:** проверки типов отключаются, и в коллекцию можно положить что угодно.
 Ошибка проявится позже, при чтении, в виде `ClassCastException` — то есть
-теряется всё преимущество generics.
+теряется всё преимущество обобщений.
 
 ### 7. Что означает инвариантность generics?
 
@@ -1035,10 +719,8 @@ Type erasure
 
 ### 8. Почему List<Integer> не является List<Number>?
 
-**Ответ:** иначе через ссылку типа `List<Number>` можно было бы добавить `Double` в
-список целых, и последующее чтение дало бы `ClassCastException`. Именно так
-устроены массивы, и там эта дыра закрыта проверкой во время выполнения с
-`ArrayStoreException`.
+**Ответ:** иначе через ссылку типа `List<Number>` можно было бы добавить `Double`
+в список целых, и последующее чтение дало бы `ClassCastException`.
 
 ### 9. Что означает `List<?>`?
 
@@ -1059,8 +741,8 @@ Type erasure
 
 ### 12. Что означает `? super T`?
 
-**Ответ:** неизвестный тип, являющийся `T` или его предком. В такую коллекцию можно
-добавлять `T` и его наследников, а чтение возможно только как `Object`.
+**Ответ:** неизвестный тип, являющийся `T` или его предком. В такую коллекцию
+можно добавлять `T` и его наследников, а чтение возможно только как `Object`.
 
 ### 13. Как расшифровывается PECS?
 
@@ -1071,7 +753,7 @@ Type erasure
 
 **Ответ:** параметр `T` именует тип и позволяет ссылаться на него в нескольких
 местах сигнатуры, связывая их между собой. Wildcard анонимен и годится, когда тип
-упоминается однократно и связывать нечего.
+упоминается однократно.
 
 ### 15. Что означает `<T extends Number>`?
 
@@ -1087,7 +769,8 @@ Type erasure
 
 **Ответ:** удаление информации о типовых аргументах при компиляции. В байт-коде
 остаётся либо `Object`, либо верхняя граница, а компилятор вставляет необходимые
-приведения. Сделано ради совместимости с кодом, написанным до появления generics.
+приведения. Сделано ради совместимости с кодом, написанным до появления
+обобщений.
 
 ### 18. Почему нельзя создать `new T()`?
 
@@ -1098,14 +781,13 @@ Type erasure
 ### 19. Почему нельзя создать массив `T[]`?
 
 **Ответ:** массивы хранят информацию о типе элементов во время выполнения и
-проверяют её при записи. Из-за стирания подставить нужный тип невозможно, поэтому
-такое создание запрещено. Используют `Object[]` с приведением или коллекции.
+проверяют её при записи. Из-за стирания подставить нужный тип невозможно.
+Используют `Object[]` с приведением или коллекции.
 
 ### 20. Почему нельзя использовать `List<int>`?
 
 **Ответ:** аргументом типа может быть только ссылочный тип, поскольку после
-стирания остаётся `Object`, а примитив им не является. Применяют обёртки либо
-специализированные структуры без упаковки.
+стирания остаётся `Object`, а примитив им не является.
 
 ### 21. Почему нельзя проверить `instanceof List<String>`?
 
@@ -1114,18 +796,42 @@ Type erasure
 
 ### 22. Почему нельзя объявить статическое поле типа T?
 
-**Ответ:** статическое поле принадлежит классу, а не экземпляру, тогда как аргумент
-типа задаётся при создании конкретного экземпляра. Одно поле не может
+**Ответ:** статическое поле принадлежит классу, а не экземпляру, тогда как
+аргумент типа задаётся при создании конкретного экземпляра. Одно поле не может
 соответствовать разным типам одновременно.
+
+### 23. Что такое heap pollution?
+
+**Ответ:** ситуация, когда переменная параметризованного типа ссылается на объект,
+этому параметру не соответствующий. Компилятор выдаёт предупреждение, а
+`ClassCastException` возникает позже, в месте чтения.
+
+### 24. Почему varargs параметризованного типа опасен?
+
+**Ответ:** он превращается в массив, который из-за невозможности создать
+`List<T>[]` создаётся сырым. Массивы ковариантны, поэтому через `Object[]` в него
+можно положить элемент чужого типа без проверки.
+
+### 25. Чем массивы отличаются от generics по типобезопасности?
+
+**Ответ:** массивы ковариантны и проверяют тип во время выполнения, обобщения
+инвариантны и проверяются только при компиляции, а затем стираются. Varargs сводит
+оба механизма вместе, и на этом стыке возникает дыра.
+
+### 26. Когда допустимо ставить @SafeVarargs?
+
+**Ответ:** когда метод только читает элементы массива и не записывает в него и не
+публикует ссылку на него наружу. Аннотация ничего не проверяет, ответственность на
+авторе.
 
 ---
 
 ## См. также
 
-- [`01-collections-framework.md`](01-collections-framework.md) — generics в
-  сигнатурах коллекций и ковариантность массивов
-- [`00-java-language-basics.md`](00-java-language-basics.md) — приведение типов
-  и различие cast и conversion
+- [`01-collections-framework.md`](01-collections-framework.md) — обобщения в
+  сигнатурах коллекций
+- [`00-java-language-basics.md`](00-java-language-basics.md) — ковариантность
+  массивов и `ArrayStoreException`, обратная сторона инвариантности обобщений
 - [`08-functional-interfaces-lambda.md`](08-functional-interfaces-lambda.md) —
   обобщённые функциональные интерфейсы и примитивные специализации
 - [`06-stream-api.md`](06-stream-api.md) — где PECS встречается на практике
