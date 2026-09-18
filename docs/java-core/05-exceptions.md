@@ -1,21 +1,17 @@
 # Исключения в Java
 
-## Назначение исключений
-
-Исключение сообщает, что метод не смог нормально выполнить свою работу.
-
-Оно отделяет основной сценарий программы от обработки ошибок и переносит сведения
-о проблеме по стеку вызовов до уровня, который способен на неё отреагировать.
+Исключение сообщает, что метод не смог нормально выполнить свою работу. Оно
+отделяет основной сценарий от обработки ошибок и переносит сведения о проблеме по
+стеку вызовов до уровня, который способен на неё отреагировать.
 
 ```java
 public User getUser(long userId) {
-  return userRepository.findById(userId)
-          .orElseThrow(() -> new UserNotFoundException(userId));
+    return userRepository.findById(userId)
+            .orElseThrow(() -> new UserNotFoundException(userId));
 }
 ```
 
-Если `UserNotFoundException` не перехвачено в `getUser()`, оно не теряется.
-Исключение поднимается вверх по стеку вызовов.
+Если исключение не перехвачено в самом методе, оно не теряется:
 
 ```text
 контроллер
@@ -33,9 +29,9 @@ public User getUser(long userId) {
 глобальный обработчик формирует HTTP-ответ
 ```
 
-## Иерархия Throwable
+---
 
-Корнем иерархии ошибок является `Throwable`.
+## Иерархия Throwable
 
 ```text
 Throwable
@@ -45,132 +41,79 @@ Throwable
     └── остальные Exception
 ```
 
-Только объекты `Throwable` и его наследников можно выбрасывать через `throw`.
+Выбрасывать через `throw` можно только `Throwable` и его наследников.
 
-### Error
+**`Error`** означает серьёзную проблему среды выполнения или JVM:
+`OutOfMemoryError`, `StackOverflowError`, `NoClassDefFoundError`. Прикладной код
+обычно не способен корректно восстановиться после такого, поэтому `Error` не
+перехватывают.
 
-`Error` обычно означает серьёзную проблему среды выполнения или JVM.
+**`Exception`** описывает ошибки приложения: `IOException`, `SQLException`,
+`IllegalArgumentException`, собственные типы. Часть из них компилятор требует
+обработать, часть нет.
 
-Примеры:
-
-```text
-OutOfMemoryError
-StackOverflowError
-NoClassDefFoundError
-```
-
-Прикладной код обычно не способен корректно восстановиться после таких проблем.
-Поэтому `Error` обычно не перехватывают.
-
-### Exception
-
-`Exception` описывает ошибки, которые относятся к выполнению приложения.
-
-Примеры:
-
-```text
-IOException
-SQLException
-IllegalArgumentException
-UserNotFoundException
-```
-
-Часть таких исключений компилятор требует обработать, а часть нет.
-
-### RuntimeException
-
-`RuntimeException` является базовым классом unchecked-исключений прикладного уровня.
-
-Часто они обозначают:
-
-- нарушение контракта метода
-- некорректное состояние объекта
-- отсутствие ожидаемой сущности
-- программную ошибку
+**`RuntimeException`** — базовый класс непроверяемых исключений прикладного
+уровня. Обычно обозначает нарушение контракта метода, некорректное состояние
+объекта, отсутствие ожидаемой сущности или программную ошибку.
 
 ```java
-throw new IllegalArgumentException("reporterId must be positive");
+throw new IllegalArgumentException("customerId must be positive");
 ```
-
-## Error и Exception
 
 | Критерий | Error | Exception |
 |---|---|---|
 | Смысл | серьёзная проблема JVM или окружения | ошибка выполнения приложения |
-| Ожидаемое восстановление | обычно невозможно | часто возможно обработать или преобразовать |
-| Нужно ли обычно ловить | нет | зависит от ситуации |
+| Восстановление | обычно невозможно | часто возможно обработать или преобразовать |
+| Нужно ли ловить | нет | зависит от ситуации |
 | Примеры | `OutOfMemoryError` | `IOException`, `IllegalArgumentException` |
 
-`Error` тоже является unchecked с точки зрения компилятора, но это не делает его
-обычным способом описания бизнес-ошибок.
+`Error` тоже является непроверяемым с точки зрения компилятора, но это не делает
+его способом описания бизнес-ошибок.
 
-## Checked и unchecked exceptions
+---
 
-### Checked exceptions
+## Checked и unchecked
 
-Checked exception компилятор заставляет обработать одним из двух способов:
-
-- перехватить через `try-catch`
-- объявить через `throws`
+Проверяемое исключение компилятор заставляет либо перехватить, либо объявить:
 
 ```java
 public String readTemplate(Path path) throws IOException {
-  return Files.readString(path);
+    return Files.readString(path);
 }
 ```
 
-Примеры checked exceptions:
+К ним относятся `IOException`, `SQLException`, `ClassNotFoundException`.
 
-```text
-IOException
-SQLException
-ClassNotFoundException
-```
-
-### Unchecked exceptions
-
-Unchecked exception не требуется объявлять или перехватывать.
-
-К ним относятся:
-
-- `RuntimeException` и его наследники
-- `Error` и его наследники
+Непроверяемые объявлять или перехватывать не нужно — это `RuntimeException` и
+`Error` вместе с наследниками.
 
 ```java
-public Incident getIncident(long incidentId) {
-  return incidentRepository.findById(incidentId)
-          .orElseThrow(() -> new IncidentNotFoundException(incidentId));
+public Order getOrder(long orderId) {
+    return orderRepository.findById(orderId)
+            .orElseThrow(() -> new OrderNotFoundException(orderId));
 }
 ```
 
-### Как определить checked exception
-
-Нужно посмотреть на иерархию класса.
+Определяется всё по иерархии, а не по имени класса:
 
 ```text
-наследник RuntimeException → unchecked
-наследник Error            → unchecked
+наследник RuntimeException    → unchecked
+наследник Error               → unchecked
 остальной наследник Exception → checked
 ```
 
-Само наличие слова `Exception` в имени ничего не доказывает.
-
-## throw и throws
-
-`throw` выбрасывает конкретный объект исключения.
+### throw и throws
 
 ```java
-if (reporterId <= 0) {
-        throw new IllegalArgumentException("reporterId must be positive");
+if (customerId <= 0) {
+    throw new IllegalArgumentException("customerId must be positive");
 }
 ```
 
-`throws` объявляет в сигнатуре метода возможность выхода исключения.
-
 ```java
-public Incident importIncident(Path path) throws IOException {
-  String content = Files.readString(path);
-  return parseIncident(content);
+public Order importOrder(Path path) throws IOException {
+    String content = Files.readString(path);
+    return parseOrder(content);
 }
 ```
 
@@ -179,36 +122,32 @@ throw  → действие внутри метода
 throws → часть объявления метода
 ```
 
-Объявлять unchecked exception через `throws` разрешено, но компилятор этого не
-требует. Иногда такое объявление используют как документацию контракта.
+Объявить непроверяемое исключение через `throws` разрешено, но компилятор этого не
+требует. Иногда так документируют контракт.
 
-## Распространение по стеку вызовов
+---
 
-Когда выполняется `throw`, нормальное выполнение текущего блока прекращается.
-JVM ищет подходящий `catch` сначала в текущем методе, затем в вызывающем и далее
-вверх по стеку.
+## Распространение и stack trace
+
+После `throw` нормальное выполнение блока прекращается. JVM ищет подходящий
+`catch` сначала в текущем методе, затем вверх по стеку.
 
 ```java
-public IncidentResponse findIncident(long incidentId) {
-  Incident incident = incidentService.getIncident(incidentId);
-  return mapper.toResponse(incident);
+public OrderResponse findOrder(long orderId) {
+    Order order = orderService.getOrder(orderId);
+    return mapper.toResponse(order);
 }
 ```
 
-Если `getIncident()` выбросит `IncidentNotFoundException`, строка с `mapper` не
-выполнится. При отсутствии локального `catch` исключение перейдёт вызывающему коду.
-
-Если подходящего обработчика нет во всём потоке, поток завершается. Перед этим
-стандартный обработчик обычно выводит stack trace.
-
-## Stack trace
-
-Stack trace показывает тип исключения, сообщение и цепочку вызовов.
+Если `getOrder()` выбросит исключение, строка с `mapper` не выполнится. При
+отсутствии локального `catch` исключение перейдёт вызывающему коду. Если
+подходящего обработчика нет во всём потоке, поток завершается, а стандартный
+обработчик печатает stack trace.
 
 ```text
-IncidentNotFoundException: Incident not found: 42
-    at IncidentService.getIncident(IncidentService.java:31)
-    at IncidentController.getIncident(IncidentController.java:24)
+OrderNotFoundException: Order not found: 42
+    at OrderService.getOrder(OrderService.java:31)
+    at OrderController.getOrder(OrderController.java:24)
     at ...
 Caused by: java.sql.SQLException: connection closed
     at ...
@@ -216,73 +155,70 @@ Caused by: java.sql.SQLException: connection closed
 
 Порядок чтения:
 
-1. Прочитать тип и сообщение верхнего исключения
-2. Найти первую строку `at` из собственного кода
-3. Проследить путь вызовов сверху вниз
-4. Изучить секции `Caused by`, начиная с самой глубокой причины
-5. Проверить секцию `Suppressed`, если она есть
+```text
+1. тип и сообщение верхнего исключения
+2. первая строка at из собственного кода
+3. путь вызовов сверху вниз
+4. секции Caused by, начиная с самой глубокой причины
+5. секция Suppressed, если она есть
+```
 
-Первая строка стека обычно указывает место создания или выбрасывания исключения.
-Это не обязательно место, где находится первопричина ошибки в данных или логике.
+Первая строка стека указывает место создания или выбрасывания исключения — это не
+обязательно место, где находится первопричина ошибки в данных или логике.
 
-## try-catch
+---
 
-`try` содержит код, который может завершиться исключением. `catch` обрабатывает
-подходящий тип исключения.
+## Обработка
+
+### try-catch
 
 ```java
 try {
-String content = Files.readString(path);
-    importService.importIncident(content);
+    String content = Files.readString(path);
+    importService.importOrder(content);
 } catch (IOException exception) {
-        throw new IncidentImportException("Cannot read " + path, exception);
+    throw new OrderImportException("Cannot read " + path, exception);
 }
 ```
 
-`catch` нужен только тогда, когда текущий уровень способен:
+`catch` нужен только тогда, когда текущий уровень способен восстановиться и
+продолжить работу, преобразовать исключение в ошибку своего уровня, дополнить его
+полезным контекстом или выполнить осмысленную компенсацию. Если ничего из этого не
+происходит, исключению дают подняться выше.
 
-- восстановиться и продолжить работу
-- преобразовать исключение в ошибку своего уровня
-- дополнить ошибку полезным контекстом
-- выполнить осмысленную компенсацию
+### Порядок блоков
 
-Если уровень ничего из этого не делает, исключению обычно дают подняться выше.
-
-## Порядок нескольких catch
-
-Блоки `catch` располагают от конкретного типа к общему.
+От конкретного типа к общему:
 
 ```java
 try {
-importIncident(path);
+    importOrder(path);
 } catch (NoSuchFileException exception) {
-handleMissingFile(exception);
+    handleMissingFile(exception);
 } catch (IOException exception) {
-handleReadFailure(exception);
+    handleReadFailure(exception);
 }
 ```
 
-Обратный порядок не скомпилируется, потому что общий `catch` уже перехватит все
-подклассы и сделает конкретный обработчик недостижимым.
+Обратный порядок не скомпилируется: общий `catch` перехватит все подклассы и
+сделает конкретный обработчик недостижимым.
 
-## Multi-catch
-
-Одинаковую обработку нескольких несвязанных типов можно записать в одном блоке.
+### Multi-catch
 
 ```java
 try {
-loadIncident(source);
+    loadOrder(source);
 } catch (IOException | ParseException exception) {
-        throw new IncidentImportException("Import failed", exception);
+    throw new OrderImportException("Import failed", exception);
 }
 ```
 
-Типы в multi-catch не должны находиться в отношении предок и потомок.
-Переменная исключения внутри такого `catch` фактически является `final`.
+Типы не должны находиться в отношении наследования, иначе одна из веток заведомо
+избыточна. Переменная внутри такого блока фактически является `final`.
 
-## finally
+### finally
 
-`finally` выполняется после `try` и возможного `catch` независимо от того, было ли
+Выполняется после `try` и возможного `catch` независимо от того, было ли
 исключение.
 
 ```java
@@ -290,102 +226,84 @@ Lock lock = new ReentrantLock();
 lock.lock();
 
 try {
-updateIncident();
+    updateOrder();
 } finally {
-        lock.unlock();
+    lock.unlock();
 }
 ```
 
-`finally` подходит для освобождения ресурса, если для него нельзя использовать
+Подходит для освобождения ресурса, если для него нельзя использовать
 try-with-resources.
 
-### Почему нельзя использовать return внутри finally
-
-`return` в `finally` может заменить результат из `try` или `catch`.
+**`return` внутри `finally` использовать нельзя.** Он способен заменить результат:
 
 ```java
 public int value() {
-  try {
-    return 1;
-  } finally {
-    return 2;
-  }
+    try {
+        return 1;
+    } finally {
+        return 2;
+    }
 }
 ```
 
-Метод вернёт `2`.
-
-Ещё опаснее то, что `return` в `finally` способен подавить летящее исключение.
+Метод вернёт `2`. Но опаснее другое — он подавляет летящее исключение:
 
 ```java
 public int value() {
-  try {
-    throw new IllegalStateException("failure");
-  } finally {
-    return 2;
-  }
+    try {
+        throw new IllegalStateException("failure");
+    } finally {
+        return 2;
+    }
 }
 ```
 
-Вызывающий код не увидит `IllegalStateException`. Поэтому `return` внутри
-`finally` использовать нельзя.
+Вызывающий код никогда не узнает об ошибке.
 
-### Когда finally может не выполниться
+Гарантия выполнения `finally` не абсолютна. Блок не выполнится, если процесс
+принудительно завершён, вызван `System.exit()`, JVM аварийно остановилась,
+отключилась машина или поток навсегда завис до входа в `finally`.
 
-Гарантия выполнения `finally` не абсолютна. Блок может не выполниться, если:
-
-- процесс принудительно завершён
-- вызван `System.exit()`
-- JVM аварийно остановилась
-- питание или машина отключились
-- поток навсегда завис до входа в `finally`
+---
 
 ## Try-with-resources
 
-Try-with-resources автоматически закрывает ресурсы.
+Автоматически закрывает ресурсы и при успешном завершении, и при исключении.
 
 ```java
 try (BufferedReader reader = Files.newBufferedReader(path)) {
-        return reader.readLine();
+    return reader.readLine();
 }
 ```
 
-Закрытие выполняется и при успешном завершении, и при исключении. Такой код обычно
-короче и безопаснее ручного закрытия в `finally`.
-
-## AutoCloseable
-
-Ресурс для try-with-resources должен реализовывать `AutoCloseable`.
+Ресурс должен реализовывать `AutoCloseable`:
 
 ```java
-public final class IncidentExport implements AutoCloseable {
+public final class OrderExport implements AutoCloseable {
 
-  @Override
-  public void close() {
-    System.out.println("export closed");
-  }
+    @Override
+    public void close() {
+        System.out.println("export closed");
+    }
 }
 ```
-
-Метод интерфейса:
 
 ```java
 void close() throws Exception;
 ```
 
-Более узкий интерфейс `Closeable` предназначен прежде всего для ресурсов ввода и
-вывода. Его `close()` объявляет `IOException`.
+Более узкий `Closeable` предназначен для ресурсов ввода-вывода, его `close()`
+объявляет `IOException`.
 
-## Порядок закрытия ресурсов
-
-Несколько ресурсов закрываются в порядке, обратном объявлению.
+Несколько ресурсов закрываются в порядке, обратном объявлению:
 
 ```java
 try (
-InputStream input = Files.newInputStream(source);
-OutputStream output = Files.newOutputStream(target)
+        InputStream input = Files.newInputStream(source);
+        OutputStream output = Files.newOutputStream(target)
 ) {
-        input.transferTo(output);
+    input.transferTo(output);
 }
 ```
 
@@ -394,11 +312,13 @@ OutputStream output = Files.newOutputStream(target)
 закрытие: output → input
 ```
 
-## Suppressed exceptions
+Это важно, когда один ресурс зависит от другого: `ResultSet` закроется раньше
+`Statement`, а тот раньше `Connection`.
 
-Если основной код выбросил исключение, а `close()` выбросил другое, основным
-остаётся исключение из тела `try`. Исключение из `close()` сохраняется вместе с
-ним как suppressed exception.
+### Suppressed exceptions
+
+Если тело `try` выбросило исключение и `close()` выбросил другое, основным
+остаётся первое, а второе сохраняется вместе с ним.
 
 ```text
 основное исключение из try
@@ -406,106 +326,81 @@ OutputStream output = Files.newOutputStream(target)
 ```
 
 ```java
-try (IncidentExport export = openExport()) {
-        throw new IllegalStateException("write failed");
+try (OrderExport export = openExport()) {
+    throw new IllegalStateException("write failed");
 }
 ```
-
-Получить сохранённые исключения можно так:
 
 ```java
 for (Throwable suppressed : exception.getSuppressed()) {
-        log.debug("Resource closing failed", suppressed);
+    log.debug("Resource closing failed", suppressed);
 }
 ```
 
-Это позволяет не потерять ошибку закрытия и одновременно сохранить исходную
-причину сбоя операции.
+Механизм позволяет не потерять ошибку закрытия и одновременно сохранить исходную
+причину сбоя. При ручном закрытии в `finally` первопричина обычно теряется.
 
-## Собственные исключения
+---
 
-Собственный тип делает ошибку понятной для вызывающего кода.
+## Проектирование исключений
+
+### Собственные типы
 
 ```java
 public class UserNotFoundException extends RuntimeException {
 
-  public UserNotFoundException(long userId) {
-    super("User not found: " + userId);
-  }
+    public UserNotFoundException(long userId) {
+        super("User not found: " + userId);
+    }
 }
 ```
 
-```java
-public class IncidentNotFoundException extends RuntimeException {
+Проверяемое собственное исключение наследуют от `Exception`, непроверяемое — от
+`RuntimeException`.
 
-  public IncidentNotFoundException(long incidentId) {
-    super("Incident not found: " + incidentId);
-  }
-}
-```
+### Cause и оборачивание
 
-Checked-собственное исключение наследуют от `Exception`, unchecked-собственное
-исключение наследуют от `RuntimeException`.
-
-## Cause и оборачивание
-
-При преобразовании исключения нужно сохранять исходную причину.
+При преобразовании исключения исходную причину нужно сохранять.
 
 ```java
-public class IncidentImportException extends RuntimeException {
+public class OrderImportException extends RuntimeException {
 
-  public IncidentImportException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    public OrderImportException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
 ```
 
 ```java
 try {
-        return Files.readString(path);
+    return Files.readString(path);
 } catch (IOException exception) {
-        throw new IncidentImportException(
-            "Cannot import incident from " + path,
-            exception
-            );
+    throw new OrderImportException("Cannot import order from " + path, exception);
 }
 ```
 
-Без `cause` исходный stack trace теряется и диагностика становится сложнее.
+Без `cause` исходный stack trace теряется, и по логу невозможно понять, где
+возникла ошибка.
 
-## Почему нельзя проглатывать исключения
-
-Пустой `catch` скрывает сбой и позволяет программе продолжить работу с неверным
-состоянием.
+### Почему нельзя проглатывать исключения
 
 ```java
 try {
-updateIncident();
+    updateOrder();
 } catch (Exception exception) {
-        }
+}
 ```
 
-Вызывающий код решит, что операция успешна. Транзакция или внешний ответ могут не
-соответствовать фактическому результату.
+Пустой блок скрывает сбой и позволяет программе продолжить работу с неверным
+состоянием. Вызывающий код решит, что операция успешна, а транзакция или внешний
+ответ не будут соответствовать фактическому результату.
 
-## Где логировать исключение
+### Где логировать
 
-Исключение обычно логируют на границе, где оно окончательно обрабатывается.
-
-Примеры таких границ:
-
-- глобальный HTTP-обработчик
-- обработчик сообщения из очереди
-- планировщик фоновой задачи
-- верхний уровень отдельной команды
-
-На нижнем уровне исключение можно дополнить контекстом и пробросить с `cause`, не
-логируя его повторно.
-
-### Почему не следует логировать и пробрасывать на каждом слое
-
-Если одна ошибка логируется в репозитории, сервисе, контроллере и глобальном
-обработчике, журнал получает несколько stack trace для одного события.
+Исключение логируют на границе, где оно окончательно обрабатывается: в глобальном
+HTTP-обработчике, в обработчике сообщения из очереди, в планировщике фоновой
+задачи, на верхнем уровне отдельной команды. На нижних уровнях его дополняют
+контекстом и пробрасывают с причиной, не логируя повторно.
 
 ```text
 одна ошибка
@@ -513,171 +408,173 @@ updateIncident();
 → шум и ложное ощущение нескольких сбоев
 ```
 
-Правило по умолчанию:
-
 > Либо обработай и залогируй, либо преобразуй и пробрось с причиной.
 
-## Когда допустим catch Exception
+### Когда допустим catch Exception
 
-`catch (Exception)` допустим на верхней границе независимой операции, где нужно
-не дать одному сбою остановить весь механизм.
+На верхней границе независимой операции, где нужно не дать одному сбою остановить
+весь механизм:
 
 ```java
 public void runScheduledImport() {
-  try {
-    importService.importAll();
-  } catch (Exception exception) {
-    log.error("Scheduled incident import failed", exception);
-  }
+    try {
+        importService.importAll();
+    } catch (Exception exception) {
+        log.error("Scheduled order import failed", exception);
+    }
 }
 ```
 
-Он также бывает оправдан при адаптации API, если после перехвата ошибка корректно
-преобразуется. В обычной бизнес-логике лучше ловить ожидаемые конкретные типы.
+Обязательное условие — исключение логируется, а не проглатывается. Также приём
+бывает оправдан при адаптации чужого API, если ошибка корректно преобразуется. В
+обычной бизнес-логике ловят конкретные ожидаемые типы.
 
 `catch (Throwable)` почти всегда ошибочен, потому что дополнительно ловит `Error`.
+
+### Исключения не заменяют управление потоком
+
+Исключение предназначено для ненормальной ситуации. Ожидаемое ветвление выражают
+условием, циклом или подходящим возвращаемым типом:
+
+```java
+if (users.isEmpty()) {
+    return List.of();
+}
+```
+
+Использование исключений для ожидаемых проверок скрывает намерение кода, требует
+создания и обработки stack trace, усложняет отладку и метрики ошибок и смешивает
+штатный сценарий с аварийным.
+
+---
 
 ## Стандартные unchecked exceptions
 
 ### IllegalArgumentException
 
-`IllegalArgumentException` означает, что переданный аргумент нарушает контракт
-метода.
+Переданный аргумент нарушает контракт метода.
 
 ```java
-public Incident createIncident(long reporterId) {
-  if (reporterId <= 0) {
-    throw new IllegalArgumentException(
-            "reporterId must be positive"
-    );
-  }
+public Order createOrder(long customerId) {
+    if (customerId <= 0) {
+        throw new IllegalArgumentException("customerId must be positive");
+    }
 
-  return createForReporter(reporterId);
+    return createForCustomer(customerId);
 }
 ```
 
-Проверка формата или диапазона аргумента подходит для этого типа. Отсутствие
-пользователя с корректным ID лучше выразить `UserNotFoundException`.
+Проверка формата или диапазона подходит для этого типа. Отсутствие пользователя с
+корректным идентификатором лучше выразить собственным исключением.
 
 ### IllegalStateException
 
-`IllegalStateException` означает, что операция недопустима в текущем состоянии
-объекта или системы.
+Операция недопустима в текущем состоянии объекта или системы.
 
 ```java
-public void resolve() {
-  if (status != IncidentStatus.IN_PROGRESS) {
-    throw new IllegalStateException(
-            "Only an incident in progress can be resolved"
-    );
-  }
+public void complete() {
+    if (status != OrderStatus.IN_PROGRESS) {
+        throw new IllegalStateException("Only an order in progress can be completed");
+    }
 
-  status = IncidentStatus.RESOLVED;
+    status = OrderStatus.COMPLETED;
 }
 ```
 
 ```text
-неверный входной аргумент → IllegalArgumentException
+неверный входной аргумент      → IllegalArgumentException
 недопустимое текущее состояние → IllegalStateException
 ```
 
-### NullPointerException и Objects.requireNonNull
+### NullPointerException и requireNonNull
 
-`NullPointerException` возникает при использовании `null` там, где ожидается
-объект. Для ранней проверки обязательного аргумента применяют
-`Objects.requireNonNull()`.
+Возникает при использовании `null` там, где ожидается объект. Для ранней проверки
+обязательного аргумента применяют `Objects.requireNonNull()`:
 
 ```java
-public IncidentService(IncidentRepository incidentRepository) {
-  this.incidentRepository = Objects.requireNonNull(
-          incidentRepository,
-          "incidentRepository must not be null"
-  );
+public OrderService(OrderRepository orderRepository) {
+    this.orderRepository = Objects.requireNonNull(
+            orderRepository,
+            "orderRepository must not be null"
+    );
 }
 ```
 
-Проверка даёт сбой ближе к источнику ошибки и добавляет понятное сообщение.
-Для проверки бизнес-полей DTO часто лучше использовать Bean Validation.
+Проверка даёт сбой ближе к источнику ошибки и добавляет понятное сообщение. Для
+полей DTO лучше использовать Bean Validation.
+
+---
 
 ## Исключения и транзакции Spring
 
-Для транзакции, открытой через `@Transactional`, поведение по умолчанию такое:
+Поведение по умолчанию для метода с `@Transactional`:
 
 ```text
-RuntimeException → rollback
-Error            → rollback
-checked exception → rollback по умолчанию не гарантирован
+RuntimeException  → rollback
+Error             → rollback
+checked exception → фиксация, откат не выполняется
 ```
 
 ```java
 @Transactional
-public Incident createIncident(
-        String title,
-        String description,
-        String category,
-        IncidentPriority priority,
-        long reporterId
-) {
-  User reporter = userRepository.findById(reporterId)
-          .orElseThrow(() -> new UserNotFoundException(reporterId));
+public Order createOrder(String title, long customerId) {
+    Customer customer = customerRepository.findById(customerId)
+            .orElseThrow(() -> new CustomerNotFoundException(customerId));
 
-  return incidentRepository.save(new Incident(
-          title,
-          description,
-          category,
-          priority,
-          reporter
-  ));
+    return orderRepository.save(new Order(title, customer));
 }
 ```
 
-`UserNotFoundException` наследуется от `RuntimeException`, поэтому исключение,
-вышедшее из транзакционного метода, по умолчанию приводит к rollback.
+Собственное исключение наследует `RuntimeException`, поэтому выход из
+транзакционного метода приводит к откату.
 
-Для checked exception правило можно задать явно.
+Для проверяемого исключения правило задаётся явно:
 
 ```java
 @Transactional(rollbackFor = IOException.class)
-public void importIncidents(Path path) throws IOException {
-  importFrom(path);
+public void importOrders(Path path) throws IOException {
+    importFrom(path);
 }
 ```
 
-Важно, чтобы исключение вышло за границу транзакционного вызова. Если метод
-перехватил и проглотил ошибку, инфраструктура может считать вызов успешным.
+Важно, чтобы исключение вышло за границу транзакционного вызова: если метод
+перехватил и проглотил ошибку, инфраструктура сочтёт вызов успешным.
 
 ### Почему бизнес-исключения обычно unchecked
 
-В Spring бизнес-исключения часто наследуют от `RuntimeException`, потому что:
+```text
+вызывающий уровень редко способен продолжить тот же сценарий
+сигнатуры сервисов не перегружаются throws
+стандартное правило транзакций выполняет rollback
+исключения удобно преобразовывать в HTTP-ответ глобальным обработчиком
+```
 
-- вызывающий уровень редко способен продолжить тот же сценарий
-- сигнатуры сервисов не перегружаются `throws`
-- стандартное правило транзакций выполняет rollback
-- исключения удобно преобразовывать в HTTP-ответ глобальным обработчиком
-
-Это соглашение, а не требование языка. Тип исключения должен соответствовать
+Это соглашение, а не требование языка: тип исключения должен соответствовать
 контракту приложения.
 
-### Self-invocation и proxy
+### Self-invocation
 
-Spring обычно применяет `@Transactional` через proxy. Внутренний вызов одного
-метода класса из другого метода того же объекта обходит proxy. Поэтому транзакция,
-ожидаемая только из аннотации на вызываемом внутреннем методе, может не начаться.
+`@Transactional` обрабатывается через прокси, а вызов метода изнутри того же
+класса идёт через `this`, минуя его.
 
 ```text
 внешний вызов через proxy → транзакционный перехватчик работает
 self-invocation через this → proxy не участвует
 ```
 
+Транзакция не откроется, и ошибки при этом не возникнет.
+
+---
+
 ## Checked exceptions внутри Stream API
 
-Стандартный `Function<T, R>` не объявляет checked exception в сигнатуре.
+Стандартный `Function<T, R>` не объявляет проверяемых исключений:
 
 ```java
 R apply(T value);
 ```
 
-Поэтому `IOException` нельзя напрямую пробросить из lambda, переданной в `map()`.
+Поэтому `IOException` нельзя напрямую пробросить из лямбды в `map()`:
 
 ```java
 paths.stream()
@@ -685,26 +582,28 @@ paths.stream()
         .toList();
 ```
 
-Такой код не скомпилируется. Исключение нужно обработать или обернуть.
+Такой код не компилируется. Исключение нужно обработать или обернуть:
 
 ```java
 List<String> contents = paths.stream()
         .map(path -> {
-          try {
-            return Files.readString(path);
-          } catch (IOException exception) {
-            throw new UncheckedIOException(exception);
-          }
+            try {
+                return Files.readString(path);
+            } catch (IOException exception) {
+                throw new UncheckedIOException(exception);
+            }
         })
         .toList();
 ```
 
 Если обработка становится громоздкой, обычный цикл или отдельный метод часто
-понятнее pipeline.
+понятнее конвейера.
 
-## Когда следует перехватывать исключение
+---
 
-Перехватывать исключение следует, когда текущий уровень знает, что делать дальше.
+## Когда перехватывать
+
+Перехватывать следует, когда текущий уровень знает, что делать дальше:
 
 ```text
 можно повторить безопасную операцию
@@ -714,25 +613,10 @@ List<String> contents = paths.stream()
 можно сформировать окончательный внешний ответ
 ```
 
-Перехват только ради того, чтобы немедленно бросить то же исключение, бесполезен.
+Перехват только ради того, чтобы немедленно бросить то же самое исключение,
+бесполезен.
 
-## Исключения не заменяют обычное управление потоком
-
-Исключение предназначено для ненормальной ситуации. Ожидаемое ветвление лучше
-выражать условием, циклом или подходящим возвращаемым типом.
-
-```java
-if (users.isEmpty()) {
-        return List.of();
-}
-```
-
-Использование исключений для ожидаемых проверок:
-
-- скрывает намерение кода
-- создаёт и обрабатывает stack trace
-- усложняет отладку и метрики ошибок
-- смешивает штатный и аварийный сценарии
+---
 
 ## Типичные ошибки
 
@@ -752,19 +636,17 @@ if (users.isEmpty()) {
 
 ### Потеря cause
 
-```java
-throw new IncidentImportException("Import failed");
-```
-
-При оборачивании нужно передать исходное исключение в конструктор.
+При оборачивании исходное исключение нужно передать в конструктор, иначе
+диагностика становится невозможной.
 
 ### Логирование на каждом слое
 
-Одна ошибка создаёт множество одинаковых записей и затрудняет диагностику.
+Одна ошибка создаёт множество одинаковых записей и создаёт впечатление нескольких
+независимых сбоев.
 
 ### return в finally
 
-Он способен заменить возвращаемое значение и подавить исключение.
+Заменяет возвращаемое значение и подавляет исключение.
 
 ### Ручное закрытие вместо try-with-resources
 
@@ -773,33 +655,20 @@ throw new IncidentImportException("Import failed");
 
 ### Неверное ожидание rollback
 
-Checked exception без `rollbackFor` может не откатить Spring-транзакцию.
+Проверяемое исключение без `rollbackFor` транзакцию не откатит.
 
 ### Проглатывание исключения в транзакционном методе
 
-Если ошибка не вышла из метода, proxy может завершить транзакцию как успешную.
+Если ошибка не вышла из метода, прокси завершит транзакцию как успешную.
+
+### Расчёт на @Transactional при self-invocation
+
+Внутренний вызов идёт мимо прокси, и транзакция не откроется.
 
 ### Исключения как обычная ветка
 
-Ожидаемое отсутствие результата или проверку состояния не стоит строить на
-дорогом и неявном механизме исключений без необходимости.
-
-## Краткий ответ для собеседования
-
-Исключения в Java представлены иерархией `Throwable`. `Error` обычно описывает
-серьёзные проблемы JVM, а `Exception` ошибки приложения. Checked-исключения нужно
-перехватить или объявить через `throws`. `RuntimeException` и `Error` являются
-unchecked. Неперехваченное исключение поднимается вверх по стеку до подходящего
-`catch`.
-
-Ловить исключение нужно там, где его можно обработать, преобразовать или дополнить
-контекстом. Ресурсы следует закрывать через try-with-resources. Он закрывает их в
-обратном порядке и сохраняет ошибку `close()` как suppressed, если уже существует
-основная ошибка. При оборачивании нужно передавать `cause`.
-
-В Spring `RuntimeException` и `Error` по умолчанию вызывают rollback, а checked
-exception может потребовать `rollbackFor`. Бизнес-исключения поэтому часто делают
-unchecked.
+Ожидаемое отсутствие результата не стоит выражать дорогим и неявным механизмом
+исключений.
 
 ---
 
@@ -807,48 +676,102 @@ unchecked.
 
 ```text
 Throwable
-├── Error → unchecked
+├── Error → unchecked, не ловим
 └── Exception
     ├── RuntimeException → unchecked
     └── остальные → checked
+
+определяется иерархией, а не именем класса
+
+throw  → выбросить объект
+throws → объявить возможность
 ```
 
 ```text
-throw  → выбросить объект исключения
-throws → объявить возможность исключения
-```
-
-```text
-catch
-→ обработать
-→ преобразовать
-→ дополнить контекстом
-
+catch нужен, если можно
+обработать, преобразовать, дополнить контекстом
 иначе исключение поднимается выше
+
+несколько catch → от конкретного к общему
+multi-catch     → типы не в отношении наследования, переменная final
+catch (Throwable) → почти всегда ошибка
 ```
 
 ```text
-несколько catch
-→ от конкретного к общему
+finally выполняется всегда, кроме System.exit,
+аварийной остановки JVM и зависшего потока
+
+return в finally
+→ заменяет результат
+→ подавляет исключение
 ```
 
 ```text
 try-with-resources
-→ ресурсы закрываются в обратном порядке
+→ AutoCloseable, у Closeable close() бросает IOException
+→ закрытие в обратном порядке объявления
 → ошибка close сохраняется как suppressed
+→ getSuppressed()
 ```
 
 ```text
-оборачивание
-→ передать cause
+оборачивание → всегда передавать cause
+логировать → на границе обработки, один раз
+IllegalArgumentException → неверный аргумент
+IllegalStateException    → недопустимое состояние
+Objects.requireNonNull   → ранняя проверка с понятным сообщением
 ```
 
 ```text
 Spring @Transactional по умолчанию
 RuntimeException → rollback
 Error            → rollback
-checked exception → rollbackFor при необходимости
+checked          → фиксация, нужен rollbackFor
+
+исключение должно выйти за границу метода
+self-invocation обходит proxy
 ```
+
+```text
+Function<T, R> не объявляет checked
+→ обработать внутри или обернуть в UncheckedIOException
+```
+
+---
+
+## Краткий ответ для собеседования
+
+Исключения образуют иерархию `Throwable`, от которой наследуются `Error` и
+`Exception`. `Error` описывает проблемы уровня JVM и в прикладном коде не
+перехватывается. Внутри `Exception` отдельно стоит `RuntimeException`: всё, что не
+`Error` и не наследует `RuntimeException`, является проверяемым и требует либо
+`catch`, либо объявления через `throws`. Определять это нужно по иерархии, а не по
+имени класса.
+
+Неперехваченное исключение поднимается вверх по стеку до подходящего обработчика,
+а если его нет — завершает поток с печатью stack trace. Ловить исключение стоит
+там, где уровень способен что-то сделать: восстановиться, преобразовать в ошибку
+своего слоя или дополнить контекстом. Перехват ради немедленного повторного
+выбрасывания бесполезен, а пустой блок `catch` опасен: программа продолжает
+работать в неверном состоянии, и диагностика уничтожена.
+
+Блоки `catch` располагают от конкретного типа к общему, иначе конкретный окажется
+недостижимым. `finally` выполняется всегда, но `return` внутри него запрещён — он
+заменяет результат и молча подавляет летящее исключение.
+
+Ресурсы закрывают через try-with-resources: он закрывает их в обратном порядке
+объявления и, если исключение уже летит из тела, сохраняет ошибку закрытия как
+suppressed, а не затирает первопричину.
+
+При оборачивании обязательно передавать причину, иначе исходный stack trace
+теряется. Логировать ошибку следует один раз, на границе обработки, — иначе одно
+событие попадёт в лог несколько раз.
+
+В Spring непроверяемые исключения и `Error` по умолчанию вызывают откат
+транзакции, а проверяемые — нет, для них нужен `rollbackFor`. Именно поэтому
+бизнес-исключения обычно делают непроверяемыми. Два условия легко упустить:
+исключение должно выйти за границу транзакционного метода, и вызов должен идти
+через прокси — при self-invocation аннотация не сработает вовсе.
 
 ---
 
@@ -864,7 +787,7 @@ checked exception → rollbackFor при необходимости
 
 **Ответ:** корень — `Throwable`, от него наследуются `Error` и `Exception`. Внутри
 `Exception` отдельно стоит `RuntimeException`. Всё, что не является `Error` и не
-наследует `RuntimeException`, относится к checked.
+наследует `RuntimeException`, относится к проверяемым.
 
 ### 3. Чем Error отличается от Exception?
 
@@ -874,20 +797,19 @@ checked exception → rollbackFor при необходимости
 
 ### 4. Какие исключения являются checked и unchecked?
 
-**Ответ:** checked — наследники `Exception`, не входящие в ветку
-`RuntimeException`: их обязательно объявлять или обрабатывать. Unchecked —
-`RuntimeException` и его наследники, а также `Error`; компилятор их не
-контролирует.
+**Ответ:** проверяемые — наследники `Exception`, не входящие в ветку
+`RuntimeException`: их обязательно объявлять или обрабатывать. Непроверяемые —
+`RuntimeException` и его наследники, а также `Error`.
 
 ### 5. Как по иерархии определить checked exception?
 
 **Ответ:** подняться по цепочке наследования. Если по пути встретился
-`RuntimeException` или `Error` — исключение unchecked, иначе checked.
+`RuntimeException` или `Error` — исключение непроверяемое, иначе проверяемое.
 
 ### 6. Чем throw отличается от throws?
 
 **Ответ:** `throw` выбрасывает конкретный экземпляр в теле метода, `throws` —
-часть сигнатуры, объявляющая, какие checked-исключения метод может выпустить
+часть сигнатуры, объявляющая, какие проверяемые исключения метод может выпустить
 наружу.
 
 ### 7. Что происходит с неперехваченным исключением?
@@ -963,8 +885,8 @@ try-with-resources. `Closeable` — его частный случай, объя
 
 **Ответ:** когда ошибка отражает нарушение бизнес-правила и вызывающий код всё
 равно не может её осмысленно обработать на месте. Такой подход преобладает в
-приложениях на Spring: unchecked-исключения не засоряют сигнатуры и по умолчанию
-вызывают откат транзакции.
+приложениях на Spring: непроверяемые исключения не засоряют сигнатуры и по
+умолчанию вызывают откат транзакции.
 
 ### 20. Почему при оборачивании нужно передавать cause?
 
@@ -1014,8 +936,8 @@ try-with-resources. `Closeable` — его частный случай, объя
 
 ### 28. Как включить rollback для checked exception?
 
-**Ответ:** указать `@Transactional(rollbackFor = Exception.class)` либо перечислить
-конкретные типы.
+**Ответ:** указать `@Transactional(rollbackFor = Exception.class)` либо
+перечислить конкретные типы.
 
 ### 29. Почему бизнес-исключения в Spring часто являются unchecked?
 
@@ -1023,19 +945,24 @@ try-with-resources. `Closeable` — его частный случай, объя
 вызывают откат транзакции, поэтому поведение оказывается ожидаемым без
 дополнительной настройки.
 
-### 30. Почему self-invocation может помешать работе @Transactional?
+### 30. Что произойдёт, если перехватить исключение внутри транзакционного метода?
+
+**Ответ:** ошибка не выйдет за границу вызова, и прокси завершит транзакцию как
+успешную. Изменения будут зафиксированы, хотя операция фактически не удалась.
+
+### 31. Почему self-invocation может помешать работе @Transactional?
 
 **Ответ:** аннотацию обрабатывает прокси, а вызов метода изнутри того же класса
 идёт через `this`, минуя его. Транзакция не открывается, и ошибки при этом не
 возникает.
 
-### 31. Почему Function<T, R> не принимает lambda с IOException напрямую?
+### 32. Почему Function<T, R> не принимает lambda с IOException напрямую?
 
-**Ответ:** метод `apply()` не объявляет проверяемых исключений, а lambda не может
+**Ответ:** метод `apply()` не объявляет проверяемых исключений, а лямбда не может
 выбросить больше, чем объявлено в функциональном интерфейсе. Исключение нужно
-обработать внутри или обернуть в unchecked.
+обработать внутри или обернуть в непроверяемое.
 
-### 32. Почему исключения не используют для обычного управления потоком?
+### 33. Почему исключения не используют для обычного управления потоком?
 
 **Ответ:** это скрывает логику от читателя и обходится дороже обычной проверки:
 создание исключения требует сбора stack trace. Ожидаемый результат выражают
@@ -1046,8 +973,12 @@ try-with-resources. `Closeable` — его частный случай, объя
 
 ## См. также
 
-- [`06-stream-api.md`](06-stream-api.md) — checked exceptions внутри lambda
+- [`06-stream-api.md`](06-stream-api.md) — проверяемые исключения внутри лямбд
 - [`08-functional-interfaces-lambda.md`](08-functional-interfaces-lambda.md) —
   почему стандартные функциональные интерфейсы не объявляют checked exceptions
+- [`09-optional.md`](09-optional.md) — как выражать ожидаемое отсутствие
+  результата без исключений
+- [`../spring/05-spring-transactions.md`](../spring/05-spring-transactions.md) —
+  правила отката и границы транзакции
 - [`../concurrency/03-locks-atomics-executors.md`](../concurrency/03-locks-atomics-executors.md) —
   `ExecutionException` и передача ошибки задачи через `Future.get()`
