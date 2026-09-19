@@ -240,7 +240,7 @@ public void onOrderCreated(OrderCreatedEvent event) {
 
 Отключает снимки для dirty checking, экономит память и время сброса. Кроме того,
 Spring передаёт флаг драйверу, и на репликах такой запрос может быть направлен на
-读-узел.
+читающий узел.
 
 ### Self-invocation
 

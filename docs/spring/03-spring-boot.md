@@ -695,3 +695,5 @@ camelCase, с подчёркиваниями, в верхнем регистре
   мета-аннотации, из которых собран `@SpringBootApplication`
 - [`../jvm/01-jvm-memory.md`](../jvm/01-jvm-memory.md) — загрузчики классов,
   которые Boot расширяет ради вложенных jar
+- [`../databases/05-migrations.md`](../databases/05-migrations.md) — кто создаёт
+  схему, если `ddl-auto` выставлен в `validate`

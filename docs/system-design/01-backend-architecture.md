@@ -648,6 +648,8 @@ Readiness — готов ли он принимать трафик. Сервис
 
 - [`../http_rest/01-http-rest.md`](../http_rest/01-http-rest.md) —
   идемпотентность методов и ключ идемпотентности
+- [`../spring/07-http-clients.md`](../spring/07-http-clients.md) — таймауты,
+  повторы и circuit breaker на уровне кода
 - [`../kafka/01-kafka.md`](../kafka/01-kafka.md) — асинхронное взаимодействие,
   at-least-once и Outbox
 - [`../databases/03-transactions.md`](../databases/03-transactions.md) — почему

@@ -675,6 +675,8 @@ Controller. Он находит обработчик, вызывает его и
   контроллеры
 - [`02-spring-aop.md`](02-spring-aop.md) — прокси, через который работает
   `@Validated` на уровне методов
+- [`06-spring-security-jwt.md`](06-spring-security-jwt.md) — цепочка фильтров,
+  работающая до `DispatcherServlet`
 - [`../java-core/10-modern-java.md`](../java-core/10-modern-java.md) — `record`
   как форма DTO
 - [`../concurrency/06-virtual-threads.md`](../concurrency/06-virtual-threads.md) —

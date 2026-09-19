@@ -635,6 +635,8 @@ HTTP-запроса. В Spring Boot включён по умолчанию.
 
 ## См. также
 
+- [`../databases/05-migrations.md`](../databases/05-migrations.md) — кто создаёт
+  схему, которую проверяет `ddl-auto: validate`
 - [`../databases/03-transactions.md`](../databases/03-transactions.md) —
   транзакции и уровни изоляции на стороне базы
 - [`../spring/04-spring-mvc.md`](../spring/04-spring-mvc.md) — почему сущности не

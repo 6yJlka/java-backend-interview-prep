@@ -753,6 +753,9 @@ stateless, единообразный интерфейс и кешируемос
 
 ## См. также
 
+- [`../spring/06-spring-security-jwt.md`](../spring/06-spring-security-jwt.md) —
+  как `401` и `403` выглядят со стороны реализации и что представляет собой
+  самодостаточный токен
 - [`../java-core/05-exceptions.md`](../java-core/05-exceptions.md) — преобразование
   исключений в коды ответов
 - [`../java-core/09-optional.md`](../java-core/09-optional.md) — `orElseThrow()`

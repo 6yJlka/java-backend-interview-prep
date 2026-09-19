@@ -699,6 +699,8 @@ MVCC означает, что обновление создаёт новую в�
 - [`02-indexes.md`](02-indexes.md) — Index Only Scan и карта видимости, которая
   напрямую связана с MVCC
 - [`01-sql-basics.md`](01-sql-basics.md) — запросы, выполняемые внутри транзакций
+- [`05-migrations.md`](05-migrations.md) — почему `ALTER TABLE` берёт
+  `ACCESS EXCLUSIVE` и как это обходят при живой нагрузке
 - [`../http_rest/01-http-rest.md`](../http_rest/01-http-rest.md) — `ETag` и
   `If-Match` как та же оптимистическая блокировка на уровне протокола
 - [`../concurrency/02-multithreading-basics.md`](../concurrency/02-multithreading-basics.md) —
