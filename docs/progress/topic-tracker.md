@@ -128,12 +128,17 @@ HTTP-клиенты — последними: они про исходящие �
 - [ ] `hibernate/01-jpa-basics.md`
 - [ ] `hibernate/02-relationships-fetching.md`
 - [ ] `hibernate/03-hibernate-problems.md`
+- [ ] `spring/08-spring-data-jpa.md`
 - [ ] `spring/05-spring-transactions.md`
 - [ ] `databases/04-jdbc.md`
 
-Транзакции Spring идут после Hibernate: они смыкают прокси, контекст
-персистентности и уровни изоляции. JDBC в конце — как объяснение того, что лежит
-под ORM.
+Порядок содержательный, а не алфавитный. Сначала JPA: без контекста
+персистентности, состояний сущности и ленивой загрузки Spring Data выглядит
+магией. Затем сам Spring Data — репозитории, проекции, пагинация. Транзакции
+Spring после него, потому что смыкают прокси, контекст персистентности и уровни
+изоляции. JDBC в конце — как объяснение того, что лежит под ORM.
+
+Самый объёмный блок этапа и второй по важности после Spring.
 
 ---
 
@@ -166,7 +171,7 @@ System Design читается после архитектуры: разбор �
 ```text
 1. блок 9  — HTTP, SQL, индексы, транзакции, миграции
 2. блок 10 — Spring, включая безопасность
-3. блок 11 — JPA и Hibernate
+3. блок 11 — JPA, Spring Data и Hibernate
 4. блок 2  — коллекции и Map
 5. блок 1  — основы, SOLID, equals / hashCode
 6. блок 4  — лямбды и Stream API
@@ -186,13 +191,16 @@ System Design читается после архитектуры: разбор �
 |---|---|
 | Идемпотентность | HTTP, Kafka, JPA `@Version`, архитектура, System Design, HTTP-клиенты |
 | Оптимистическая блокировка | HTTP `ETag`, транзакции БД, JPA `@Version`, System Design |
-| Прокси и self-invocation | аннотации, Spring AOP, Spring Transactions, Hibernate, Security, повторы |
+| Прокси и self-invocation | аннотации, Spring AOP, Spring Transactions, Hibernate, Security, репозитории |
 | Инверсия зависимостей | SOLID в ООП, Spring Core, тестирование |
 | Поверхностная неизменяемость | лямбды, `record`, JMM, коллекции |
 | Привязка к потоку | Spring Transactions, `ThreadLocal`, MDC в логировании, `SecurityContext` |
 | Стирание типов | generics, коллекции, лямбды |
 | Таймауты и backpressure | HTTP-клиенты, архитектура, очереди, пулы потоков |
 | Блокировки при изменении схемы | транзакции БД, миграции, rolling update |
+| Пагинация | REST API, Spring Data, индексы, System Design |
+| N+1 и стратегии загрузки | Hibernate, `@EntityGraph` в Spring Data, сериализация в Spring MVC |
+| Границы транзакции | Spring Transactions, Spring Data, Hibernate, HTTP-клиенты |
 
 ---
 

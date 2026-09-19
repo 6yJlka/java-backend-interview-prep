@@ -958,6 +958,29 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 - [x] pagination + join fetch
 - [x] transaction boundaries
 
+## 9.6. Spring Data JPA — Изучено
+
+- [x] иерархия интерфейсов репозиториев
+- [x] прокси и `SimpleJpaRepository`
+- [x] собственный фрагмент репозитория
+- [x] производные методы и ключевые слова
+- [x] `@Query`: JPQL и нативный SQL
+- [x] именованные и позиционные параметры
+- [x] `@Modifying` и обход контекста персистентности
+- [x] `clearAutomatically` и `flushAutomatically`
+- [x] `@EntityGraph`
+- [x] `Pageable`, `Page`, `Slice`
+- [x] пагинация вместе с `join fetch` и `HHH000104`
+- [x] `Sort` и `JpaSort.unsafe`
+- [x] интерфейсные проекции, закрытые и открытые
+- [x] DTO-проекции через конструктор
+- [x] динамические проекции
+- [x] `Specification` и `JpaSpecificationExecutor`
+- [x] Query by Example
+- [x] `save`, `isNew` и `Persistable`
+- [x] `saveAll` и пакетная вставка
+- [x] `deleteAll` против `deleteAllInBatch`
+- [x] транзакционность методов репозитория
 ---
 
 # 10. Spring Transactions — Изучено
@@ -1193,6 +1216,7 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
   архитектура, System Design, Docker, Git, сборщики
 - [x] Дополнение по итогам аудита: Spring Security и JWT, HTTP-клиенты, миграции
   схемы
+- [x] Spring Data JPA — последний пробел уровня Junior
 
 Отложены и конспектами не покрыты: `Date and Time API`, `Java I/O / NIO`,
 `Structured Concurrency` и `Scoped Values`.
