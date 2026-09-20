@@ -1,7 +1,7 @@
 # Backend Interview Preparation Tracker
 
-Все конспекты написаны. Этот файл задаёт порядок прохождения материала и
-отслеживает, что уже проработано.
+Этот файл задаёт порядок прохождения материала, отслеживает проработанное и
+фиксирует уровень каждого конспекта.
 
 Подробные чек-листы по темам — в [`backend-roadmap.md`](backend-roadmap.md).
 
@@ -15,6 +15,30 @@
 пройденным.
 
 Отметка `[x]` ставится не после чтения, а после успешного прогона по вопросам.
+Проваленные вопросы записываются в [`review-log.md`](review-log.md).
+
+## Уровни
+
+Метка отвечает на один вопрос: **на собеседовании какого уровня отсутствие этого
+знания станет причиной отказа.** Это не сложность темы и не глубина владения ею.
+
+```text
+J   → спрашивают у джуна, незнание отсекает сразу
+J+  → спрашивают у джуна с опытом, незнание заметно
+M   → ожидается от мидла
+S   → ожидается от сеньора
+```
+
+Метка ставится один раз, при добавлении конспекта, и почти никогда не меняется.
+Желание перевесить её обычно означает, что оценивается сложность темы, а не её
+отсекающая сила.
+
+Новые конспекты более высокого уровня не отменяют существующих: они добавляются
+новыми файлами в те же директории и получают свою метку. Репозиторий растёт
+вширь, а не переписывается.
+
+Каждый файл из `docs` обязан быть в этой таблице и иметь метку — это проверяет
+`scripts/check-format.py`.
 
 ---
 
@@ -22,9 +46,11 @@
 
 ### Блок 1. Основы языка и объектная модель
 
-- [ ] `java-core/00-java-language-basics.md`
-- [ ] `java-core/07-oop-object-string-wrappers.md`
-- [ ] `java-core/03-equals-hashcode.md`
+| Конспект | Уровень | Пройден |
+|---|---|---|
+| `java-core/00-java-language-basics.md` | J | [ ] |
+| `java-core/07-oop-object-string-wrappers.md` | J | [ ] |
+| `java-core/03-equals-hashcode.md` | J | [ ] |
 
 Сквозная тема — pass-by-value и то, что копируется значение ссылки. Из неё же
 вырастает контракт `equals` и `hashCode`. SOLID разбирается во втором конспекте
@@ -32,32 +58,40 @@
 
 ### Блок 2. Коллекции
 
-- [ ] `java-core/01-collections-framework.md`
-- [ ] `java-core/02-map.md`
+| Конспект | Уровень | Пройден |
+|---|---|---|
+| `java-core/01-collections-framework.md` | J | [ ] |
+| `java-core/02-map.md` | J | [ ] |
 
 Читается сразу после контракта `equals` и `hashCode`: без него устройство
 `HashMap` не объясняется.
 
 ### Блок 3. Обобщения и исключения
 
-- [ ] `java-core/04-generics.md`
-- [ ] `java-core/05-exceptions.md`
+| Конспект | Уровень | Пройден |
+|---|---|---|
+| `java-core/04-generics.md` | J+ | [ ] |
+| `java-core/05-exceptions.md` | J | [ ] |
 
 Generics опираются на ковариантность массивов из первого блока.
 
 ### Блок 4. Функциональная Java
 
-- [ ] `java-core/08-functional-interfaces-lambda.md`
-- [ ] `java-core/06-stream-api.md`
-- [ ] `java-core/09-optional.md`
+| Конспект | Уровень | Пройден |
+|---|---|---|
+| `java-core/08-functional-interfaces-lambda.md` | J | [ ] |
+| `java-core/06-stream-api.md` | J | [ ] |
+| `java-core/09-optional.md` | J | [ ] |
 
 Строгий порядок: лямбды дают фундамент под Stream API, а `Optional` завершает
 тему, поскольку его возвращают терминальные операции.
 
 ### Блок 5. Современная Java и аннотации
 
-- [ ] `java-core/10-modern-java.md`
-- [ ] `java-core/11-annotations.md`
+| Конспект | Уровень | Пройден |
+|---|---|---|
+| `java-core/10-modern-java.md` | J+ | [ ] |
+| `java-core/11-annotations.md` | J+ | [ ] |
 
 Аннотации нужны до Spring: без `RetentionPolicy.RUNTIME` и рефлексии непонятно,
 как работает `@Transactional`.
@@ -68,29 +102,35 @@ Generics опираются на ковариантность массивов �
 
 ### Блок 6. Устройство JVM
 
-- [ ] `jvm/01-jvm-memory.md`
-- [ ] `jvm/02-garbage-collection.md`
+| Конспект | Уровень | Пройден |
+|---|---|---|
+| `jvm/01-jvm-memory.md` | J+ | [ ] |
+| `jvm/02-garbage-collection.md` | M | [ ] |
 
-Второй конспект начинается там, где заканчивается первый.
+Второй конспект начинается там, где заканчивается первый. Алгоритмы сборщиков и
+выбор между ними — уровень мидла, джуну достаточно первого.
 
 ### Блок 7. Модель памяти и потоки
 
-- [ ] `concurrency/01-java-memory-model.md`
-- [ ] `concurrency/02-multithreading-basics.md`
+| Конспект | Уровень | Пройден |
+|---|---|---|
+| `concurrency/01-java-memory-model.md` | J+ | [ ] |
+| `concurrency/02-multithreading-basics.md` | J | [ ] |
 
 Только в этом порядке: `synchronized` и `volatile` объясняются гарантиями
 happens-before, а не наоборот.
 
 ### Блок 8. Инструменты конкурентности
 
-- [ ] `concurrency/03-locks-atomics-executors.md`
-- [ ] `concurrency/04-concurrent-collections.md`
-- [ ] `concurrency/05-completable-future.md`
-- [ ] `concurrency/06-virtual-threads.md`
+| Конспект | Уровень | Пройден |
+|---|---|---|
+| `concurrency/03-locks-atomics-executors.md` | J+ | [ ] |
+| `concurrency/04-concurrent-collections.md` | J+ | [ ] |
+| `concurrency/05-completable-future.md` | J+ | [ ] |
+| `concurrency/06-virtual-threads.md` | M | [ ] |
 
-Самый объёмный блок. Для Junior-собеседования достаточно первых двух конспектов,
-остальные — про запас. В третьем конспекте почти пятьдесят вопросов: при
-подготовке к конкретному собеседованию половину можно пропускать.
+Самый объёмный блок. В третьем конспекте почти пятьдесят вопросов: при подготовке
+к конкретному собеседованию половину можно пропускать.
 
 ---
 
@@ -101,23 +141,27 @@ happens-before, а не наоборот.
 
 ### Блок 9. Протокол и база данных
 
-- [ ] `http_rest/01-http-rest.md`
-- [ ] `databases/01-sql-basics.md`
-- [ ] `databases/02-indexes.md`
-- [ ] `databases/03-transactions.md`
-- [ ] `databases/05-migrations.md`
+| Конспект | Уровень | Пройден |
+|---|---|---|
+| `http_rest/01-http-rest.md` | J | [ ] |
+| `databases/01-sql-basics.md` | J | [ ] |
+| `databases/02-indexes.md` | J+ | [ ] |
+| `databases/03-transactions.md` | J+ | [ ] |
+| `databases/05-migrations.md` | J+ | [ ] |
 
 Транзакции читаются перед миграциями: и то и другое про блокировки, но миграции
 опираются на понимание того, что `ALTER TABLE` их берёт.
 
 ### Блок 10. Spring
 
-- [ ] `spring/01-spring-core.md`
-- [ ] `spring/02-spring-aop.md`
-- [ ] `spring/03-spring-boot.md`
-- [ ] `spring/04-spring-mvc.md`
-- [ ] `spring/06-spring-security-jwt.md`
-- [ ] `spring/07-http-clients.md`
+| Конспект | Уровень | Пройден |
+|---|---|---|
+| `spring/01-spring-core.md` | J | [ ] |
+| `spring/02-spring-aop.md` | J+ | [ ] |
+| `spring/03-spring-boot.md` | J | [ ] |
+| `spring/04-spring-mvc.md` | J | [ ] |
+| `spring/06-spring-security-jwt.md` | J+ | [ ] |
+| `spring/07-http-clients.md` | J+ | [ ] |
 
 Порядок обязателен: контейнер, затем прокси, затем автоконфигурация поверх обоих.
 Безопасность идёт после MVC, потому что опирается на устройство фильтров.
@@ -125,12 +169,14 @@ HTTP-клиенты — последними: они про исходящие �
 
 ### Блок 11. Персистентность
 
-- [ ] `hibernate/01-jpa-basics.md`
-- [ ] `hibernate/02-relationships-fetching.md`
-- [ ] `hibernate/03-hibernate-problems.md`
-- [ ] `spring/08-spring-data-jpa.md`
-- [ ] `spring/05-spring-transactions.md`
-- [ ] `databases/04-jdbc.md`
+| Конспект | Уровень | Пройден |
+|---|---|---|
+| `hibernate/01-jpa-basics.md` | J | [ ] |
+| `hibernate/02-relationships-fetching.md` | J | [ ] |
+| `hibernate/03-hibernate-problems.md` | J+ | [ ] |
+| `spring/08-spring-data-jpa.md` | J | [ ] |
+| `spring/05-spring-transactions.md` | J+ | [ ] |
+| `databases/04-jdbc.md` | J+ | [ ] |
 
 Порядок содержательный, а не алфавитный. Сначала JPA: без контекста
 персистентности, состояний сущности и ленивой загрузки Spring Data выглядит
@@ -146,10 +192,12 @@ Spring после него, потому что смыкают прокси, к�
 
 ### Блок 12. Эксплуатация
 
-- [ ] `logging/01-logging.md`
-- [ ] `testing/01-testing.md`
-- [ ] `kafka/01-kafka.md`
-- [ ] `kafka/02-spring-kafka.md`
+| Конспект | Уровень | Пройден |
+|---|---|---|
+| `logging/01-logging.md` | J | [ ] |
+| `testing/01-testing.md` | J | [ ] |
+| `kafka/01-kafka.md` | J+ | [ ] |
+| `kafka/02-spring-kafka.md` | J+ | [ ] |
 
 Конспекты по Kafka строго в этом порядке: второй говорит о смещениях, повторах и
 ребалансировке, и без понимания партиций и групп потребителей из первого он
@@ -157,34 +205,70 @@ Spring после него, потому что смыкают прокси, к�
 
 ### Блок 13. Архитектура и инфраструктура
 
-- [ ] `system-design/01-backend-architecture.md`
-- [ ] `system-design/02-system-design.md`
-- [ ] `docker/01-docker-cicd.md`
-- [ ] `git/01-git.md`
-- [ ] `build-tools/01-gradle-maven.md`
+| Конспект | Уровень | Пройден |
+|---|---|---|
+| `system-design/01-backend-architecture.md` | J+ | [ ] |
+| `system-design/02-system-design.md` | J+ | [ ] |
+| `docker/01-docker-cicd.md` | J+ | [ ] |
+| `git/01-git.md` | J | [ ] |
+| `build-tools/01-gradle-maven.md` | J | [ ] |
 
 System Design читается после архитектуры: разбор задач опирается на приёмы
 устойчивости из первого конспекта.
 
 ---
 
-## Если времени мало
+## Срезы по уровням
 
-Приоритет при подготовке к конкретному собеседованию, в порядке убывания
-вероятности вопроса:
+Срезы накопительные: подготовка к следующему уровню включает предыдущий. Базовые
+вопросы никуда не деваются, их просто задают быстрее.
+
+### Срез: Junior
+
+Только конспекты с меткой `J`, в порядке убывания вероятности вопроса:
 
 ```text
-1. блок 9  — HTTP, SQL, индексы, транзакции, миграции
-2. блок 10 — Spring, включая безопасность
-3. блок 11 — JPA, Spring Data и Hibernate
-4. блок 2  — коллекции и Map
-5. блок 1  — основы, SOLID, equals / hashCode
-6. блок 4  — лямбды и Stream API
-7. блок 7  — модель памяти и потоки
+1. http_rest/01, databases/01
+2. spring/01, spring/03, spring/04
+3. hibernate/01, hibernate/02, spring/08
+4. java-core/01, java-core/02
+5. java-core/00, java-core/07, java-core/03
+6. java-core/08, java-core/06, java-core/09
+7. java-core/05, concurrency/02
+8. logging/01, testing/01, git/01, build-tools/01
 ```
 
-Остальное — по времени. Исключение: если в резюме заявлен опыт с Kafka, блок 12
-поднимается сразу после блока 11 — про обвязку спросят почти наверняка.
+### Срез: Junior+
+
+Всё из предыдущего среза плюс метки `J+`. Добавляется:
+
+```text
+databases/02, databases/03, databases/05
+spring/02, spring/05, spring/06, spring/07
+hibernate/03, databases/04
+java-core/04, java-core/10, java-core/11
+jvm/01, concurrency/01, concurrency/03, concurrency/04, concurrency/05
+kafka/01, kafka/02
+system-design/01, system-design/02, docker/01
+```
+
+### Срез: Middle
+
+Всё предыдущее плюс метки `M`:
+
+```text
+jvm/02, concurrency/06
+```
+
+Раздел пополняется по мере появления конспектов уровня мидла: планы запросов и
+статистика, партиционирование, репликация, наблюдаемость, кеширование,
+согласованность в распределённых системах.
+
+### Отдельная оговорка
+
+Если в резюме заявлен опыт с конкретной технологией, её конспекты поднимаются в
+срезе независимо от метки. Заявленная в резюме Kafka означает, что про обвязку
+спросят почти наверняка, даже на джуна.
 
 ---
 

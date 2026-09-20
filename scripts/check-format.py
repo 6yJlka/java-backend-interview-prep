@@ -17,6 +17,7 @@
   * вопросы пронумерованы подряд с единицы и у каждого есть «Ответ:»
   * есть блок «См. также», и все относительные ссылки ведут в существующие файлы
   * нет CRLF и посторонних символов
+  * каждый конспект указан в topic-tracker.md и имеет метку уровня
 """
 
 import re
@@ -26,6 +27,8 @@ from pathlib import Path
 
 DOCS = Path("docs")
 SKIP = {"progress"}
+TRACKER = DOCS / "progress" / "topic-tracker.md"
+LEVELS = {"J", "J+", "M", "S"}
 
 ENDING = [
     "Типичные ошибки",
@@ -130,6 +133,47 @@ def check(path: Path):
             bad(f"битая ссылка: {target}")
 
 
+def check_tracker(files):
+    """Каждый конспект должен быть в трекере и иметь метку уровня."""
+    if not TRACKER.exists():
+        problems.append(f"{TRACKER}: файл не найден, проверка уровней пропущена")
+        return
+
+    text = TRACKER.read_text(encoding="utf-8")
+
+    rows = re.findall(
+        r"^\|\s*`([^`]+\.md)`\s*\|\s*([^|]+?)\s*\|",
+        text,
+        re.M,
+    )
+
+    tracked = dict(rows)
+
+    for path in files:
+        rel = path.relative_to(DOCS).as_posix()
+
+        if rel == "_template.md":
+            continue
+
+        if rel not in tracked:
+            problems.append(f"{TRACKER}: конспект не указан в трекере — {rel}")
+            continue
+
+        level = tracked[rel]
+
+        if level not in LEVELS:
+            problems.append(
+                f"{TRACKER}: недопустимая метка уровня «{level}» у {rel}"
+                f" (ожидается одна из {', '.join(sorted(LEVELS))})"
+            )
+
+    existing = {path.relative_to(DOCS).as_posix() for path in files}
+
+    for rel in tracked:
+        if rel not in existing:
+            problems.append(f"{TRACKER}: в трекере указан несуществующий файл — {rel}")
+
+
 def main():
     if not DOCS.exists():
         print("Каталог docs/ не найден — запускайте из корня репозитория.")
@@ -138,6 +182,8 @@ def main():
     files = [p for p in sorted(DOCS.rglob("*.md")) if p.parent.name not in SKIP]
     for p in files:
         check(p)
+
+    check_tracker(files)
 
     print(f"Проверено файлов: {len(files)}")
     if not problems:
