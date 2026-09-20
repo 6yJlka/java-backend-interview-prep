@@ -149,6 +149,11 @@ Spring после него, потому что смыкают прокси, к�
 - [ ] `logging/01-logging.md`
 - [ ] `testing/01-testing.md`
 - [ ] `kafka/01-kafka.md`
+- [ ] `kafka/02-spring-kafka.md`
+
+Конспекты по Kafka строго в этом порядке: второй говорит о смещениях, повторах и
+ребалансировке, и без понимания партиций и групп потребителей из первого он
+читается как набор настроек.
 
 ### Блок 13. Архитектура и инфраструктура
 
@@ -178,7 +183,8 @@ System Design читается после архитектуры: разбор �
 7. блок 7  — модель памяти и потоки
 ```
 
-Остальное — по времени.
+Остальное — по времени. Исключение: если в резюме заявлен опыт с Kafka, блок 12
+поднимается сразу после блока 11 — про обвязку спросят почти наверняка.
 
 ---
 
@@ -189,7 +195,7 @@ System Design читается после архитектуры: разбор �
 
 | Тема | Где встречается |
 |---|---|
-| Идемпотентность | HTTP, Kafka, JPA `@Version`, архитектура, System Design, HTTP-клиенты |
+| Идемпотентность | HTTP, Kafka, Spring Kafka, JPA `@Version`, архитектура, System Design, HTTP-клиенты |
 | Оптимистическая блокировка | HTTP `ETag`, транзакции БД, JPA `@Version`, System Design |
 | Прокси и self-invocation | аннотации, Spring AOP, Spring Transactions, Hibernate, Security, репозитории |
 | Инверсия зависимостей | SOLID в ООП, Spring Core, тестирование |
@@ -197,10 +203,12 @@ System Design читается после архитектуры: разбор �
 | Привязка к потоку | Spring Transactions, `ThreadLocal`, MDC в логировании, `SecurityContext` |
 | Стирание типов | generics, коллекции, лямбды |
 | Таймауты и backpressure | HTTP-клиенты, архитектура, очереди, пулы потоков |
+| Повторы и backoff | HTTP-клиенты, Spring Kafka, архитектура |
+| Outbox | Spring Kafka, Spring Data, System Design, архитектура |
 | Блокировки при изменении схемы | транзакции БД, миграции, rolling update |
 | Пагинация | REST API, Spring Data, индексы, System Design |
 | N+1 и стратегии загрузки | Hibernate, `@EntityGraph` в Spring Data, сериализация в Spring MVC |
-| Границы транзакции | Spring Transactions, Spring Data, Hibernate, HTTP-клиенты |
+| Границы транзакции | Spring Transactions, Spring Data, Spring Kafka, Hibernate, HTTP-клиенты |
 
 ---
 

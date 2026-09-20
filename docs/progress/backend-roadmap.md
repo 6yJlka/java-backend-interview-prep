@@ -958,6 +958,8 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 - [x] pagination + join fetch
 - [x] transaction boundaries
 
+---
+
 ## 9.6. Spring Data JPA — Изучено
 
 - [x] иерархия интерфейсов репозиториев
@@ -1105,25 +1107,35 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 
 Практический опыт есть, знания нужно систематизировать для интервью.
 
+## 13.1. Apache Kafka
+
 - [x] broker
-- [x] topic
-- [x] partition
-- [x] producer
-- [x] consumer
-- [x] consumer group
-- [x] offset
-- [x] replication
-- [x] key
-- [x] ordering внутри partition
-- [x] rebalancing
-- [x] at-most-once
-- [x] at-least-once
-- [x] exactly-once
-- [x] idempotent producer
-- [x] retries
-- [x] duplicate messages
-- [x] DLQ
-- [x] consumer error handling
+
+---
+
+## 13.2. Spring Kafka — Изучено
+
+- [x] `KafkaTemplate` и асинхронность отправки
+- [x] ключ сообщения и порядок внутри партиции
+- [x] `acks` и `enable.idempotence`
+- [x] `@KafkaListener` и контейнеры слушателей
+- [x] `concurrency` и ограничение числом партиций
+- [x] почему выключают автоподтверждение смещений
+- [x] `AckMode`: `BATCH`, `RECORD`, `MANUAL`, `MANUAL_IMMEDIATE`
+- [x] `JsonDeserializer` и доверенные пакеты
+- [x] poison pill и `ErrorHandlingDeserializer`
+- [x] `DefaultErrorHandler` и `BackOff`
+- [x] `DeadLetterPublishingRecoverer` и топик `.DLT`
+- [x] повторяемые и неповторяемые исключения
+- [x] блокирующие повторы и остановка партиции
+- [x] `@RetryableTopic` и неблокирующие повторы
+- [x] транзакции Kafka и `read_committed`
+- [x] отсутствие атомарности базы и брокера, Outbox
+- [x] `@TransactionalEventListener` после фиксации
+- [x] `max.poll.interval.ms` и бесконечная ребалансировка
+- [x] `CooperativeStickyAssignor`
+- [x] идемпотентность потребителя
+- [x] `@EmbeddedKafka` и Testcontainers
 
 ---
 
@@ -1217,6 +1229,7 @@ Junior / Junior+ собеседовании. Spring, SQL и Hibernate заним
 - [x] Дополнение по итогам аудита: Spring Security и JWT, HTTP-клиенты, миграции
   схемы
 - [x] Spring Data JPA — последний пробел уровня Junior
+- [x] Spring Kafka — обвязка поверх брокера
 
 Отложены и конспектами не покрыты: `Date and Time API`, `Java I/O / NIO`,
 `Structured Concurrency` и `Scoped Values`.
