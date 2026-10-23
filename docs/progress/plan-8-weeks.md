@@ -57,8 +57,8 @@
 
 Теория:
 
-- [ ] `http_rest/01`
-- [ ] `databases/01`
+- [x] `http_rest/01`
+- [x] `databases/01`
 - [ ] `databases/02`
 - [ ] `databases/03`
 - [ ] `databases/05`
