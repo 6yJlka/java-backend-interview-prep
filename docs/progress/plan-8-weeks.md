@@ -59,8 +59,8 @@
 
 - [x] `http_rest/01`
 - [x] `databases/01`
-- [ ] `databases/02`
-- [ ] `databases/03`
+- [x] `databases/02`
+- [x] `databases/03`
 - [ ] `databases/05`
 
 Практика в песочнице:
