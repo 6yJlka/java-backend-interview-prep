@@ -61,7 +61,7 @@
 - [x] `databases/01`
 - [x] `databases/02`
 - [x] `databases/03`
-- [ ] `databases/05`
+- [x] `databases/05`
 
 Практика в песочнице:
 
