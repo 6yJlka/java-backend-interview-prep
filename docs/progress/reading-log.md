@@ -48,14 +48,14 @@ Kafka стоит сразу после Spring: она заявлена в опы
 
 ### Spring
 
-| Конспект | Уровень | Прочитан | Дата | Заметки |
-|---|---|---|---|---|
-| [`spring/01-spring-core.md`](../spring/01-spring-core.md) | J | [ ] | | |
-| [`spring/02-spring-aop.md`](../spring/02-spring-aop.md) | J+ | [ ] | | |
-| [`spring/03-spring-boot.md`](../spring/03-spring-boot.md) | J | [ ] | | |
-| [`spring/04-spring-mvc.md`](../spring/04-spring-mvc.md) | J | [ ] | | |
-| [`spring/06-spring-security-jwt.md`](../spring/06-spring-security-jwt.md) | J+ | [ ] | | |
-| [`spring/07-http-clients.md`](../spring/07-http-clients.md) | J+ | [ ] | | |
+| Конспект | Уровень | Прочитан | Дата       | Заметки                                |
+|---|---|----------|------------|----------------------------------------|
+| [`spring/01-spring-core.md`](../spring/01-spring-core.md) | J | [x]      | 11.11.2026 | Освежил в памяти, эту теорию я +- знал |
+| [`spring/02-spring-aop.md`](../spring/02-spring-aop.md) | J+ | [ ]      |            |                                        |
+| [`spring/03-spring-boot.md`](../spring/03-spring-boot.md) | J | [ ]      |            |                                        |
+| [`spring/04-spring-mvc.md`](../spring/04-spring-mvc.md) | J | [ ]      |            |                                        |
+| [`spring/06-spring-security-jwt.md`](../spring/06-spring-security-jwt.md) | J+ | [ ]      |            |                                        |
+| [`spring/07-http-clients.md`](../spring/07-http-clients.md) | J+ | [ ]      |            |                                        |
 
 ### Персистентность
 

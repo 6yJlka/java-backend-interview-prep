@@ -82,7 +82,7 @@
 
 Теория:
 
-- [ ] `spring/01`
+- [x] `spring/01`
 - [ ] `spring/02`
 - [ ] `spring/03`
 - [ ] `spring/04`
