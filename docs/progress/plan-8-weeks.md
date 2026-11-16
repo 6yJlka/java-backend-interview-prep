@@ -83,8 +83,8 @@
 Теория:
 
 - [x] `spring/01`
-- [ ] `spring/02`
-- [ ] `spring/03`
+- [x] `spring/02`
+- [x] `spring/03`
 - [ ] `spring/04`
 
 Практика:
