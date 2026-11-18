@@ -85,7 +85,7 @@
 - [x] `spring/01`
 - [x] `spring/02`
 - [x] `spring/03`
-- [ ] `spring/04`
+- [x] `spring/04`
 
 Практика:
 
